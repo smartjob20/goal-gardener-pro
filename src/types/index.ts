@@ -1,0 +1,169 @@
+// Core Types for TimeManager Pro
+
+export type Priority = 'low' | 'medium' | 'high';
+export type TaskCategory = 'work' | 'study' | 'health' | 'personal' | 'project';
+export type HabitCategory = 'health' | 'fitness' | 'nutrition' | 'productivity' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'finance' | 'relationship';
+export type HabitFrequency = 'daily' | 'weekly' | 'custom';
+export type HabitType = 'quantitative' | 'qualitative';
+export type HabitDifficulty = 'easy' | 'medium' | 'hard';
+export type GoalCategory = 'health' | 'learning' | 'career' | 'finance' | 'personal' | 'family' | 'hobby' | 'travel';
+export type PlanType = 'habit' | 'goal' | 'routine';
+export type PlanStatus = 'planning' | 'active' | 'completed' | 'paused';
+
+export interface SubTask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  category: TaskCategory;
+  priority: Priority;
+  completed: boolean;
+  createdAt: string;
+  completedAt?: string;
+  deadline?: string;
+  subtasks?: SubTask[];
+  xpReward: number;
+  timeSpent?: number;
+}
+
+export interface Habit {
+  id: string;
+  title: string;
+  description?: string;
+  category: HabitCategory;
+  target: number;
+  targetUnit: string;
+  currentStreak: number;
+  longestStreak: number;
+  completedDates: string[];
+  xpReward: number;
+  color: string;
+  frequency: HabitFrequency;
+  reminderTime?: string;
+  reminderEnabled: boolean;
+  habitType: HabitType;
+  difficulty: HabitDifficulty;
+  createdAt: string;
+  isActive: boolean;
+}
+
+export interface Milestone {
+  id: string;
+  title: string;
+  completed: boolean;
+  completedAt?: string;
+}
+
+export interface Goal {
+  id: string;
+  title: string;
+  description?: string;
+  category: GoalCategory;
+  progress: number;
+  targetDate: string;
+  milestones: Milestone[];
+  xpReward: number;
+  status: 'active' | 'completed' | 'paused';
+  imageUrl?: string;
+  createdAt: string;
+}
+
+export interface FocusSession {
+  id: string;
+  taskId?: string;
+  startTime: string;
+  endTime?: string;
+  duration: number;
+  xpEarned: number;
+  completed: boolean;
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  xpReward: number;
+  unlocked: boolean;
+  unlockedAt?: string;
+}
+
+export interface DailyStats {
+  date: string;
+  tasksCompleted: number;
+  habitsCompleted: number;
+  focusTime: number;
+  xpEarned: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  level: number;
+  xp: number;
+  xpToNextLevel: number;
+  avatar: string;
+  bio?: string;
+  achievements: string[];
+  totalTasksCompleted: number;
+  totalFocusTime: number;
+  longestStreak: number;
+  createdAt: string;
+}
+
+export interface Plan {
+  id: string;
+  title: string;
+  description?: string;
+  type: PlanType;
+  category: string;
+  priority: Priority;
+  status: PlanStatus;
+  startDate: string;
+  endDate: string;
+  duration: number;
+  checklist: { id: string; title: string; completed: boolean }[];
+  progress: number;
+  createdAt: string;
+}
+
+export interface AppSettings {
+  theme: 'light' | 'dark' | 'auto';
+  language: 'fa' | 'en' | 'ar';
+  calendar: 'jalali' | 'gregorian';
+  notifications: boolean;
+  sounds: boolean;
+  volume: number;
+  haptics: boolean;
+  dailyReminderTime: string;
+  habitReminders: boolean;
+}
+
+export interface AICoachSuggestion {
+  id: string;
+  type: 'motivation' | 'tip' | 'achievement' | 'goal' | 'habit' | 'focus';
+  title: string;
+  message: string;
+  priority: Priority;
+  actionable: boolean;
+  dismissed: boolean;
+  createdAt: string;
+}
+
+export interface AppState {
+  user: User;
+  tasks: Task[];
+  habits: Habit[];
+  goals: Goal[];
+  plans: Plan[];
+  focusSessions: FocusSession[];
+  dailyStats: DailyStats[];
+  achievements: Achievement[];
+  settings: AppSettings;
+  aiSuggestions: AICoachSuggestion[];
+}
