@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppProvider } from '@/context/AppContext';
 import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
+import TaskManager from '@/components/TaskManager';
 import { motion, AnimatePresence } from 'motion/react';
 
 const Index = () => {
@@ -12,15 +13,7 @@ const Index = () => {
       case 'dashboard':
         return <Dashboard />;
       case 'tasks':
-        return (
-          <div className="flex items-center justify-center min-h-screen pb-24">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">✓</div>
-              <h2 className="text-2xl font-bold">مدیریت وظایف</h2>
-              <p className="text-muted-foreground">به زودی...</p>
-            </div>
-          </div>
-        );
+        return <TaskManager />;
       case 'habits':
         return (
           <div className="flex items-center justify-center min-h-screen pb-24">
