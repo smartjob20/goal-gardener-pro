@@ -3,6 +3,7 @@ import { AppProvider } from '@/context/AppContext';
 import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
 import TaskManager from '@/components/TaskManager';
+import HabitTracker from '@/components/HabitTracker';
 import { motion, AnimatePresence } from 'motion/react';
 
 const Index = () => {
@@ -15,15 +16,7 @@ const Index = () => {
       case 'tasks':
         return <TaskManager />;
       case 'habits':
-        return (
-          <div className="flex items-center justify-center min-h-screen pb-24">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">🔥</div>
-              <h2 className="text-2xl font-bold">ردیابی عادت‌ها</h2>
-              <p className="text-muted-foreground">به زودی...</p>
-            </div>
-          </div>
-        );
+        return <HabitTracker />;
       case 'planning':
         return (
           <div className="flex items-center justify-center min-h-screen pb-24">
