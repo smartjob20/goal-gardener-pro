@@ -156,6 +156,9 @@ interface AppContextType {
   addHabit: (habit: Omit<Habit, 'id' | 'createdAt' | 'currentStreak' | 'longestStreak' | 'completedDates'>) => void;
   checkHabit: (id: string, date: string) => void;
   addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'progress' | 'status'>) => void;
+  addPlan: (plan: Plan) => void;
+  updatePlan: (id: string, updates: Partial<Plan>) => void;
+  deletePlan: (id: string) => void;
   addXP: (amount: number, reason: string) => void;
   checkAchievements: () => void;
 }
@@ -254,6 +257,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     checkAchievements();
   };
 
+  const addPlan = (plan: Plan) => {
+    dispatch({ type: 'ADD_PLAN', payload: plan });
+  };
+
+  const updatePlan = (id: string, updates: Partial<Plan>) => {
+    const plan = state.plans.find(p => p.id === id);
+    if (plan) {
+      dispatch({ type: 'UPDATE_PLAN', payload: { ...plan, ...updates } });
+    }
+  };
+
+  const deletePlan = (id: string) => {
+    dispatch({ type: 'DELETE_PLAN', payload: id });
+  };
+
   const checkAchievements = () => {
     // Check for achievement unlocks
     const { totalTasksCompleted, level, totalFocusTime } = state.user;
@@ -277,7 +295,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, addHabit, checkHabit, addGoal, addXP, checkAchievements }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, addHabit, checkHabit, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
       {children}
     </AppContext.Provider>
   );
