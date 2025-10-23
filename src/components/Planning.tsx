@@ -18,7 +18,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Play, Pause, CheckCircle2, Target, Zap, LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, differenceInDays, addDays } from 'date-fns';
-import { faIR } from 'date-fns/locale';
 
 const Planning = () => {
   const { state, addPlan, updatePlan, deletePlan } = useApp();
@@ -399,7 +398,7 @@ const Planning = () => {
                       <PopoverTrigger asChild>
                         <Button variant="outline" className="w-full justify-start">
                           <CalendarIcon className="ml-2 h-4 w-4" />
-                          {format(startDate, 'PPP', { locale: faIR })}
+                          {format(startDate, 'yyyy/MM/dd')}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
@@ -407,7 +406,6 @@ const Planning = () => {
                           mode="single"
                           selected={startDate}
                           onSelect={(date) => date && setStartDate(date)}
-                          locale={faIR}
                         />
                       </PopoverContent>
                     </Popover>
