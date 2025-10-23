@@ -5,6 +5,7 @@ import Dashboard from '@/components/Dashboard';
 import TaskManager from '@/components/TaskManager';
 import HabitTracker from '@/components/HabitTracker';
 import Planning from '@/components/Planning';
+import Goals from '@/components/Goals';
 import { motion, AnimatePresence } from 'motion/react';
 
 const Index = () => {
@@ -21,15 +22,7 @@ const Index = () => {
       case 'planning':
         return <Planning />;
       case 'goals':
-        return (
-          <div className="flex items-center justify-center min-h-screen pb-24">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">🎯</div>
-              <h2 className="text-2xl font-bold">هدف‌گذاری</h2>
-              <p className="text-muted-foreground">به زودی...</p>
-            </div>
-          </div>
-        );
+        return <Goals />;
       case 'focus':
         return (
           <div className="flex items-center justify-center min-h-screen pb-24">
