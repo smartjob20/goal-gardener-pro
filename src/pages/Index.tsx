@@ -8,6 +8,8 @@ import Planning from '@/components/Planning';
 import Goals from '@/components/Goals';
 import Focus from '@/components/Focus';
 import Analytics from '@/components/Analytics';
+import Settings from '@/components/Settings';
+import Profile from '@/components/Profile';
 import { motion, AnimatePresence } from 'motion/react';
 
 const Index = () => {
@@ -30,25 +32,9 @@ const Index = () => {
       case 'analytics':
         return <Analytics />;
       case 'settings':
-        return (
-          <div className="flex items-center justify-center min-h-screen pb-24">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">⚙️</div>
-              <h2 className="text-2xl font-bold">تنظیمات</h2>
-              <p className="text-muted-foreground">به زودی...</p>
-            </div>
-          </div>
-        );
+        return <Settings />;
       case 'profile':
-        return (
-          <div className="flex items-center justify-center min-h-screen pb-24">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">👤</div>
-              <h2 className="text-2xl font-bold">پروفایل</h2>
-              <p className="text-muted-foreground">به زودی...</p>
-            </div>
-          </div>
-        );
+        return <Profile />;
       default:
         return <Dashboard />;
     }
