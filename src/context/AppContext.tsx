@@ -68,6 +68,7 @@ type Action =
   | { type: 'UPDATE_PLAN'; payload: Plan }
   | { type: 'DELETE_PLAN'; payload: string }
   | { type: 'ADD_FOCUS_SESSION'; payload: FocusSession }
+  | { type: 'UPDATE_FOCUS_SESSION'; payload: FocusSession }
   | { type: 'UPDATE_USER'; payload: Partial<User> }
   | { type: 'ADD_XP'; payload: number }
   | { type: 'UNLOCK_ACHIEVEMENT'; payload: string }
@@ -113,6 +114,10 @@ const appReducer = (state: AppState, action: Action): AppState => {
       return { ...state, plans: state.plans.filter(p => p.id !== action.payload) };
     case 'ADD_FOCUS_SESSION':
       return { ...state, focusSessions: [...state.focusSessions, action.payload] };
+    case 'UPDATE_FOCUS_SESSION': {
+      const updatedSessions = state.focusSessions.map(s => s.id === action.payload.id ? action.payload : s);
+      return { ...state, focusSessions: updatedSessions };
+    }
     case 'UPDATE_USER':
       return { ...state, user: { ...state.user, ...action.payload } };
     case 'ADD_XP': {
