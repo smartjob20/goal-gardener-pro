@@ -20,39 +20,58 @@ const tabs = [
 
 export default function Navigation({ activeTab, onTabChange }: NavigationProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-2">
-        <div className="flex justify-around items-center py-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border/60 backdrop-blur-2xl shadow-2xl">
+      <div className="max-w-7xl mx-auto px-1 md:px-3">
+        <div className="flex justify-around items-center py-1.5 md:py-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             
             return (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="relative flex flex-col items-center gap-1 px-2 py-1 min-w-[60px] transition-all"
+                className="relative flex flex-col items-center gap-0.5 md:gap-1 px-1.5 md:px-3 py-1.5 md:py-2 min-w-[50px] md:min-w-[70px] transition-all"
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.05 }}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-primary/10 rounded-xl"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    className="absolute inset-0 bg-gradient-to-br from-primary/15 to-accent/10 rounded-2xl shadow-lg"
+                    transition={{ type: 'spring', bounce: 0.25, duration: 0.6 }}
                   />
                 )}
-                <Icon
-                  className={`w-5 h-5 transition-all relative z-10 ${
-                    isActive ? 'text-primary scale-110' : 'text-muted-foreground'
-                  }`}
-                />
+                <motion.div
+                  animate={isActive ? { scale: [1, 1.2, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                  className="relative z-10"
+                >
+                  <Icon
+                    className={`w-5 h-5 md:w-6 md:h-6 transition-all ${
+                      isActive 
+                        ? 'text-primary drop-shadow-lg' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  />
+                  {isActive && (
+                    <motion.div
+                      className="absolute -inset-1 bg-primary/20 rounded-full blur-md"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  )}
+                </motion.div>
                 <span
-                  className={`text-[10px] font-medium transition-all relative z-10 ${
-                    isActive ? 'text-primary' : 'text-muted-foreground'
+                  className={`text-[9px] md:text-[11px] font-semibold transition-all relative z-10 ${
+                    isActive 
+                      ? 'text-primary' 
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {tab.label}
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
