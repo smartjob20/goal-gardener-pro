@@ -138,10 +138,21 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    direction: rtl;
   }
   
   html {
     scroll-behavior: smooth;
+    direction: rtl;
+  }
+  
+  * {
+    text-align: right;
+  }
+  
+  input, textarea, select {
+    text-align: right;
+    direction: rtl;
   }
 }
 
