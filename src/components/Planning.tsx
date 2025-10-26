@@ -261,7 +261,7 @@ const Planning = () => {
   const pausedPlans = state.plans.filter(p => p.status === 'paused');
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
+    <div className="min-h-screen pb-24 px-4 pt-6" dir="rtl">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

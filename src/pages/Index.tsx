@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppProvider } from '@/context/AppContext';
 import Navigation from '@/components/Navigation';
+import UnifiedDashboard from '@/components/UnifiedDashboard';
 import Dashboard from '@/components/Dashboard';
 import TaskManager from '@/components/TaskManager';
 import HabitTracker from '@/components/HabitTracker';
@@ -15,10 +16,36 @@ import { motion, AnimatePresence } from 'motion/react';
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
 
+  // Apply theme on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('appState');
+    if (savedSettings) {
+      try {
+        const { settings } = JSON.parse(savedSettings);
+        const root = document.documentElement;
+        
+        if (settings.theme === 'dark') {
+          root.classList.add('dark');
+        } else if (settings.theme === 'light') {
+          root.classList.remove('dark');
+        } else {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (prefersDark) {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading theme:', error);
+      }
+    }
+  }, []);
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return <UnifiedDashboard />;
       case 'tasks':
         return <TaskManager />;
       case 'habits':
@@ -36,7 +63,7 @@ const Index = () => {
       case 'profile':
         return <Profile />;
       default:
-        return <Dashboard />;
+        return <UnifiedDashboard />;
     }
   };
 
@@ -50,6 +77,7 @@ const Index = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
+            className="min-h-screen"
           >
             {renderContent()}
           </motion.div>

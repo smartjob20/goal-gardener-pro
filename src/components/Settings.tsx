@@ -54,6 +54,23 @@ const Settings = () => {
 
   const saveSettings = () => {
     dispatch({ type: 'UPDATE_SETTINGS', payload: settings });
+    
+    // Apply theme to document
+    const root = document.documentElement;
+    if (settings.theme === 'dark') {
+      root.classList.add('dark');
+    } else if (settings.theme === 'light') {
+      root.classList.remove('dark');
+    } else {
+      // Auto mode
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+    
     setHasChanges(false);
     toast.success('تنظیمات با موفقیت ذخیره شد! ✅');
   };

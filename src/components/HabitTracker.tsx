@@ -202,7 +202,7 @@ const HabitTracker = () => {
   };
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="min-h-screen space-y-6 pb-24 p-4" dir="rtl">
       {/* Header با آمار */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

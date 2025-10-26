@@ -153,7 +153,7 @@ export default function TaskManager() {
   const completedCount = tasks.filter(t => t.completed).length;
 
   return (
-    <div className="min-h-screen pb-24 p-4 custom-scrollbar overflow-y-auto">
+    <div className="min-h-screen pb-24 p-4 custom-scrollbar overflow-y-auto" dir="rtl">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
