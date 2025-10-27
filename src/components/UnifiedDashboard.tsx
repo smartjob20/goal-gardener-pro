@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, addDays, addWeeks, addMonths, addYears, isSameDay } from 'date-fns';
 import { faIR } from 'date-fns/locale';
+import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
 import { toast } from 'sonner';
 
 type ViewMode = 'day' | 'week' | 'month' | 'year';
@@ -32,6 +33,7 @@ const UnifiedDashboard = () => {
   const { state, completeTask, checkHabit, dispatch, addXP } = useApp();
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const useJalali = state.settings.calendar === 'jalali';
 
   // Get date range based on view mode
   const getDateRange = () => {
@@ -148,15 +150,31 @@ const UnifiedDashboard = () => {
 
   // Format date range label
   const getDateRangeLabel = () => {
-    switch (viewMode) {
-      case 'day':
-        return format(selectedDate, 'EEEE، d MMMM yyyy', { locale: faIR });
-      case 'week':
-        return `${format(dateRange.start, 'd MMM')} - ${format(dateRange.end, 'd MMM yyyy')}`;
-      case 'month':
-        return format(selectedDate, 'MMMM yyyy', { locale: faIR });
-      case 'year':
-        return format(selectedDate, 'yyyy');
+    if (useJalali) {
+      switch (viewMode) {
+        case 'day':
+          return `${getPersianDayName(selectedDate)} ${formatPersianDate(selectedDate)}`;
+        case 'week': {
+          const start = startOfWeek(selectedDate, { weekStartsOn: 6 });
+          const end = endOfWeek(selectedDate, { weekStartsOn: 6 });
+          return `${formatPersianDate(start)} - ${formatPersianDate(end)}`;
+        }
+        case 'month':
+          return formatPersianDate(selectedDate, 'MMMM yyyy');
+        case 'year':
+          return formatPersianDate(selectedDate, 'yyyy');
+      }
+    } else {
+      switch (viewMode) {
+        case 'day':
+          return format(selectedDate, 'EEEE، d MMMM yyyy', { locale: faIR });
+        case 'week':
+          return `${format(dateRange.start, 'd MMM')} - ${format(dateRange.end, 'd MMM yyyy')}`;
+        case 'month':
+          return format(selectedDate, 'MMMM yyyy', { locale: faIR });
+        case 'year':
+          return format(selectedDate, 'yyyy');
+      }
     }
   };
 
@@ -277,8 +295,8 @@ const UnifiedDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {/* Stats Overview - Mobile Friendly */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <Card className="glass hover-scale">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
@@ -368,8 +386,8 @@ const UnifiedDashboard = () => {
             </Card>
           </div>
 
-          {/* Main Content */}
-          <div className="grid lg:grid-cols-3 gap-6">
+          {/* Main Content - Mobile Friendly */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Tasks Section */}
             <Card className="lg:col-span-2 glass">
               <CardHeader>

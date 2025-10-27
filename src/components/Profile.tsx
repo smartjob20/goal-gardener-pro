@@ -181,7 +181,7 @@ const Profile = () => {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       <div className="text-center p-3 bg-secondary/50 rounded-lg">
                         <div className="text-2xl font-bold text-primary">{state.user.level}</div>
                         <div className="text-xs text-muted-foreground">سطح</div>
@@ -221,9 +221,9 @@ const Profile = () => {
             <TabsTrigger value="activity">فعالیت‌ها</TabsTrigger>
           </TabsList>
 
-          {/* Stats Tab */}
+          {/* Stats Tab - Mobile Friendly */}
           <TabsContent value="stats" className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-2">
@@ -343,7 +343,7 @@ const Profile = () => {
                     <Progress value={(state.user.xp % 100)} />
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t">
                     <div className="text-center">
                       <div className="text-3xl mb-1">🎯</div>
                       <div className="text-2xl font-bold">{completedTasks}</div>
@@ -380,7 +380,7 @@ const Profile = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {state.achievements.map((achievement) => (
                     <motion.div
                       key={achievement.id}

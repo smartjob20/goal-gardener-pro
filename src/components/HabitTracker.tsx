@@ -224,7 +224,7 @@ const HabitTracker = () => {
                 عادت جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
               <DialogHeader>
                 <DialogTitle>{editingHabit ? 'ویرایش عادت' : 'افزودن عادت جدید'}</DialogTitle>
               </DialogHeader>
@@ -247,7 +247,7 @@ const HabitTracker = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="grid grid-cols-2 gap-2 p-4 bg-accent rounded-lg"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 bg-accent rounded-lg"
                 >
                   {habitTemplates.map((template, idx) => (
                     <Button

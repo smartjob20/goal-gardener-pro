@@ -12,8 +12,9 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar } from '@/components/ui/calendar';
+import { PersianCalendar } from '@/components/ui/persian-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useApp as useAppContext } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Play, Pause, CheckCircle2, Target, Zap, LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,6 +22,8 @@ import { format, differenceInDays, addDays } from 'date-fns';
 
 const Planning = () => {
   const { state, addPlan, updatePlan, deletePlan } = useApp();
+  const appContext = useAppContext();
+  const useJalali = appContext.state.settings.calendar === 'jalali';
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('active');
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
@@ -284,7 +287,7 @@ const Planning = () => {
                 برنامه جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
               <DialogHeader>
                 <DialogTitle>✨ ایجاد برنامه جدید</DialogTitle>
               </DialogHeader>
@@ -399,15 +402,25 @@ const Planning = () => {
                         <Button variant="outline" className="w-full justify-start">
                           <CalendarIcon className="ml-2 h-4 w-4" />
                           {format(startDate, 'yyyy/MM/dd')}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      {useJalali ? (
+                        <PersianCalendar
                           mode="single"
                           selected={startDate}
                           onSelect={(date) => date && setStartDate(date)}
                         />
-                      </PopoverContent>
+                      ) : (
+                        <div className="p-3">
+                          <Input
+                            type="date"
+                            value={format(startDate, 'yyyy-MM-dd')}
+                            onChange={(e) => setStartDate(new Date(e.target.value))}
+                          />
+                        </div>
+                      )}
+                    </PopoverContent>
                     </Popover>
                   </div>
                 </div>
@@ -458,8 +471,8 @@ const Planning = () => {
           </Dialog>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Stats Cards - Mobile Friendly */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="p-4 glass-card hover:shadow-lg transition-all">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-green-500/20 rounded-xl">

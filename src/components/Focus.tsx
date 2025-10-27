@@ -224,8 +224,8 @@ const Focus = () => {
           <p className="text-muted-foreground">با تکنیک پومودورو بهره‌وری خود را افزایش دهید</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {/* Stats Cards - Mobile Friendly */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -284,8 +284,8 @@ const Focus = () => {
           <div className="md:col-span-2">
             <Card>
               <CardContent className="p-6">
-                {/* Mode Selector */}
-                <div className="flex gap-2 mb-6 flex-wrap">
+                {/* Mode Selector - Mobile Friendly */}
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-6">
                   <Button
                     variant={mode === 'pomodoro' ? 'default' : 'outline'}
                     onClick={() => changeMode('pomodoro')}

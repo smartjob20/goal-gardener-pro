@@ -293,8 +293,8 @@ const Analytics = () => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {/* Stats Grid - Mobile Friendly */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
@@ -346,8 +346,8 @@ const Analytics = () => {
               </Card>
             </div>
 
-            {/* Additional Stats */}
-            <div className="grid md:grid-cols-3 gap-4">
+            {/* Additional Stats - Mobile Friendly */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle>نرخ تکمیل وظایف</CardTitle>
@@ -425,9 +425,9 @@ const Analytics = () => {
             </Card>
           </TabsContent>
 
-          {/* Tasks Tab */}
+          {/* Tasks Tab - Mobile Friendly */}
           <TabsContent value="tasks" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle>توزیع بر اساس دسته‌بندی</CardTitle>

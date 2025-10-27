@@ -12,8 +12,9 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar } from '@/components/ui/calendar';
+import { PersianCalendar } from '@/components/ui/persian-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useApp as useAppContext } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Target, Trophy, Play, Pause, CheckCircle2, Clock, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,6 +22,8 @@ import { format, differenceInDays } from 'date-fns';
 
 const Goals = () => {
   const { state, addGoal, dispatch } = useApp();
+  const appContext = useAppContext();
+  const useJalali = appContext.state.settings.calendar === 'jalali';
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('active');
 
@@ -240,7 +243,7 @@ const Goals = () => {
                 هدف جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
               <DialogHeader>
                 <DialogTitle>🎯 ایجاد هدف جدید</DialogTitle>
               </DialogHeader>
@@ -295,12 +298,22 @@ const Goals = () => {
                         {format(targetDate, 'yyyy/MM/dd')}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={targetDate}
-                        onSelect={(date) => date && setTargetDate(date)}
-                      />
+                    <PopoverContent className="w-auto p-0" align="start">
+                      {useJalali ? (
+                        <PersianCalendar
+                          mode="single"
+                          selected={targetDate}
+                          onSelect={(date) => date && setTargetDate(date)}
+                        />
+                      ) : (
+                        <div className="p-3">
+                          <Input
+                            type="date"
+                            value={format(targetDate, 'yyyy-MM-dd')}
+                            onChange={(e) => setTargetDate(new Date(e.target.value))}
+                          />
+                        </div>
+                      )}
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -390,8 +403,8 @@ const Goals = () => {
           </Dialog>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Stats Cards - Mobile Friendly */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="p-4 glass-card hover:shadow-lg transition-all">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-green-500/20 rounded-xl">
@@ -786,12 +799,22 @@ const Goals = () => {
                     {format(targetDate, 'yyyy/MM/dd')}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={targetDate}
-                    onSelect={(date) => date && setTargetDate(date)}
-                  />
+                <PopoverContent className="w-auto p-0" align="start">
+                  {useJalali ? (
+                    <PersianCalendar
+                      mode="single"
+                      selected={targetDate}
+                      onSelect={(date) => date && setTargetDate(date)}
+                    />
+                  ) : (
+                    <div className="p-3">
+                      <Input
+                        type="date"
+                        value={format(targetDate, 'yyyy-MM-dd')}
+                        onChange={(e) => setTargetDate(new Date(e.target.value))}
+                      />
+                    </div>
+                  )}
                 </PopoverContent>
               </Popover>
             </div>
