@@ -11,6 +11,7 @@ import Focus from '@/components/Focus';
 import Analytics from '@/components/Analytics';
 import Settings from '@/components/Settings';
 import Profile from '@/components/Profile';
+import Rewards from '@/components/Rewards';
 import { motion, AnimatePresence } from 'motion/react';
 
 const Index = () => {
@@ -56,6 +57,8 @@ const Index = () => {
         return <Goals />;
       case 'focus':
         return <Focus />;
+      case 'rewards':
+        return <Rewards />;
       case 'analytics':
         return <Analytics />;
       case 'settings':

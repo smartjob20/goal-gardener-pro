@@ -155,6 +155,24 @@ export interface AICoachSuggestion {
   createdAt: string;
 }
 
+export type RewardCategory = 'entertainment' | 'food' | 'shopping' | 'travel' | 'self-care' | 'custom';
+export type RewardStatus = 'available' | 'locked' | 'claimed' | 'expired';
+
+export interface Reward {
+  id: string;
+  title: string;
+  description?: string;
+  category: RewardCategory;
+  xpRequired: number;
+  icon: string;
+  status: RewardStatus;
+  claimedAt?: string;
+  expiresAt?: string;
+  customValue?: string;
+  motivationalMessage?: string;
+  createdAt: string;
+}
+
 export interface AppState {
   user: User;
   tasks: Task[];
@@ -166,4 +184,5 @@ export interface AppState {
   achievements: Achievement[];
   settings: AppSettings;
   aiSuggestions: AICoachSuggestion[];
+  rewards: Reward[];
 }

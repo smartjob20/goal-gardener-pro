@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { AppState, Task, Habit, Goal, FocusSession, Achievement, User, Plan, AppSettings, AICoachSuggestion } from '@/types';
+import { AppState, Task, Habit, Goal, FocusSession, Achievement, User, Plan, AppSettings, AICoachSuggestion, Reward } from '@/types';
 import { toast } from 'sonner';
 
 // Initial State
@@ -51,6 +51,7 @@ const initialState: AppState = {
   achievements: initialAchievements,
   settings: initialSettings,
   aiSuggestions: [],
+  rewards: [],
 };
 
 // Action Types
@@ -75,6 +76,10 @@ type Action =
   | { type: 'UPDATE_SETTINGS'; payload: Partial<AppSettings> }
   | { type: 'ADD_AI_SUGGESTION'; payload: AICoachSuggestion }
   | { type: 'DISMISS_SUGGESTION'; payload: string }
+  | { type: 'ADD_REWARD'; payload: Reward }
+  | { type: 'UPDATE_REWARD'; payload: Reward }
+  | { type: 'DELETE_REWARD'; payload: string }
+  | { type: 'CLAIM_REWARD'; payload: { rewardId: string; xpSpent: number } }
   | { type: 'LOAD_STATE'; payload: AppState };
 
 // Reducer
@@ -144,6 +149,53 @@ const appReducer = (state: AppState, action: Action): AppState => {
         s.id === action.payload ? { ...s, dismissed: true } : s
       );
       return { ...state, aiSuggestions: updatedSuggestions };
+    }
+    case 'ADD_REWARD':
+      return { ...state, rewards: [...state.rewards, action.payload] };
+    case 'UPDATE_REWARD': {
+      const updatedRewards = state.rewards.map(r => 
+        r.id === action.payload.id ? action.payload : r
+      );
+      return { ...state, rewards: updatedRewards };
+    }
+    case 'DELETE_REWARD':
+      return { ...state, rewards: state.rewards.filter(r => r.id !== action.payload) };
+    case 'CLAIM_REWARD': {
+      const reward = state.rewards.find(r => r.id === action.payload.rewardId);
+      if (!reward) return state;
+      
+      const updatedReward = { 
+        ...reward, 
+        status: 'claimed' as const, 
+        claimedAt: new Date().toISOString() 
+      };
+      const updatedRewards = state.rewards.map(r => 
+        r.id === action.payload.rewardId ? updatedReward : r
+      );
+      
+      // Update XP (subtract spent XP)
+      const newXP = state.user.xp - action.payload.xpSpent;
+      const newLevel = Math.floor(newXP / 100) + 1;
+      const xpToNext = (newLevel * 100) - newXP;
+      
+      // Check if any locked rewards should now be available
+      const rewardsToUpdate = updatedRewards.map(r => {
+        if (r.status === 'locked' && newXP >= r.xpRequired) {
+          return { ...r, status: 'available' as const };
+        }
+        return r;
+      });
+      
+      return {
+        ...state,
+        rewards: rewardsToUpdate,
+        user: { 
+          ...state.user, 
+          xp: newXP, 
+          level: newLevel, 
+          xpToNextLevel: xpToNext 
+        }
+      };
     }
     case 'LOAD_STATE':
       return action.payload;
@@ -260,6 +312,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'ADD_XP', payload: amount });
     toast.success(`${amount} XP کسب کردید! ${reason} 🌟`);
     checkAchievements();
+    
+    // Check if any locked rewards should become available
+    const updatedRewards = state.rewards.map(reward => {
+      if (reward.status === 'locked' && (state.user.xp + amount) >= reward.xpRequired) {
+        toast.success(`🎁 پاداش "${reward.title}" آماده دریافت است!`);
+        return { ...reward, status: 'available' as const };
+      }
+      return reward;
+    });
+    
+    // Update rewards if any changed
+    updatedRewards.forEach((reward, index) => {
+      if (reward.status !== state.rewards[index].status) {
+        dispatch({ type: 'UPDATE_REWARD', payload: reward });
+      }
+    });
   };
 
   const addPlan = (plan: Plan) => {
