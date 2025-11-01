@@ -15,7 +15,8 @@ import {
   BarChart3,
   Calendar,
   Download,
-  Trophy
+  Trophy,
+  FileText
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format, subDays, isAfter, isBefore, startOfDay, endOfDay, differenceInDays } from 'date-fns';
@@ -36,6 +37,7 @@ import {
   Area,
   AreaChart
 } from 'recharts';
+import { generatePDFReport } from './PDFExport';
 
 type TimeRange = '7' | '30' | '90' | '365' | 'all';
 
@@ -275,9 +277,13 @@ const Analytics = () => {
                 <SelectItem value="all">همه زمان‌ها</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => generatePDFReport(state)}>
+              <FileText className="ml-2 h-4 w-4" />
+              گزارش PDF
+            </Button>
             <Button variant="outline" onClick={exportData}>
               <Download className="ml-2 h-4 w-4" />
-              دانلود داده‌ها
+              دانلود JSON
             </Button>
           </div>
         </div>

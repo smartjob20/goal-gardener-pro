@@ -15,6 +15,7 @@ import { Plus, Search, Filter, CheckCircle2, Circle, Clock, Calendar, Trash2, Ed
 import { Task, TaskCategory, Priority, SubTask } from '@/types';
 import { formatDate, daysUntil } from '@/utils/dateUtils';
 import { toast } from 'sonner';
+import { ImageUpload } from './ImageUpload';
 
 const categoryConfig = {
   work: { label: 'کار', icon: '💼', color: 'text-info bg-info/10 border-info/20' },
@@ -49,6 +50,7 @@ export default function TaskManager() {
   const [deadline, setDeadline] = useState('');
   const [subtasks, setSubtasks] = useState<SubTask[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const resetForm = () => {
     setTitle('');
@@ -58,6 +60,7 @@ export default function TaskManager() {
     setDeadline('');
     setSubtasks([]);
     setNewSubtask('');
+    setImageUrl('');
     setEditingTask(null);
   };
 
@@ -77,6 +80,7 @@ export default function TaskManager() {
       subtasks: subtasks.length > 0 ? subtasks : undefined,
       xpReward: priorityConfig[priority].xp,
       timeSpent: 0,
+      imageUrl: imageUrl || undefined,
     };
 
     if (editingTask) {
@@ -126,10 +130,11 @@ export default function TaskManager() {
     setEditingTask(task);
     setTitle(task.title);
     setDescription(task.description || '');
-    setCategory(task.category);
+    setCategory(task.category as TaskCategory);
     setPriority(task.priority);
     setDeadline(task.deadline || '');
     setSubtasks(task.subtasks || []);
+    setImageUrl(task.imageUrl || '');
     setIsDialogOpen(true);
   };
 
@@ -214,6 +219,14 @@ export default function TaskManager() {
                             </span>
                           </SelectItem>
                         ))}
+                        {state.settings.customTaskCategories.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            <span className="flex items-center gap-2">
+                              <span>📌</span>
+                              <span>{cat}</span>
+                            </span>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -247,6 +260,13 @@ export default function TaskManager() {
                     onChange={(e) => setDeadline(e.target.value)}
                   />
                 </div>
+
+                {/* Image Upload */}
+                <ImageUpload
+                  imageUrl={imageUrl}
+                  onImageChange={setImageUrl}
+                  label="تصویر وظیفه (اختیاری)"
+                />
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">زیروظایف</label>

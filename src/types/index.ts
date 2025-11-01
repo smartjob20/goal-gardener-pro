@@ -20,7 +20,7 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
-  category: TaskCategory;
+  category: TaskCategory | string;
   priority: Priority;
   completed: boolean;
   createdAt: string;
@@ -29,13 +29,14 @@ export interface Task {
   subtasks?: SubTask[];
   xpReward: number;
   timeSpent?: number;
+  imageUrl?: string;
 }
 
 export interface Habit {
   id: string;
   title: string;
   description?: string;
-  category: HabitCategory;
+  category: HabitCategory | string;
   target: number;
   targetUnit: string;
   currentStreak: number;
@@ -50,6 +51,7 @@ export interface Habit {
   difficulty: HabitDifficulty;
   createdAt: string;
   isActive: boolean;
+  imageUrl?: string;
 }
 
 export interface Milestone {
@@ -130,6 +132,7 @@ export interface Plan {
   checklist: { id: string; title: string; completed: boolean }[];
   progress: number;
   createdAt: string;
+  imageUrl?: string;
 }
 
 export interface AppSettings {
@@ -142,6 +145,9 @@ export interface AppSettings {
   haptics: boolean;
   dailyReminderTime: string;
   habitReminders: boolean;
+  customTaskCategories: string[];
+  customHabitCategories: string[];
+  customGoalCategories: string[];
 }
 
 export interface AICoachSuggestion {
@@ -171,6 +177,7 @@ export interface Reward {
   customValue?: string;
   motivationalMessage?: string;
   createdAt: string;
+  imageUrl?: string;
 }
 
 export interface AppState {

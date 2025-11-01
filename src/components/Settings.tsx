@@ -36,7 +36,10 @@ import {
   Sun,
   Monitor,
   Save,
-  RotateCcw
+  RotateCcw,
+  Tags,
+  Plus,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
@@ -46,6 +49,11 @@ const Settings = () => {
   const { state, dispatch } = useApp();
   const [settings, setSettings] = useState(state.settings);
   const [hasChanges, setHasChanges] = useState(false);
+  
+  // Custom categories state
+  const [newTaskCategory, setNewTaskCategory] = useState('');
+  const [newHabitCategory, setNewHabitCategory] = useState('');
+  const [newGoalCategory, setNewGoalCategory] = useState('');
 
   const handleSettingChange = (key: keyof typeof settings, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -168,9 +176,10 @@ const Settings = () => {
         </div>
 
         <Tabs defaultValue="appearance" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="appearance">ظاهر</TabsTrigger>
             <TabsTrigger value="notifications">اعلان‌ها</TabsTrigger>
+            <TabsTrigger value="categories">دسته‌بندی‌ها</TabsTrigger>
             <TabsTrigger value="privacy">حریم خصوصی</TabsTrigger>
             <TabsTrigger value="data">داده‌ها</TabsTrigger>
           </TabsList>
@@ -374,6 +383,191 @@ const Settings = () => {
                     checked={settings.haptics}
                     onCheckedChange={(checked) => handleSettingChange('haptics', checked)}
                   />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Categories Tab */}
+          <TabsContent value="categories" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Tags className="h-5 w-5 text-primary" />
+                  <CardTitle>دسته‌بندی‌های سفارشی</CardTitle>
+                </div>
+                <CardDescription>دسته‌بندی‌های دلخواه خود را برای وظایف، عادات و اهداف اضافه کنید</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Task Categories */}
+                <div className="space-y-3">
+                  <Label className="text-base">دسته‌بندی‌های وظایف</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newTaskCategory}
+                      onChange={(e) => setNewTaskCategory(e.target.value)}
+                      placeholder="نام دسته‌بندی جدید..."
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && newTaskCategory.trim()) {
+                          const updated = [...settings.customTaskCategories, newTaskCategory.trim()];
+                          handleSettingChange('customTaskCategories', updated);
+                          setNewTaskCategory('');
+                          toast.success('دسته‌بندی اضافه شد!');
+                        }
+                      }}
+                    />
+                    <Button
+                      onClick={() => {
+                        if (newTaskCategory.trim()) {
+                          const updated = [...settings.customTaskCategories, newTaskCategory.trim()];
+                          handleSettingChange('customTaskCategories', updated);
+                          setNewTaskCategory('');
+                          toast.success('دسته‌بندی اضافه شد!');
+                        }
+                      }}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {settings.customTaskCategories.map((category, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm"
+                      >
+                        <span>{category}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto p-0 ml-1"
+                          onClick={() => {
+                            const updated = settings.customTaskCategories.filter((_, i) => i !== index);
+                            handleSettingChange('customTaskCategories', updated);
+                            toast.success('دسته‌بندی حذف شد');
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Habit Categories */}
+                <div className="space-y-3">
+                  <Label className="text-base">دسته‌بندی‌های عادات</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newHabitCategory}
+                      onChange={(e) => setNewHabitCategory(e.target.value)}
+                      placeholder="نام دسته‌بندی جدید..."
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && newHabitCategory.trim()) {
+                          const updated = [...settings.customHabitCategories, newHabitCategory.trim()];
+                          handleSettingChange('customHabitCategories', updated);
+                          setNewHabitCategory('');
+                          toast.success('دسته‌بندی اضافه شد!');
+                        }
+                      }}
+                    />
+                    <Button
+                      onClick={() => {
+                        if (newHabitCategory.trim()) {
+                          const updated = [...settings.customHabitCategories, newHabitCategory.trim()];
+                          handleSettingChange('customHabitCategories', updated);
+                          setNewHabitCategory('');
+                          toast.success('دسته‌بندی اضافه شد!');
+                        }
+                      }}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {settings.customHabitCategories.map((category, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm"
+                      >
+                        <span>{category}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto p-0 ml-1"
+                          onClick={() => {
+                            const updated = settings.customHabitCategories.filter((_, i) => i !== index);
+                            handleSettingChange('customHabitCategories', updated);
+                            toast.success('دسته‌بندی حذف شد');
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Goal Categories */}
+                <div className="space-y-3">
+                  <Label className="text-base">دسته‌بندی‌های اهداف</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newGoalCategory}
+                      onChange={(e) => setNewGoalCategory(e.target.value)}
+                      placeholder="نام دسته‌بندی جدید..."
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && newGoalCategory.trim()) {
+                          const updated = [...settings.customGoalCategories, newGoalCategory.trim()];
+                          handleSettingChange('customGoalCategories', updated);
+                          setNewGoalCategory('');
+                          toast.success('دسته‌بندی اضافه شد!');
+                        }
+                      }}
+                    />
+                    <Button
+                      onClick={() => {
+                        if (newGoalCategory.trim()) {
+                          const updated = [...settings.customGoalCategories, newGoalCategory.trim()];
+                          handleSettingChange('customGoalCategories', updated);
+                          setNewGoalCategory('');
+                          toast.success('دسته‌بندی اضافه شد!');
+                        }
+                      }}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {settings.customGoalCategories.map((category, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm"
+                      >
+                        <span>{category}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto p-0 ml-1"
+                          onClick={() => {
+                            const updated = settings.customGoalCategories.filter((_, i) => i !== index);
+                            handleSettingChange('customGoalCategories', updated);
+                            toast.success('دسته‌بندی حذف شد');
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-accent/10 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    💡 دسته‌بندی‌های سفارشی به شما کمک می‌کنند تا وظایف، عادات و اهداف خود را بهتر سازماندهی کنید.
+                  </p>
                 </div>
               </CardContent>
             </Card>

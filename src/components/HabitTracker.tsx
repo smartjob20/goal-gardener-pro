@@ -151,7 +151,7 @@ const HabitTracker = () => {
     setEditingHabit(habit);
     setTitle(habit.title);
     setDescription(habit.description || '');
-    setCategory(habit.category);
+    setCategory(habit.category as HabitCategory);
     setTarget(habit.target.toString());
     setTargetUnit(habit.targetUnit);
     setHabitType(habit.habitType);

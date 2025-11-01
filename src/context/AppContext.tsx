@@ -27,6 +27,9 @@ const initialSettings: AppSettings = {
   haptics: true,
   dailyReminderTime: '09:00',
   habitReminders: true,
+  customTaskCategories: [],
+  customHabitCategories: [],
+  customGoalCategories: [],
 };
 
 const initialAchievements: Achievement[] = [
