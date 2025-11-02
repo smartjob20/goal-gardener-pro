@@ -47,7 +47,12 @@ import { format } from 'date-fns';
 
 const Settings = () => {
   const { state, dispatch } = useApp();
-  const [settings, setSettings] = useState(state.settings);
+  const [settings, setSettings] = useState({
+    ...state.settings,
+    customTaskCategories: state.settings.customTaskCategories || [],
+    customHabitCategories: state.settings.customHabitCategories || [],
+    customGoalCategories: state.settings.customGoalCategories || [],
+  });
   const [hasChanges, setHasChanges] = useState(false);
   
   // Custom categories state

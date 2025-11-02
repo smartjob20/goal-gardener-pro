@@ -235,7 +235,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        dispatch({ type: 'LOAD_STATE', payload: { ...initialState, ...parsed } });
+        // Ensure settings have all required fields with defaults
+        const mergedSettings = {
+          ...initialSettings,
+          ...parsed.settings,
+          customTaskCategories: parsed.settings?.customTaskCategories || [],
+          customHabitCategories: parsed.settings?.customHabitCategories || [],
+          customGoalCategories: parsed.settings?.customGoalCategories || [],
+        };
+        dispatch({ type: 'LOAD_STATE', payload: { ...initialState, ...parsed, settings: mergedSettings } });
       } catch (error) {
         console.error('Failed to load state:', error);
       }
