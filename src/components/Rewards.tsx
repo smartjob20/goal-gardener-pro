@@ -27,6 +27,7 @@ import {
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { RewardCategory, RewardStatus } from '@/types';
+import { ImageUpload } from '@/components/ImageUpload';
 
 const categoryIcons: Record<RewardCategory, string> = {
   entertainment: '🎮',
@@ -57,6 +58,7 @@ const Rewards = () => {
     icon: '🎁',
     customValue: '',
     motivationalMessage: '',
+    imageUrl: '',
   });
 
   const availableRewards = state.rewards.filter(r => r.status === 'available');
@@ -94,6 +96,7 @@ const Rewards = () => {
       icon: '🎁',
       customValue: '',
       motivationalMessage: '',
+      imageUrl: '',
     });
     setIsAddDialogOpen(false);
   };
@@ -291,6 +294,13 @@ const Rewards = () => {
                   ))}
                 </div>
               </div>
+
+              {/* تصویر انگیزشی */}
+              <ImageUpload
+                imageUrl={newReward.imageUrl}
+                onImageChange={(url) => setNewReward({ ...newReward, imageUrl: url })}
+                label="تصویر پاداش"
+              />
 
               <Button onClick={handleAddReward} className="w-full">
                 <Gift className="ml-2 h-4 w-4" />

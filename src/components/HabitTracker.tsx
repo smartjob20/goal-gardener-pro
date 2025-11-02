@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap } from 'lucide-react';
 import { getTodayString, calculateStreak, getWeekDays } from '@/utils/dateUtils';
 import { toast } from 'sonner';
+import { ImageUpload } from '@/components/ImageUpload';
 
 // قالب‌های آماده
 const habitTemplates = [
@@ -61,7 +62,7 @@ const HabitTracker = () => {
   // Form states
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<HabitCategory>('health');
+  const [category, setCategory] = useState<HabitCategory | string>('health');
   const [target, setTarget] = useState('1');
   const [targetUnit, setTargetUnit] = useState('بار');
   const [habitType, setHabitType] = useState<HabitType>('qualitative');
@@ -70,6 +71,7 @@ const HabitTracker = () => {
   const [color, setColor] = useState('#6366f1');
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState('09:00');
+  const [imageUrl, setImageUrl] = useState('');
 
   const resetForm = () => {
     setTitle('');
@@ -83,6 +85,7 @@ const HabitTracker = () => {
     setColor('#6366f1');
     setReminderEnabled(false);
     setReminderTime('09:00');
+    setImageUrl('');
     setEditingHabit(null);
   };
 
@@ -111,6 +114,7 @@ const HabitTracker = () => {
           reminderEnabled,
           reminderTime: reminderEnabled ? reminderTime : undefined,
           xpReward,
+          imageUrl: imageUrl || undefined,
         },
       });
       toast.success('عادت با موفقیت ویرایش شد! ✏️');
@@ -129,6 +133,7 @@ const HabitTracker = () => {
         reminderTime: reminderEnabled ? reminderTime : undefined,
         xpReward,
         isActive: true,
+        imageUrl: imageUrl || undefined,
       });
     }
 
@@ -151,7 +156,7 @@ const HabitTracker = () => {
     setEditingHabit(habit);
     setTitle(habit.title);
     setDescription(habit.description || '');
-    setCategory(habit.category as HabitCategory);
+    setCategory(habit.category);
     setTarget(habit.target.toString());
     setTargetUnit(habit.targetUnit);
     setHabitType(habit.habitType);
@@ -160,6 +165,7 @@ const HabitTracker = () => {
     setColor(habit.color);
     setReminderEnabled(habit.reminderEnabled);
     setReminderTime(habit.reminderTime || '09:00');
+    setImageUrl(habit.imageUrl || '');
     setIsDialogOpen(true);
   };
 
@@ -294,7 +300,7 @@ const HabitTracker = () => {
                 {/* دسته‌بندی */}
                 <div className="space-y-2">
                   <Label>دسته‌بندی</Label>
-                  <Select value={category} onValueChange={(v) => setCategory(v as HabitCategory)}>
+                  <Select value={category} onValueChange={(v) => setCategory(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -304,6 +310,16 @@ const HabitTracker = () => {
                           {cat.icon} {cat.label}
                         </SelectItem>
                       ))}
+                      {state.settings.customHabitCategories && state.settings.customHabitCategories.length > 0 && (
+                        <>
+                          <SelectItem value="_separator_" disabled>───────────</SelectItem>
+                          {state.settings.customHabitCategories.map(cat => (
+                            <SelectItem key={cat} value={cat}>
+                              ⭐ {cat}
+                            </SelectItem>
+                          ))}
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -414,9 +430,8 @@ const HabitTracker = () => {
                 {/* یادآوری */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="reminder">یادآوری روزانه</Label>
+                    <Label>یادآوری</Label>
                     <Switch
-                      id="reminder"
                       checked={reminderEnabled}
                       onCheckedChange={setReminderEnabled}
                     />
@@ -429,6 +444,13 @@ const HabitTracker = () => {
                     />
                   )}
                 </div>
+
+                {/* تصویر انگیزشی */}
+                <ImageUpload
+                  imageUrl={imageUrl}
+                  onImageChange={setImageUrl}
+                  label="تصویر انگیزشی"
+                />
 
                 {/* دکمه‌ها */}
                 <div className="flex gap-2 pt-4">

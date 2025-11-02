@@ -16,9 +16,10 @@ import { PersianCalendar } from '@/components/ui/persian-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useApp as useAppContext } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Target, Trophy, Play, Pause, CheckCircle2, Clock, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Target, Trophy, Play, Pause, CheckCircle2, Clock, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, differenceInDays } from 'date-fns';
+import { ImageUpload } from '@/components/ImageUpload';
 
 const Goals = () => {
   const { state, addGoal, dispatch } = useApp();
@@ -30,7 +31,7 @@ const Goals = () => {
   // Form states
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<GoalCategory>('health');
+  const [category, setCategory] = useState<GoalCategory | string>('health');
   const [targetDate, setTargetDate] = useState<Date>(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000));
   const [imageUrl, setImageUrl] = useState('');
   const [milestones, setMilestones] = useState<string[]>(['']);
@@ -83,7 +84,7 @@ const Goals = () => {
     addGoal({
       title,
       description,
-      category,
+      category: category as GoalCategory,
       targetDate: targetDate.toISOString(),
       milestones: milestoneObjects,
       xpReward: 100,
@@ -120,7 +121,7 @@ const Goals = () => {
       ...editingGoal,
       title,
       description,
-      category,
+      category: category as GoalCategory,
       targetDate: targetDate.toISOString(),
       milestones: milestoneObjects,
       progress,
@@ -274,7 +275,7 @@ const Goals = () => {
                 {/* دسته‌بندی */}
                 <div className="space-y-2">
                   <Label>دسته‌بندی *</Label>
-                  <Select value={category} onValueChange={(v) => setCategory(v as GoalCategory)}>
+                  <Select value={category} onValueChange={(v) => setCategory(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -284,6 +285,16 @@ const Goals = () => {
                           {cat.icon} {cat.label}
                         </SelectItem>
                       ))}
+                      {state.settings.customGoalCategories && state.settings.customGoalCategories.length > 0 && (
+                        <>
+                          <SelectItem value="_separator_" disabled>───────────</SelectItem>
+                          {state.settings.customGoalCategories.map(cat => (
+                            <SelectItem key={cat} value={cat}>
+                              ⭐ {cat}
+                            </SelectItem>
+                          ))}
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -319,43 +330,11 @@ const Goals = () => {
                 </div>
 
                 {/* تصویر انگیزشی */}
-                <div className="space-y-2">
-                  <Label htmlFor="image">تصویر انگیزشی (URL)</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="image"
-                      placeholder="https://example.com/image.jpg"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                    />
-                    {imageUrl && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setImageUrl('')}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  {imageUrl && (
-                    <div className="relative w-full h-48 rounded-lg overflow-hidden border">
-                      <img
-                        src={imageUrl}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                        onError={() => {
-                          toast.error('خطا در بارگذاری تصویر');
-                          setImageUrl('');
-                        }}
-                      />
-                    </div>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    می‌توانید لینک تصویر را از سایت‌های عکس مانند Unsplash کپی کنید
-                  </p>
-                </div>
+                <ImageUpload
+                  imageUrl={imageUrl}
+                  onImageChange={setImageUrl}
+                  label="تصویر انگیزشی"
+                />
 
                 {/* مایلستون‌ها */}
                 <div className="space-y-2">

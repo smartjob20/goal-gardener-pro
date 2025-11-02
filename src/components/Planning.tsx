@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Play, Pause, CheckCircle2, Target, Zap, LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, differenceInDays, addDays } from 'date-fns';
+import { ImageUpload } from '@/components/ImageUpload';
 
 const Planning = () => {
   const { state, addPlan, updatePlan, deletePlan } = useApp();
@@ -38,6 +39,7 @@ const Planning = () => {
   const [customDuration, setCustomDuration] = useState('');
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [checklistItems, setChecklistItems] = useState<string[]>(['']);
+  const [imageUrl, setImageUrl] = useState('');
 
   // Edit states
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
@@ -134,7 +136,8 @@ const Planning = () => {
       duration: finalDuration,
       checklist,
       progress: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      imageUrl: imageUrl || undefined
     };
 
     addPlan(newPlan);
@@ -171,7 +174,8 @@ const Planning = () => {
       category,
       priority,
       checklist,
-      progress
+      progress,
+      imageUrl: imageUrl || undefined
     };
 
     updatePlan(updatedPlan.id, updatedPlan);
@@ -225,6 +229,7 @@ const Planning = () => {
     setCategory(plan.category);
     setPriority(plan.priority);
     setChecklistItems(plan.checklist.map(item => item.title));
+    setImageUrl(plan.imageUrl || '');
     setIsEditDialogOpen(true);
   };
 
@@ -238,6 +243,7 @@ const Planning = () => {
     setCustomDuration('');
     setStartDate(new Date());
     setChecklistItems(['']);
+    setImageUrl('');
   };
 
   const addChecklistItem = () => {
@@ -461,6 +467,13 @@ const Planning = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* تصویر انگیزشی */}
+                <ImageUpload
+                  imageUrl={imageUrl}
+                  onImageChange={setImageUrl}
+                  label="تصویر انگیزشی"
+                />
 
                 <Button onClick={handleAddPlan} className="w-full">
                   <Target className="ml-2 h-5 w-5" />

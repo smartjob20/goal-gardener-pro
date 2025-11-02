@@ -1,4 +1,4 @@
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import { AppState } from '@/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
