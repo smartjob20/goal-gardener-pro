@@ -9,14 +9,14 @@ interface NavigationProps {
 const tabs = [
   { id: 'dashboard', label: 'داشبورد', icon: Home },
   { id: 'tasks', label: 'وظایف', icon: CheckSquare },
-  { id: 'habits', label: 'عادت‌ها', icon: Flame },
   { id: 'planning', label: 'برنامه', icon: Calendar },
   { id: 'goals', label: 'اهداف', icon: Target },
+  { id: 'habits', label: 'عادت‌ها', icon: Flame },
   { id: 'focus', label: 'تمرکز', icon: Clock },
   { id: 'rewards', label: 'پاداش', icon: Gift },
   { id: 'analytics', label: 'آمار', icon: BarChart3 },
-  { id: 'settings', label: 'تنظیمات', icon: Settings },
   { id: 'profile', label: 'پروفایل', icon: User },
+  { id: 'settings', label: 'تنظیمات', icon: Settings },
 ];
 
 export default function Navigation({ activeTab, onTabChange }: NavigationProps) {
