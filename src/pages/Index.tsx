@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { AppProvider } from '@/context/AppContext';
 import Navigation from '@/components/Navigation';
+import Welcome from '@/components/Welcome';
+import Onboarding from '@/components/Onboarding';
 import UnifiedDashboard from '@/components/UnifiedDashboard';
 import Dashboard from '@/components/Dashboard';
 import TaskManager from '@/components/TaskManager';
@@ -16,6 +18,16 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    const onboardingCompleted = localStorage.getItem('deepbreath_onboarding_completed');
+    if (!onboardingCompleted) {
+      setShowWelcome(true);
+    }
+  }, []);
 
   // Apply theme on mount
   useEffect(() => {
@@ -69,6 +81,23 @@ const Index = () => {
         return <UnifiedDashboard />;
     }
   };
+
+  // Show welcome screen
+  if (showWelcome) {
+    return <Welcome onStart={() => {
+      setShowWelcome(false);
+      setShowOnboarding(true);
+    }} />;
+  }
+
+  // Show onboarding
+  if (showOnboarding) {
+    return (
+      <AppProvider>
+        <Onboarding onComplete={() => setShowOnboarding(false)} />
+      </AppProvider>
+    );
+  }
 
   return (
     <AppProvider>

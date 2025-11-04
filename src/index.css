@@ -4,48 +4,49 @@
 
 @layer base {
   :root {
-    /* Base Colors - Enhanced */
-    --background: 245 15% 98%;
-    --foreground: 240 12% 8%;
+    /* Deep Breath Brand - Calm & Serene Colors */
+    --background: 210 25% 98%;
+    --foreground: 215 20% 15%;
     
-    /* Card & Surface */
+    /* Card & Surface - Soft Glass Effect */
     --card: 0 0% 100%;
-    --card-foreground: 240 12% 8%;
+    --card-foreground: 215 20% 15%;
     
-    /* Primary Brand - Vibrant Purple/Indigo */
-    --primary: 243 80% 62%;
+    /* Primary - Calming Ocean Blue (Deep Breath Blue) */
+    --primary: 205 85% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 243 80% 72%;
-    --primary-light: 243 80% 95%;
+    --primary-glow: 205 85% 68%;
+    --primary-light: 205 85% 95%;
+    --primary-dark: 205 85% 40%;
     
-    /* Secondary - Elegant Purple */
-    --secondary: 250 55% 96%;
-    --secondary-foreground: 243 80% 35%;
+    /* Secondary - Tranquil Teal */
+    --secondary: 180 60% 96%;
+    --secondary-foreground: 180 60% 25%;
     
-    /* Success - Fresh Green */
-    --success: 142 76% 48%;
+    /* Success - Peaceful Green */
+    --success: 155 70% 50%;
     --success-foreground: 0 0% 100%;
-    --success-light: 142 76% 96%;
+    --success-light: 155 70% 96%;
     
-    /* Warning - Vibrant Orange */
-    --warning: 35 95% 58%;
+    /* Warning - Gentle Amber */
+    --warning: 40 90% 60%;
     --warning-foreground: 0 0% 100%;
-    --warning-light: 35 95% 96%;
+    --warning-light: 40 90% 96%;
     
-    /* Danger/Destructive - Bold Red */
-    --destructive: 0 86% 62%;
+    /* Danger/Destructive - Soft Coral */
+    --destructive: 5 80% 62%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-light: 0 86% 96%;
+    --destructive-light: 5 80% 96%;
     
-    /* Info - Bright Blue */
-    --info: 215 92% 62%;
+    /* Info - Sky Blue */
+    --info: 200 85% 60%;
     --info-foreground: 0 0% 100%;
-    --info-light: 215 92% 96%;
+    --info-light: 200 85% 96%;
     
-    /* Accent - Energetic Pink */
-    --accent: 330 85% 65%;
+    /* Accent - Lavender Dream */
+    --accent: 265 75% 68%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 330 85% 96%;
+    --accent-light: 265 75% 96%;
     
     /* Muted */
     --muted: 240 8% 95%;
@@ -60,15 +61,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 12% 8%;
     
-    /* Enhanced Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(243 80% 62%) 0%, hsl(260 80% 65%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 48%) 0%, hsl(160 75% 50%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(35 95% 58%) 0%, hsl(45 95% 55%) 100%);
-    --gradient-danger: linear-gradient(135deg, hsl(0 86% 62%) 0%, hsl(15 85% 60%) 100%);
-    --gradient-info: linear-gradient(135deg, hsl(215 92% 62%) 0%, hsl(200 90% 60%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(330 85% 65%) 0%, hsl(310 80% 68%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(243 80% 62%) 0%, hsl(260 80% 65%) 50%, hsl(280 75% 68%) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%);
+    /* Deep Breath Gradients - Serene & Calming */
+    --gradient-primary: linear-gradient(135deg, hsl(205 85% 58%) 0%, hsl(200 80% 65%) 50%, hsl(195 75% 70%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(155 70% 50%) 0%, hsl(165 68% 55%) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(40 90% 60%) 0%, hsl(45 88% 62%) 100%);
+    --gradient-danger: linear-gradient(135deg, hsl(5 80% 62%) 0%, hsl(10 78% 65%) 100%);
+    --gradient-info: linear-gradient(135deg, hsl(200 85% 60%) 0%, hsl(210 80% 65%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(265 75% 68%) 0%, hsl(275 70% 72%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(205 85% 58%) 0%, hsl(200 80% 60%) 25%, hsl(180 75% 62%) 50%, hsl(265 70% 68%) 75%, hsl(275 68% 70%) 100%);
+    --gradient-calm: linear-gradient(180deg, hsl(205 85% 58% / 0.1) 0%, hsl(180 75% 62% / 0.05) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
     
     /* Advanced Shadows */
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
@@ -85,34 +87,36 @@
   }
 
   .dark {
-    --background: 240 12% 6%;
-    --foreground: 240 6% 97%;
+    /* Deep Breath Dark Mode - Night Serenity */
+    --background: 215 30% 8%;
+    --foreground: 210 20% 95%;
     
-    --card: 240 12% 9%;
-    --card-foreground: 240 6% 97%;
+    --card: 215 28% 11%;
+    --card-foreground: 210 20% 95%;
     
-    --primary: 243 80% 68%;
-    --primary-foreground: 240 12% 6%;
-    --primary-glow: 243 80% 58%;
-    --primary-light: 243 80% 15%;
+    --primary: 205 85% 65%;
+    --primary-foreground: 215 30% 8%;
+    --primary-glow: 205 85% 55%;
+    --primary-light: 205 85% 18%;
+    --primary-dark: 205 85% 35%;
     
-    --secondary: 240 6% 15%;
-    --secondary-foreground: 240 6% 97%;
+    --secondary: 215 20% 16%;
+    --secondary-foreground: 210 20% 95%;
     
-    --success: 142 76% 52%;
-    --success-light: 142 76% 12%;
+    --success: 155 70% 55%;
+    --success-light: 155 70% 15%;
     
-    --warning: 35 95% 62%;
-    --warning-light: 35 95% 12%;
+    --warning: 40 90% 65%;
+    --warning-light: 40 90% 15%;
     
-    --destructive: 0 86% 67%;
-    --destructive-light: 0 86% 12%;
+    --destructive: 5 80% 67%;
+    --destructive-light: 5 80% 15%;
     
-    --info: 215 92% 67%;
-    --info-light: 215 92% 12%;
+    --info: 200 85% 65%;
+    --info-light: 200 85% 15%;
     
-    --accent: 330 85% 70%;
-    --accent-light: 330 85% 12%;
+    --accent: 265 75% 72%;
+    --accent-light: 265 75% 15%;
     
     --muted: 240 6% 14%;
     --muted-foreground: 240 6% 68%;
