@@ -23,7 +23,7 @@ export default function Navigation({ activeTab, onTabChange }: NavigationProps) 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border/60 backdrop-blur-2xl shadow-2xl">
       <div className="max-w-7xl mx-auto px-1 md:px-3">
-        <div className="flex flex-row-reverse justify-around items-center py-1.5 md:py-2">
+        <div className="flex flex-row justify-around items-center py-1.5 md:py-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
