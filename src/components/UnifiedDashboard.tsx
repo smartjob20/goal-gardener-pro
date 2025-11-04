@@ -238,7 +238,7 @@ const UnifiedDashboard = () => {
             </div>
             
             {/* View Mode Selector */}
-            <div className="flex gap-2">
+            <div className="flex flex-row-reverse gap-2">
               <Button
                 variant={viewMode === 'day' ? 'default' : 'outline'}
                 onClick={() => setViewMode('day')}
