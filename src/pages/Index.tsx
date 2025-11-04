@@ -82,40 +82,32 @@ const Index = () => {
     }
   };
 
-  // Show welcome screen
-  if (showWelcome) {
-    return <Welcome onStart={() => {
-      setShowWelcome(false);
-      setShowOnboarding(true);
-    }} />;
-  }
-
-  // Show onboarding
-  if (showOnboarding) {
-    return (
-      <AppProvider>
-        <Onboarding onComplete={() => setShowOnboarding(false)} />
-      </AppProvider>
-    );
-  }
-
   return (
     <AppProvider>
-      <div className="min-h-screen bg-background" dir="rtl">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-            className="min-h-screen"
-          >
-            {renderContent()}
-          </motion.div>
-        </AnimatePresence>
-        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-      </div>
+      {showWelcome ? (
+        <Welcome onStart={() => {
+          setShowWelcome(false);
+          setShowOnboarding(true);
+        }} />
+      ) : showOnboarding ? (
+        <Onboarding onComplete={() => setShowOnboarding(false)} />
+      ) : (
+        <div className="min-h-screen bg-background" dir="rtl">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              className="min-h-screen"
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
+          <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+      )}
     </AppProvider>
   );
 };
