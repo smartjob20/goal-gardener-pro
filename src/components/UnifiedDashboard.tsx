@@ -219,8 +219,35 @@ const UnifiedDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24" dir="rtl">
-      <div className="container mx-auto p-4 md:p-6 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary-light/20 to-accent-light/20 pb-24" dir="rtl">
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-primary/5"
+            style={{
+              width: Math.random() * 150 + 50,
+              height: Math.random() * 150 + 50,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, Math.random() * 50 - 25],
+              x: [0, Math.random() * 50 - 25],
+              scale: [1, Math.random() + 0.5, 1],
+              opacity: [0.05, 0.15, 0.05]
+            }}
+            transition={{
+              duration: Math.random() * 15 + 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="container mx-auto p-4 md:p-6 max-w-7xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -228,21 +255,31 @@ const UnifiedDashboard = () => {
         >
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
               <h1 className="text-3xl md:text-4xl font-bold gradient-text">
                 داشبورد یکپارچه
               </h1>
-              <p className="text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-lg">
                 کنترل کامل زندگی در یک نگاه
               </p>
-            </div>
+            </motion.div>
             
             {/* View Mode Selector */}
-            <div className="flex flex-row-reverse gap-2">
+            <motion.div 
+              className="flex flex-row-reverse gap-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <Button
                 variant={viewMode === 'day' ? 'default' : 'outline'}
                 onClick={() => setViewMode('day')}
                 size="sm"
+                className={viewMode === 'day' ? 'gradient-bg-primary shadow-lg' : ''}
               >
                 روزانه
               </Button>
@@ -250,6 +287,7 @@ const UnifiedDashboard = () => {
                 variant={viewMode === 'week' ? 'default' : 'outline'}
                 onClick={() => setViewMode('week')}
                 size="sm"
+                className={viewMode === 'week' ? 'gradient-bg-primary shadow-lg' : ''}
               >
                 هفتگی
               </Button>
@@ -257,6 +295,7 @@ const UnifiedDashboard = () => {
                 variant={viewMode === 'month' ? 'default' : 'outline'}
                 onClick={() => setViewMode('month')}
                 size="sm"
+                className={viewMode === 'month' ? 'gradient-bg-primary shadow-lg' : ''}
               >
                 ماهانه
               </Button>
@@ -264,55 +303,68 @@ const UnifiedDashboard = () => {
                 variant={viewMode === 'year' ? 'default' : 'outline'}
                 onClick={() => setViewMode('year')}
                 size="sm"
+                className={viewMode === 'year' ? 'gradient-bg-primary shadow-lg' : ''}
               >
                 سالانه
               </Button>
-            </div>
+            </motion.div>
           </div>
 
           {/* Date Navigator */}
-          <Card className="glass">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <Button variant="ghost" size="icon" onClick={() => navigateDate('prev')}>
-                  <ChevronRight className="h-5 w-5" />
-                </Button>
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold">{getDateRangeLabel()}</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedDate(new Date())}
-                    className="text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    برگشت به امروز
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="glass-strong hover-lift">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <Button variant="ghost" size="icon" onClick={() => navigateDate('prev')} className="hover:bg-primary/10">
+                    <ChevronRight className="h-5 w-5" />
+                  </Button>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold gradient-text">{getDateRangeLabel()}</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedDate(new Date())}
+                      className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/5"
+                    >
+                      برگشت به امروز
+                    </Button>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => navigateDate('next')} className="hover:bg-primary/10">
+                    <ChevronLeft className="h-5 w-5" />
                   </Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => navigateDate('next')}>
-                  <ChevronLeft className="h-5 w-5" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Stats Overview - Mobile Friendly */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Card className="glass hover-scale">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Card className="glass-strong hover-lift border-2 border-transparent hover:border-primary/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.completedTasks}/{stats.totalTasks}</p>
+                      <p className="text-xs text-muted-foreground">وظایف</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold">{stats.completedTasks}/{stats.totalTasks}</p>
-                    <p className="text-xs text-muted-foreground">وظایف</p>
-                  </div>
-                </div>
-                <Progress value={stats.completionRate} className="mt-2 h-1" />
-              </CardContent>
-            </Card>
+                  <Progress value={stats.completionRate} className="mt-2 h-1" />
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className="glass hover-scale">
+            <Card className="glass-strong hover-lift border-2 border-transparent hover:border-success/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-success/10 rounded-lg">
@@ -327,7 +379,7 @@ const UnifiedDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-scale">
+            <Card className="glass-strong hover-lift border-2 border-transparent hover:border-info/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-info/10 rounded-lg">
@@ -341,7 +393,7 @@ const UnifiedDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-scale">
+            <Card className="glass-strong hover-lift border-2 border-transparent hover:border-warning/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-warning/10 rounded-lg">
@@ -356,7 +408,7 @@ const UnifiedDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-scale">
+            <Card className="glass-strong hover-lift border-2 border-transparent hover:border-accent/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-accent/10 rounded-lg">
@@ -371,7 +423,7 @@ const UnifiedDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="glass hover-scale">
+            <Card className="glass-strong hover-lift border-2 border-transparent hover:border-purple-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-purple-500/10 rounded-lg">
@@ -389,13 +441,19 @@ const UnifiedDashboard = () => {
           {/* Main Content - Mobile Friendly */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Tasks Section */}
-            <Card className="lg:col-span-2 glass">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5" />
-                  وظایف ({filteredTasks.length})
-                </CardTitle>
-              </CardHeader>
+            <motion.div
+              className="lg:col-span-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+                <Card className="glass-strong border-2 border-transparent hover:border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5" />
+                      وظایف ({filteredTasks.length})
+                    </CardTitle>
+                  </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[400px] pr-4">
                   <AnimatePresence mode="popLayout">
@@ -453,14 +511,20 @@ const UnifiedDashboard = () => {
                       </div>
                     )}
                   </AnimatePresence>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </motion.div>
 
             {/* Right Sidebar */}
             <div className="space-y-6">
               {/* Habits Section */}
-              <Card className="glass">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Card className="glass-strong border-2 border-transparent hover:border-success/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Flame className="h-5 w-5 text-success" />
@@ -507,12 +571,18 @@ const UnifiedDashboard = () => {
                         })
                       )}
                     </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
               {/* Quick Stats */}
-              <Card className="glass">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <Card className="glass-strong border-2 border-transparent hover:border-info/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
@@ -538,9 +608,10 @@ const UnifiedDashboard = () => {
                       <Star className="h-4 w-4 text-yellow-500" />
                       {state.user.level}
                     </span>
-                  </div>
-                </CardContent>
-              </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </div>
           </div>
         </motion.div>
