@@ -208,7 +208,14 @@ const HabitTracker = () => {
   };
 
   return (
-    <div className="min-h-screen space-y-6 pb-24 p-4" dir="rtl">
+    <div className="min-h-screen space-y-6 pb-24 p-4 relative" dir="rtl">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-0 -right-4 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+      </div>
+
       {/* Header با آمار */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

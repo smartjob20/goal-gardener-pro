@@ -158,12 +158,23 @@ export default function TaskManager() {
   const completedCount = tasks.filter(t => t.completed).length;
 
   return (
-    <div className="min-h-screen pb-24 p-4 custom-scrollbar overflow-y-auto" dir="rtl">
+    <div className="min-h-screen pb-24 p-4 custom-scrollbar overflow-y-auto relative" dir="rtl">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-0 -right-4 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+      </div>
+      
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between"
+        >
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
+            <h1 className="text-3xl font-bold flex items-center gap-2 gradient-text">
               <CheckCircle2 className="w-8 h-8 text-primary" />
               مدیریت وظایف
             </h1>
@@ -173,7 +184,7 @@ export default function TaskManager() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2" onClick={resetForm}>
+              <Button className="gap-2 shadow-elegant hover-scale" onClick={resetForm}>
                 <Plus className="w-5 h-5" />
                 وظیفه جدید
               </Button>
@@ -315,10 +326,15 @@ export default function TaskManager() {
               </form>
             </DialogContent>
           </Dialog>
-        </div>
+        </motion.div>
 
         {/* Search and Filters - Mobile Friendly */}
-        <Card className="p-4 glass">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="p-4 glass-strong hover-lift">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -357,6 +373,7 @@ export default function TaskManager() {
             </Select>
           </div>
         </Card>
+        </motion.div>
 
         {/* Tasks Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
@@ -404,7 +421,7 @@ export default function TaskManager() {
                       transition={{ delay: index * 0.05 }}
                       layout
                     >
-                      <Card className="p-4 glass hover:shadow-lg transition-all">
+                      <Card className="p-4 glass-strong hover-lift">
                         <div className="flex items-start gap-4">
                           <button
                             onClick={() => completeTask(task.id)}

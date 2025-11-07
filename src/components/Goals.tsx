@@ -221,7 +221,14 @@ const Goals = () => {
   const pausedGoals = state.goals.filter(g => g.status === 'paused');
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6" dir="rtl">
+    <div className="min-h-screen pb-24 px-4 pt-6 relative" dir="rtl">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-0 -right-4 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+      </div>
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -230,7 +237,7 @@ const Goals = () => {
       >
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold gradient-text">
               🎯 هدف‌گذاری
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -239,7 +246,7 @@ const Goals = () => {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="shadow-lg hover:shadow-xl transition-all">
+              <Button className="shadow-elegant hover-scale">
                 <Plus className="ml-2 h-5 w-5" />
                 هدف جدید
               </Button>
@@ -383,8 +390,13 @@ const Goals = () => {
         </div>
 
         {/* Stats Cards - Mobile Friendly */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="p-4 glass-card hover:shadow-lg transition-all">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        >
+          <Card className="p-4 glass-strong hover-lift">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-green-500/20 rounded-xl">
                 <Target className="h-6 w-6 text-green-600" />
@@ -396,7 +408,7 @@ const Goals = () => {
             </div>
           </Card>
 
-          <Card className="p-4 glass-card hover:shadow-lg transition-all">
+          <Card className="p-4 glass-strong hover-lift">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-purple-500/20 rounded-xl">
                 <Trophy className="h-6 w-6 text-purple-600" />
@@ -408,7 +420,7 @@ const Goals = () => {
             </div>
           </Card>
 
-          <Card className="p-4 glass-card hover:shadow-lg transition-all">
+          <Card className="p-4 glass-strong hover-lift">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-blue-500/20 rounded-xl">
                 <CheckCircle2 className="h-6 w-6 text-blue-600" />
@@ -421,7 +433,7 @@ const Goals = () => {
               </div>
             </div>
           </Card>
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Tabs */}
@@ -466,7 +478,7 @@ const Goals = () => {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="overflow-hidden glass-card hover:shadow-xl transition-all">
+                    <Card className="overflow-hidden glass-strong hover-lift">
                       {/* تصویر */}
                       {goal.imageUrl ? (
                         <div className="relative h-48 overflow-hidden">
