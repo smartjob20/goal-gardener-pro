@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +25,8 @@ import {
   CheckCircle,
   Flame,
   Save,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
@@ -31,6 +34,8 @@ import { format, differenceInDays } from 'date-fns';
 
 const Profile = () => {
   const { state, dispatch } = useApp();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(state.user);
 
@@ -61,6 +66,11 @@ const Profile = () => {
   const handleCancel = () => {
     setEditedUser(state.user);
     setIsEditing(false);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/auth');
   };
 
   // Calculate statistics
@@ -108,12 +118,18 @@ const Profile = () => {
                     {state.user.level}
                   </div>
                 </div>
-                {!isEditing && (
-                  <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                    <Edit className="ml-2 h-4 w-4" />
-                    ویرایش پروفایل
+                <div className="flex flex-col gap-2 w-full">
+                  {!isEditing && (
+                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+                      <Edit className="ml-2 h-4 w-4" />
+                      ویرایش پروفایل
+                    </Button>
+                  )}
+                  <Button onClick={handleLogout} variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                    <LogOut className="ml-2 h-4 w-4" />
+                    خروج از حساب
                   </Button>
-                )}
+                </div>
               </div>
 
               {/* Info Section */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AppProvider } from '@/context/AppContext';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import Navigation from '@/components/Navigation';
 import Welcome from '@/components/Welcome';
 import Onboarding from '@/components/Onboarding';
@@ -15,19 +16,31 @@ import Settings from '@/components/Settings';
 import Profile from '@/components/Profile';
 import Rewards from '@/components/Rewards';
 import { motion, AnimatePresence } from 'motion/react';
+import { Loader2 } from 'lucide-react';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showWelcome, setShowWelcome] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Check authentication
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
 
   // Check if user has completed onboarding
   useEffect(() => {
-    const onboardingCompleted = localStorage.getItem('deepbreath_onboarding_completed');
-    if (!onboardingCompleted) {
-      setShowWelcome(true);
+    if (user) {
+      const onboardingCompleted = localStorage.getItem('deepbreath_onboarding_completed');
+      if (!onboardingCompleted) {
+        setShowWelcome(true);
+      }
     }
-  }, []);
+  }, [user]);
 
   // Apply theme on mount
   useEffect(() => {
@@ -82,8 +95,23 @@ const Index = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">در حال بارگذاری...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <AppProvider>
+    <>
       {showWelcome ? (
         <Welcome onStart={() => {
           setShowWelcome(false);
@@ -108,7 +136,7 @@ const Index = () => {
           <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       )}
-    </AppProvider>
+    </>
   );
 };
 
