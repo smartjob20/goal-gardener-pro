@@ -14,7 +14,446 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          description: string | null
+          id: string
+          title: string
+          unlocked_at: string | null
+          user_id: string
+          xp_reward: number | null
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          title: string
+          unlocked_at?: string | null
+          user_id: string
+          xp_reward?: number | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          title?: string
+          unlocked_at?: string | null
+          user_id?: string
+          xp_reward?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      focus_sessions: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          end_time: string | null
+          id: string
+          start_time: string
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration?: number | null
+          end_time?: string | null
+          id?: string
+          start_time: string
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number | null
+          end_time?: string | null
+          id?: string
+          start_time?: string
+          task_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "focus_sessions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "focus_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          category: string
+          completed: boolean | null
+          created_at: string | null
+          description: string | null
+          id: string
+          milestones: Json | null
+          progress: number | null
+          target_date: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          progress?: number | null
+          target_date?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          progress?: number | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          active: boolean | null
+          category: string
+          completed_dates: Json | null
+          created_at: string | null
+          current_streak: number | null
+          description: string | null
+          difficulty: string | null
+          frequency: string
+          id: string
+          longest_streak: number | null
+          reminder_time: string | null
+          target: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          xp_per_completion: number | null
+        }
+        Insert: {
+          active?: boolean | null
+          category: string
+          completed_dates?: Json | null
+          created_at?: string | null
+          current_streak?: number | null
+          description?: string | null
+          difficulty?: string | null
+          frequency: string
+          id?: string
+          longest_streak?: number | null
+          reminder_time?: string | null
+          target?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          xp_per_completion?: number | null
+        }
+        Update: {
+          active?: boolean | null
+          category?: string
+          completed_dates?: Json | null
+          created_at?: string | null
+          current_streak?: number | null
+          description?: string | null
+          difficulty?: string | null
+          frequency?: string
+          id?: string
+          longest_streak?: number | null
+          reminder_time?: string | null
+          target?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          xp_per_completion?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          checklist: Json | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          start_date: string | null
+          status: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          checklist?: Json | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          checklist?: Json | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          current_streak: number | null
+          display_name: string | null
+          id: string
+          level: number | null
+          longest_streak: number | null
+          total_focus_time: number | null
+          total_habits_completed: number | null
+          total_tasks_completed: number | null
+          updated_at: string | null
+          xp: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          current_streak?: number | null
+          display_name?: string | null
+          id: string
+          level?: number | null
+          longest_streak?: number | null
+          total_focus_time?: number | null
+          total_habits_completed?: number | null
+          total_tasks_completed?: number | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          current_streak?: number | null
+          display_name?: string | null
+          id?: string
+          level?: number | null
+          longest_streak?: number | null
+          total_focus_time?: number | null
+          total_habits_completed?: number | null
+          total_tasks_completed?: number | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Relationships: []
+      }
+      rewards: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          redeemed: boolean | null
+          redeemed_at: string | null
+          title: string
+          user_id: string
+          xp_cost: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          redeemed?: boolean | null
+          redeemed_at?: string | null
+          title: string
+          user_id: string
+          xp_cost: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          redeemed?: boolean | null
+          redeemed_at?: string | null
+          title?: string
+          user_id?: string
+          xp_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          category: string
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          deadline: string | null
+          description: string | null
+          id: string
+          priority: string
+          subtasks: Json | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          xp_reward: number | null
+        }
+        Insert: {
+          category: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          priority: string
+          subtasks?: Json | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          xp_reward?: number | null
+        }
+        Update: {
+          category?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          priority?: string
+          subtasks?: Json | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          xp_reward?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_settings: {
+        Row: {
+          calendar_type: string | null
+          created_at: string | null
+          focus_mode_duration: number | null
+          id: string
+          language: string | null
+          notifications_enabled: boolean | null
+          reminder_time: string | null
+          sound_enabled: boolean | null
+          theme: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          calendar_type?: string | null
+          created_at?: string | null
+          focus_mode_duration?: number | null
+          id?: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          reminder_time?: string | null
+          sound_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          calendar_type?: string | null
+          created_at?: string | null
+          focus_mode_duration?: number | null
+          id?: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          reminder_time?: string | null
+          sound_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
