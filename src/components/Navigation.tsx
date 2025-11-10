@@ -1,4 +1,4 @@
-import { Home, CheckSquare, Flame, Calendar, Target, Clock, BarChart3, Settings, User, Gift } from 'lucide-react';
+import { Home, CheckSquare, Flame, Calendar, Target, Clock, BarChart3, Settings, User, Gift, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface NavigationProps {
@@ -13,6 +13,7 @@ const tabs = [
   { id: 'goals', label: 'اهداف', icon: Target },
   { id: 'habits', label: 'عادت‌ها', icon: Flame },
   { id: 'focus', label: 'تمرکز', icon: Clock },
+  { id: 'aicoach', label: 'مربی', icon: Sparkles },
   { id: 'rewards', label: 'پاداش', icon: Gift },
   { id: 'analytics', label: 'آمار', icon: BarChart3 },
   { id: 'profile', label: 'پروفایل', icon: User },

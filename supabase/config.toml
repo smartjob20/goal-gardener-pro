@@ -1,1 +1,8 @@
 project_id = "olwdnltbwtemacevcini"
+
+# Add your edge functions here
+# [functions.my-function]
+# verify_jwt = false
+
+[functions.ai-coach]
+verify_jwt = false

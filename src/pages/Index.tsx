@@ -15,6 +15,7 @@ import Analytics from '@/components/Analytics';
 import Settings from '@/components/Settings';
 import Profile from '@/components/Profile';
 import Rewards from '@/components/Rewards';
+import AICoach from '@/components/AICoach';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
 
@@ -82,6 +83,8 @@ const Index = () => {
         return <Goals />;
       case 'focus':
         return <Focus />;
+      case 'aicoach':
+        return <AICoach />;
       case 'rewards':
         return <Rewards />;
       case 'analytics':
