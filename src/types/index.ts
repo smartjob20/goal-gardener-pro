@@ -30,6 +30,7 @@ export interface Task {
   xpReward: number;
   timeSpent?: number;
   imageUrl?: string;
+  order?: number;
 }
 
 export interface Habit {
