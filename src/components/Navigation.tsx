@@ -83,7 +83,7 @@ export default function Navigation({
   return <>
       {/* Top Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b-2 border-primary/20 shadow-2xl">
-        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between relative px-[25px]">
+        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between relative px-[25px] my-0 py-[25px] pl-[20px] pr-0 pt-0 pb-0 mb-0">
           {/* Decorative gradient line at bottom of header */}
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
