@@ -219,14 +219,18 @@
     backdrop-filter: none;
   }
   
-  body.is-android .glass-strong {
+  body.is-android .glass-strong,
+  body.is-android header {
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: none;
+    border-bottom: 2px solid hsl(var(--primary) / 0.2);
   }
   
-  body.is-android.dark .glass-strong {
+  body.is-android.dark .glass-strong,
+  body.is-android.dark header {
     background: rgba(20, 20, 30, 0.98);
     backdrop-filter: none;
+    border-bottom: 2px solid hsl(var(--primary) / 0.2);
   }
   
   /* Gradient Utilities */
