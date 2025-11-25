@@ -134,7 +134,7 @@ const Settings = () => {
       duration: 0.5
     }} className="mt-[70px]">
         {/* Header */}
-        <div className="flex justify-between items-start mb-6">
+        <div className="mb-6 flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">تنظیمات</h1>
             <p className="text-muted-foreground">شخصی‌سازی تجربه خود</p>
