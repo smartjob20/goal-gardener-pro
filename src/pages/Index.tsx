@@ -165,7 +165,7 @@ const Index = () => {
           x: -20
         }} transition={{
           duration: 0.2
-        }} className="min-h-screen">
+        }} className="min-h-screen mt-[70px]">
               {renderContent()}
             </motion.div>
           </AnimatePresence>
