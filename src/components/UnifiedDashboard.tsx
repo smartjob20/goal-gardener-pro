@@ -269,6 +269,30 @@ const UnifiedDashboard = () => {
       }
     }
   };
+  
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
+      const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
+
+      const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex);
+      
+      // Update all tasks in state with new order
+      const allTasksWithNewOrder = state.tasks.map(task => {
+        const reorderedIndex = reorderedTasks.findIndex(t => t.id === task.id);
+        if (reorderedIndex !== -1) {
+          return { ...task, order: reorderedIndex };
+        }
+        return task;
+      });
+      
+      reorderTasks(allTasksWithNewOrder);
+      toast.success('✅ ترتیب وظایف ذخیره شد');
+    }
+  };
+  
   const handleTaskComplete = (taskId: string) => {
     completeTask(taskId);
   };
