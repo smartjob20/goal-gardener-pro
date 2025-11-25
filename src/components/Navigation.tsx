@@ -50,7 +50,7 @@ export default function Navigation({ activeTab, onTabChange, onAddClick }: Navig
   return (
     <>
       {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b-2 border-primary/20 shadow-2xl">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b-2 border-primary/20 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between relative">
           {/* Decorative gradient line at bottom of header */}
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
