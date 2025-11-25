@@ -365,6 +365,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'DELETE_PLAN', payload: id });
   };
 
+  const reorderTasks = (reorderedTasks: Task[]) => {
+    const tasksWithOrder = reorderedTasks.map((task, index) => ({
+      ...task,
+      order: index
+    }));
+    dispatch({ type: 'REORDER_TASKS', payload: tasksWithOrder });
+  };
+
   const checkAchievements = () => {
     // Check for achievement unlocks
     const { totalTasksCompleted, level, totalFocusTime } = state.user;
@@ -388,7 +396,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, addHabit, checkHabit, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, addHabit, checkHabit, addGoal, addPlan, updatePlan, deletePlan, reorderTasks, addXP, checkAchievements }}>
       {children}
     </AppContext.Provider>
   );
