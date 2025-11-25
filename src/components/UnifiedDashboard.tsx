@@ -8,25 +8,102 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Circle, Target, Flame, Calendar as CalendarIcon, Clock, TrendingUp, Zap, Star, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle2, Circle, Target, Flame, Calendar as CalendarIcon, Clock, TrendingUp, Zap, Star, Award, ChevronLeft, ChevronRight, GripVertical } from 'lucide-react';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, addDays, addWeeks, addMonths, addYears, isSameDay } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
 import { toast } from 'sonner';
 import { PremiumBanner } from './PremiumBanner';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Task } from '@/types';
 
 type ViewMode = 'day' | 'week' | 'month' | 'year';
+
+// Sortable Task Item Component
+function SortableTaskItem({ task, onComplete }: { task: Task; onComplete: (id: string) => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="mb-3">
+      <Card className={`glass-strong hover-lift transition-all ${isDragging ? 'shadow-2xl scale-105' : ''}`}>
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-start gap-3">
+            <button
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-1 hover:bg-primary/10 rounded transition-colors touch-none min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
+              <GripVertical className="h-5 w-5 text-muted-foreground" />
+            </button>
+            
+            <button
+              onClick={() => onComplete(task.id)}
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
+              {task.completed ? (
+                <CheckCircle2 className="h-5 w-5 text-success" />
+              ) : (
+                <Circle className="h-5 w-5 text-muted-foreground" />
+              )}
+            </button>
+
+            <div className="flex-1 text-right min-w-0">
+              <div className="flex items-center gap-2 justify-end flex-wrap">
+                <h4 className={`font-semibold text-sm sm:text-base ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                  {task.title}
+                </h4>
+              </div>
+              {task.description && (
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
+                  {task.description}
+                </p>
+              )}
+              {task.deadline && (
+                <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground justify-end">
+                  <span>{format(new Date(task.deadline), 'yyyy/MM/dd')}</span>
+                  <Clock className="h-3 w-3" />
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 const UnifiedDashboard = () => {
   const {
     state,
     completeTask,
     checkHabit,
     dispatch,
-    addXP
+    addXP,
+    reorderTasks
   } = useApp();
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const useJalali = state.settings.calendar === 'jalali';
+
+  // Drag and Drop Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Get date range based on view mode
   const getDateRange = () => {
@@ -91,6 +168,10 @@ const UnifiedDashboard = () => {
       }
       return false;
     }).sort((a, b) => {
+      // Sort by order field first, then by priority
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
       const priorityOrder = {
         high: 0,
         medium: 1,
@@ -185,6 +266,20 @@ const UnifiedDashboard = () => {
   const handleTaskComplete = (taskId: string) => {
     completeTask(taskId);
   };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
+      const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
+
+      const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex);
+      reorderTasks(reorderedTasks);
+      toast.success('ترتیب وظایف ذخیره شد ✨');
+    }
+  };
+
   const handleHabitCheck = (habitId: string) => {
     const habit = state.habits.find(h => h.id === habitId);
     if (!habit) return;
@@ -457,50 +552,33 @@ const UnifiedDashboard = () => {
                   </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[350px] sm:h-[400px] pe-2 sm:pe-4">
-                  <AnimatePresence mode="popLayout">
-                    {filteredTasks.length === 0 ? <div className="text-center py-12 text-muted-foreground">
-                        <Circle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm sm:text-base">بدون وظیفه در این بازه زمانی</p>
-                      </div> : <div className="space-y-2 sm:space-y-3">
-                        {filteredTasks.map((task, index) => <motion.div key={task.id} initial={{
-                        opacity: 0,
-                        x: 20
-                      }} animate={{
-                        opacity: 1,
-                        x: 0
-                      }} exit={{
-                        opacity: 0,
-                        scale: 0.9
-                      }} transition={{
-                        delay: index * 0.05
-                      }} className="p-3 sm:p-4 bg-card border rounded-lg hover:shadow-lg hover:border-primary/20 transition-all">
-                            <div className="flex items-start gap-3">
-                              <div className="flex-1 text-right min-w-0">
-                                <h4 className={`font-medium text-sm sm:text-base ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                                  {task.title}
-                                </h4>
-                                {task.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{task.description}</p>}
-                                <div className="flex gap-2 mt-2 flex-wrap justify-end">
-                                  <Badge variant="outline" className="text-xs">
-                                    {task.category}
-                                  </Badge>
-                                  <Badge variant={task.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
-                                    {task.priority === 'high' ? '🔴 بالا' : task.priority === 'medium' ? '🟡 متوسط' : '🟢 پایین'}
-                                  </Badge>
-                                  {task.deadline && <Badge variant="outline" className="text-xs">
-                                      📅 {format(new Date(task.deadline), 'dd MMM')}
-                                    </Badge>}
-                                </div>
-                              </div>
-                              <button onClick={() => handleTaskComplete(task.id)} className="mt-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:scale-110 transition-transform">
-                                {task.completed ? <CheckCircle2 className="h-5 w-5 text-success" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                              </button>
-                            </div>
-                          </motion.div>)}
-                      </div>}
-                  </AnimatePresence>
-                  </ScrollArea>
-                </CardContent>
+                  {filteredTasks.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <Circle className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm sm:text-base">بدون وظیفه در این بازه زمانی</p>
+                    </div>
+                  ) : (
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={filteredTasks.map((task) => task.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {filteredTasks.map((task) => (
+                          <SortableTaskItem
+                            key={task.id}
+                            task={task}
+                            onComplete={handleTaskComplete}
+                          />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+                  )}
+                </ScrollArea>
+              </CardContent>
               </Card>
             </motion.div>
 
