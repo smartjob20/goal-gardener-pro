@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { AppState, Task, Habit, Goal, FocusSession, Achievement, User, Plan, AppSettings, AICoachSuggestion, Reward } from '@/types';
 import { toast } from 'sonner';
+import { triggerHaptic } from '@/utils/haptics';
 
 // Initial State
 const initialUser: User = {
@@ -267,13 +268,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     toast.success('وظیفه جدید اضافه شد! 🎯');
   };
 
-  const completeTask = (id: string) => {
+  const completeTask = async (id: string) => {
     const task = state.tasks.find(t => t.id === id);
     if (task && !task.completed) {
       const updatedTask = { ...task, completed: true, completedAt: new Date().toISOString() };
       dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
       addXP(task.xpReward, 'تکمیل وظیفه');
       dispatch({ type: 'UPDATE_USER', payload: { totalTasksCompleted: state.user.totalTasksCompleted + 1 } });
+      
+      // Success haptic feedback
+      await triggerHaptic('success');
     }
   };
 
@@ -290,7 +294,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     toast.success('عادت جدید ایجاد شد! 🔥');
   };
 
-  const checkHabit = (id: string, date: string) => {
+  const checkHabit = async (id: string, date: string) => {
     const habit = state.habits.find(h => h.id === id);
     if (habit) {
       const isCompleted = habit.completedDates.includes(date);
@@ -303,6 +307,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       
       if (!isCompleted) {
         addXP(habit.xpReward, 'انجام عادت');
+        // Success haptic feedback
+        await triggerHaptic('success');
       }
     }
   };

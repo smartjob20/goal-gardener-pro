@@ -208,6 +208,27 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
   }
   
+  /* Mobile-Optimized Glass (No Blur for Android Performance) */
+  body.is-android .glass {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: none;
+  }
+  
+  body.is-android.dark .glass {
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: none;
+  }
+  
+  body.is-android .glass-strong {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: none;
+  }
+  
+  body.is-android.dark .glass-strong {
+    background: rgba(20, 20, 30, 0.98);
+    backdrop-filter: none;
+  }
+  
   /* Gradient Utilities */
   .gradient-text {
     background: var(--gradient-primary);
@@ -222,6 +243,16 @@
   
   .gradient-bg-hero {
     background: var(--gradient-hero);
+  }
+  
+  /* Metallic Silver Gradient (Premium Look) */
+  .gradient-metallic-silver {
+    background: linear-gradient(135deg, #E0E0E0 0%, #FFFFFF 50%, #BDBDBD 100%);
+  }
+  
+  .bg-gradient-metallic-silver {
+    background: linear-gradient(135deg, #E0E0E0 0%, #FFFFFF 50%, #BDBDBD 100%);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
   
   /* Glow Effects */

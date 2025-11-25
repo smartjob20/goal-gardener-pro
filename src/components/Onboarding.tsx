@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Logo from '@/components/Logo';
+import Paywall from '@/components/Paywall';
+import { storage, STORAGE_KEYS } from '@/utils/storage';
+import { triggerHaptic } from '@/utils/haptics';
 import {
   User,
   Target,
@@ -13,7 +16,8 @@ import {
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Sparkles
+  Sparkles,
+  Crown
 } from 'lucide-react';
 
 interface OnboardingProps {
@@ -32,6 +36,12 @@ const steps = [
     title: 'هدف شما چیست؟',
     description: 'می‌خواهید روی چه چیزی تمرکز کنید؟',
     icon: Target
+  },
+  {
+    id: 'paywall',
+    title: 'نسخه پریمیوم',
+    description: 'قفل پتانسیل کامل خود را باز کنید',
+    icon: Crown
   },
   {
     id: 'theme',
@@ -53,6 +63,21 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [userName, setUserName] = useState('');
   const [userGoal, setUserGoal] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('system');
+  const [isPremium, setIsPremium] = useState(false);
+
+  // Load saved data on mount (migration-safe fallback to localStorage)
+  useEffect(() => {
+    const loadSavedData = async () => {
+      const savedName = await storage.get(STORAGE_KEYS.USER_NAME) || localStorage.getItem(STORAGE_KEYS.USER_NAME);
+      const savedGoal = await storage.get(STORAGE_KEYS.USER_GOAL) || localStorage.getItem(STORAGE_KEYS.USER_GOAL);
+      const savedTheme = await storage.get(STORAGE_KEYS.THEME) || localStorage.getItem(STORAGE_KEYS.THEME);
+      
+      if (savedName) setUserName(savedName);
+      if (savedGoal) setUserGoal(savedGoal);
+      if (savedTheme) setSelectedTheme(savedTheme);
+    };
+    loadSavedData();
+  }, []);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -68,7 +93,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     // Save user preferences
     const root = document.documentElement;
     if (selectedTheme === 'dark') {
@@ -84,20 +109,57 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       }
     }
 
-    // Save user info to localStorage
-    localStorage.setItem('deepbreath_user_name', userName);
-    localStorage.setItem('deepbreath_user_goal', userGoal);
-    localStorage.setItem('deepbreath_theme', selectedTheme);
-    localStorage.setItem('deepbreath_onboarding_completed', 'true');
+    // Save to Capacitor Preferences (permanent storage)
+    await storage.set(STORAGE_KEYS.USER_NAME, userName);
+    await storage.set(STORAGE_KEYS.USER_GOAL, userGoal);
+    await storage.set(STORAGE_KEYS.THEME, selectedTheme);
+    await storage.set(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+
+    // Also save to localStorage for web compatibility
+    localStorage.setItem(STORAGE_KEYS.USER_NAME, userName);
+    localStorage.setItem(STORAGE_KEYS.USER_GOAL, userGoal);
+    localStorage.setItem(STORAGE_KEYS.THEME, selectedTheme);
+    localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+
+    // Success haptic
+    await triggerHaptic('success');
 
     onComplete();
+  };
+
+  const handleGoalSelection = async (goal: string) => {
+    setUserGoal(goal);
+    await triggerHaptic('light');
+  };
+
+  const handleThemeSelection = async (theme: string) => {
+    setSelectedTheme(theme);
+    await triggerHaptic('light');
+  };
+
+  const handleStartTrial = async () => {
+    setIsPremium(true);
+    await triggerHaptic('success');
+    handleNext();
+  };
+
+  const handleContinueLimited = async () => {
+    setIsPremium(false);
+    await triggerHaptic('medium');
+    handleNext();
   };
 
   const canProceed = () => {
     if (currentStep === 0) return userName.trim().length > 0;
     if (currentStep === 1) return userGoal.length > 0;
+    if (currentStep === 2) return true; // Paywall step (always can proceed)
     return true;
   };
+
+  // Show paywall as full screen overlay
+  if (currentStep === 2) {
+    return <Paywall onStartTrial={handleStartTrial} onContinueLimited={handleContinueLimited} />;
+  }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary-light/30 to-accent-light/30 flex items-center justify-center p-4">
@@ -204,7 +266,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     className="space-y-4"
                   >
                     <Label className="text-lg">هدف اصلی خود را انتخاب کنید:</Label>
-                    <RadioGroup value={userGoal} onValueChange={setUserGoal} className="space-y-3">
+                    <RadioGroup value={userGoal} onValueChange={handleGoalSelection} className="space-y-3">
                       {goalOptions.map((option) => (
                         <motion.div
                           key={option.value}
@@ -229,14 +291,14 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   </motion.div>
                 )}
 
-                {currentStep === 2 && (
+                {currentStep === 3 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-4"
                   >
                     <Label className="text-lg">تم ظاهری:</Label>
-                    <RadioGroup value={selectedTheme} onValueChange={setSelectedTheme} className="space-y-3">
+                    <RadioGroup value={selectedTheme} onValueChange={handleThemeSelection} className="space-y-3">
                       {[
                         { value: 'light', label: 'روشن', emoji: '☀️' },
                         { value: 'dark', label: 'تاریک', emoji: '🌙' },
