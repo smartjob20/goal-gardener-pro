@@ -301,17 +301,17 @@ const UnifiedDashboard = () => {
             <Card className="glass-strong hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <Button variant="ghost" size="icon" onClick={() => navigateDate('prev')} className="hover:bg-primary/10">
-                    <ChevronRight className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" onClick={() => navigateDate('prev')} className="hover:bg-primary/10 min-h-[44px] min-w-[44px]">
+                    <ChevronLeft className="h-5 w-5" />
                   </Button>
                   <div className="text-center">
                     <h3 className="text-lg font-semibold gradient-text">{getDateRangeLabel()}</h3>
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date())} className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/5">
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date())} className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 min-h-[44px]">
                       برگشت به امروز
                     </Button>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => navigateDate('next')} className="hover:bg-primary/10">
-                    <ChevronLeft className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" onClick={() => navigateDate('next')} className="hover:bg-primary/10 min-h-[44px] min-w-[44px]">
+                    <ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
               </CardContent>

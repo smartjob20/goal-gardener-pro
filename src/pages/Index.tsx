@@ -92,15 +92,15 @@ const Index = () => {
       case 'dashboard':
         return <UnifiedDashboard />;
       case 'tasks':
-        return <TaskManager className="mb-[70px]" />;
+        return <TaskManager />;
       case 'habits':
-        return <HabitTracker className="mt-[70px]" />;
+        return <HabitTracker />;
       case 'planning':
-        return <Planning className="mt-[70px]" />;
+        return <Planning />;
       case 'goals':
-        return <Goals className="mt-[70px]" />;
+        return <Goals />;
       case 'focus':
-        return <Focus className="mt-[70px]" />;
+        return <Focus />;
       case 'aicoach':
         return <AICoach />;
       case 'rewards':
@@ -110,7 +110,7 @@ const Index = () => {
       case 'settings':
         return <Settings />;
       case 'profile':
-        return <Profile className="mt-[70px]" />;
+        return <Profile />;
       default:
         return <UnifiedDashboard />;
     }
@@ -170,7 +170,7 @@ const Index = () => {
           <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
             <DialogContent className="max-w-md" dir="rtl">
               <DialogHeader>
-                <DialogTitle className="text-right">افزودن سریع</DialogTitle>
+                <DialogTitle className="text-start">افزودن سریع</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 {/* Type Selection */}

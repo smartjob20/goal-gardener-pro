@@ -81,27 +81,27 @@ export default function Navigation({
     setOpen(false);
   };
   return <>
-      {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b-2 border-primary/20 shadow-2xl">
-        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between relative px-[25px] my-0 py-[25px] pl-[20px] pr-0 pt-0 pb-0 mb-0">
+      {/* Top Header with Safe Area Support */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl border-b-2 border-primary/20 shadow-2xl safe-area-top">
+        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between relative px-4 sm:px-6">
           {/* Decorative gradient line at bottom of header */}
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+          <div className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
-          {/* Logo (Right side for RTL) */}
+          {/* Logo (End side - right in RTL) */}
           <div className="relative z-10">
             <Logo size="sm" />
           </div>
 
-          {/* Hamburger Menu (Left side for RTL) */}
+          {/* Hamburger Menu (Start side - left in RTL) */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative z-10 hover:bg-primary/20 hover:scale-110 transition-all rounded-xl border border-transparent hover:border-primary/30">
+              <Button variant="ghost" size="icon" className="relative z-10 hover:bg-primary/20 hover:scale-110 transition-all rounded-xl border border-transparent hover:border-primary/30 min-h-[44px] min-w-[44px]">
                 <Menu className="w-6 h-6 text-primary" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-gradient-to-b from-background via-background/95 to-primary/5 border-l border-border/60">
+            <SheetContent side="right" className="w-80 bg-gradient-to-b from-background via-background/95 to-primary/5 border-s border-border/60">
               <SheetHeader className="mb-6">
-                <SheetTitle className="text-right">منو</SheetTitle>
+                <SheetTitle className="text-start">منو</SheetTitle>
               </SheetHeader>
 
               {/* User Profile Section */}
@@ -135,10 +135,10 @@ export default function Navigation({
                 {mainNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return <motion.button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-right relative ${isActive ? 'bg-primary/10 text-primary shadow-md' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`} whileTap={{
+                return <motion.button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-start relative min-h-[44px] ${isActive ? 'bg-primary/10 text-primary shadow-md' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`} whileTap={{
                   scale: 0.98
                 }}>
-                      {isActive && <motion.div layoutId="activeIndicator" className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-l-full" transition={{
+                      {isActive && <motion.div layoutId="activeIndicator" className="absolute end-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-s-full" transition={{
                     type: 'spring',
                     bounce: 0.25,
                     duration: 0.6
@@ -162,7 +162,7 @@ export default function Navigation({
                 {bottomNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return <button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-right ${isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}>
+                return <button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-start min-h-[44px] ${isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}>
                       <Icon className="w-5 h-5" />
                       <span className="font-medium text-sm">{item.label}</span>
                     </button>;
@@ -170,7 +170,7 @@ export default function Navigation({
               </nav>
 
               {/* Sign Out Button */}
-              <Button onClick={handleSignOut} variant="outline" className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20">
+              <Button onClick={handleSignOut} variant="outline" className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 min-h-[44px]">
                 <LogOut className="w-5 h-5" />
                 <span>خروج از حساب</span>
               </Button>
@@ -179,7 +179,7 @@ export default function Navigation({
         </div>
       </header>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button with Safe Area */}
       {onAddClick && <AnimatePresence>
           <motion.button onClick={onAddClick} initial={{
         scale: 0,
@@ -194,7 +194,7 @@ export default function Navigation({
         scale: 1.1
       }} whileTap={{
         scale: 0.95
-      }} className="fixed bottom-6 left-6 z-40 w-14 h-14 rounded-full bg-gradient-metallic-silver shadow-2xl flex items-center justify-center hover:shadow-primary/50 transition-shadow" style={{
+      }} className="fixed bottom-6 start-6 z-40 w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-gradient-metallic-silver shadow-2xl flex items-center justify-center hover:shadow-primary/50 transition-shadow safe-area-bottom" style={{
         background: 'linear-gradient(135deg, #E0E0E0 0%, #FFFFFF 50%, #BDBDBD 100%)'
       }}>
             <Plus className="w-7 h-7 text-foreground" />
