@@ -16,15 +16,18 @@ import { PersianCalendar } from '@/components/ui/persian-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useApp as useAppContext } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Play, Pause, CheckCircle2, Target, Zap, LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Play, Pause, CheckCircle2, Target, Zap, LayoutGrid, ChevronDown, ChevronUp, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { ImageUpload } from '@/components/ImageUpload';
+import { useSubscription } from '@/context/SubscriptionContext';
+import ProGate from '@/components/ProGate';
 
 const Planning = () => {
   const { state, addPlan, updatePlan, deletePlan } = useApp();
   const appContext = useAppContext();
   const useJalali = appContext.state.settings.calendar === 'jalali';
+  const { isPro } = useSubscription();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('active');
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
@@ -97,6 +100,24 @@ const Planning = () => {
     if (!title.trim()) {
       toast.error('لطفاً عنوان برنامه را وارد کنید');
       return;
+    }
+
+    // Check habit limit for free users
+    if (planType === 'habit' && !isPro) {
+      const habitCount = state.plans.filter(p => p.type === 'habit').length;
+      if (habitCount >= 3) {
+        toast.error('🔒 کاربران رایگان فقط می‌توانند ۳ عادت ایجاد کنند. برای عادت‌های بیشتر، به نسخه Pro ارتقا دهید!', {
+          duration: 5000,
+          action: {
+            label: 'ارتقا',
+            onClick: () => {
+              // Could trigger paywall here
+              toast.info('به تب تنظیمات بروید تا به نسخه Pro ارتقا دهید');
+            }
+          }
+        });
+        return;
+      }
     }
 
     if (!category) {

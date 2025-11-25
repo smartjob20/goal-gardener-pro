@@ -17,6 +17,7 @@ import Settings from '@/components/Settings';
 import Profile from '@/components/Profile';
 import Rewards from '@/components/Rewards';
 import AICoach from '@/components/AICoach';
+import ProGate from '@/components/ProGate';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -102,11 +103,19 @@ const Index = () => {
       case 'focus':
         return <Focus />;
       case 'aicoach':
-        return <AICoach />;
+        return (
+          <ProGate fallback={<p className="text-sm text-center">مربی هوشمند AI فقط برای کاربران Pro در دسترس است</p>}>
+            <AICoach />
+          </ProGate>
+        );
       case 'rewards':
         return <Rewards />;
       case 'analytics':
-        return <Analytics />;
+        return (
+          <ProGate fallback={<p className="text-sm text-center">تحلیل‌های پیشرفته فقط برای کاربران Pro در دسترس است</p>}>
+            <Analytics />
+          </ProGate>
+        );
       case 'settings':
         return <Settings />;
       case 'profile':

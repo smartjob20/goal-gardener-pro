@@ -264,11 +264,15 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string | null
+          current_period_end: string | null
           current_streak: number | null
           display_name: string | null
           id: string
+          is_pro: boolean | null
           level: number | null
           longest_streak: number | null
+          subscription_status: string | null
+          subscription_tier: string | null
           total_focus_time: number | null
           total_habits_completed: number | null
           total_tasks_completed: number | null
@@ -279,11 +283,15 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          current_period_end?: string | null
           current_streak?: number | null
           display_name?: string | null
           id: string
+          is_pro?: boolean | null
           level?: number | null
           longest_streak?: number | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
           total_focus_time?: number | null
           total_habits_completed?: number | null
           total_tasks_completed?: number | null
@@ -294,11 +302,15 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          current_period_end?: string | null
           current_streak?: number | null
           display_name?: string | null
           id?: string
+          is_pro?: boolean | null
           level?: number | null
           longest_streak?: number | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
           total_focus_time?: number | null
           total_habits_completed?: number | null
           total_tasks_completed?: number | null
@@ -459,7 +471,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_subscription_status: {
+        Args: {
+          _current_period_end: string
+          _is_pro: boolean
+          _subscription_status: string
+          _subscription_tier: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
