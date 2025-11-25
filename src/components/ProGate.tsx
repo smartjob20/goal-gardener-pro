@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React from 'react';
+import { motion } from 'motion/react';
 import { Lock, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useSubscription } from '@/context/SubscriptionContext';
-import Paywall from './Paywall';
 import { Button } from './ui/button';
 
 interface ProGateProps {
@@ -12,7 +12,7 @@ interface ProGateProps {
 
 export default function ProGate({ children, fallback }: ProGateProps) {
   const { isPro, isLoading } = useSubscription();
-  const [showPaywall, setShowPaywall] = useState(false);
+  const navigate = useNavigate();
 
   // Show loading state
   if (isLoading) {
@@ -78,7 +78,7 @@ export default function ProGate({ children, fallback }: ProGateProps) {
             </div>
 
             <Button
-              onClick={() => setShowPaywall(true)}
+              onClick={() => navigate('/subscription')}
               className="w-full bg-gradient-metallic-silver text-foreground hover:scale-105 transition-transform"
               size="lg"
             >
@@ -94,34 +94,6 @@ export default function ProGate({ children, fallback }: ProGateProps) {
           </div>
         </motion.div>
       </motion.div>
-
-      {/* Paywall Modal */}
-      <AnimatePresence>
-        {showPaywall && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-            onClick={() => setShowPaywall(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Paywall
-                onStartTrial={() => {
-                  // Will be wired up in next step
-                  setShowPaywall(false);
-                }}
-                onContinueLimited={() => setShowPaywall(false)}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

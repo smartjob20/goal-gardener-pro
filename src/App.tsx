@@ -12,6 +12,7 @@ import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import Install from "./pages/Install";
 import Auth from "./pages/Auth";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -84,6 +85,7 @@ const App = () => {
                 <Route path="/" element={<PageTransition><Index /></PageTransition>} />
                 <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
                 <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
+                <Route path="/subscription" element={<Subscription />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
               </Routes>
