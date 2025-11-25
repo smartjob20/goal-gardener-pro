@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown } from 'lucide-react';
+import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { paymentService } from '@/services/payment/PaymentService';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { toast } from '@/hooks/use-toast';
@@ -112,6 +118,33 @@ export default function Subscription() {
       cta: 'شروع تحول',
       popular: true,
       icon: Crown,
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "آیا می‌توانم اشتراک خود را لغو کنم؟",
+      answer: "بله، شما می‌توانید در هر زمان اشتراک خود را لغو کنید. پس از لغو، تا پایان دوره پرداخت شده به تمام امکانات دسترسی خواهید داشت و دیگر مبلغی از شما کسر نخواهد شد."
+    },
+    {
+      question: "آیا تضمین بازگشت وجه دارید؟",
+      answer: "بله، ما تضمین ۱۴ روزه بازگشت وجه ارائه می‌دهیم. اگر از خدمات راضی نبودید، می‌توانید درخواست بازگشت کامل وجه خود را بدهید."
+    },
+    {
+      question: "تفاوت پلن رایگان و پریمیوم چیست؟",
+      answer: "پلن رایگان به شما اجازه می‌دهد تا ۳ عادت فعال داشته باشید و به آمار پایه دسترسی داشته باشید. پلن پریمیوم امکان ساخت عادت‌های نامحدود، مربی هوش مصنوعی اختصاصی، تحلیل‌های پیشرفته، و پشتیبان‌گیری ابری را به شما می‌دهد."
+    },
+    {
+      question: "آیا می‌توانم بین پلن ماهانه و سالانه تغییر دهم؟",
+      answer: "بله، شما می‌توانید در هر زمان پلن خود را ارتقا یا تغییر دهید. در صورت تغییر به پلن سالانه، تخفیف ۴۴٪ برای شما اعمال خواهد شد."
+    },
+    {
+      question: "مربی هوش مصنوعی چگونه کار می‌کند؟",
+      answer: "مربی هوش مصنوعی Deep Breath رفتار و پیشرفت شما را تحلیل می‌کند و توصیه‌های شخصی‌سازی شده برای بهبود عادت‌ها و دستیابی به اهدافتان ارائه می‌دهد. این مربی به زبان فارسی با شما صحبت می‌کند و انگیزه و پشتیبانی لازم را فراهم می‌آورد."
+    },
+    {
+      question: "آیا اطلاعات من امن است؟",
+      answer: "بله، ما امنیت اطلاعات شما را بسیار جدی می‌گیریم. تمام داده‌ها با رمزنگاری پیشرفته محافظت می‌شوند و در سرورهای ابری امن ذخیره می‌شوند. ما هیچ‌گاه اطلاعات شخصی شما را با اشخاص ثالث به اشتراک نمی‌گذاریم."
     },
   ];
 
@@ -369,11 +402,51 @@ export default function Subscription() {
             })}
           </motion.div>
 
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="w-full max-w-3xl mx-auto"
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                سوالات متداول
+              </h2>
+              <p className="text-muted-foreground">
+                پاسخ سوالات رایج درباره اشتراک و امکانات
+              </p>
+            </div>
+
+            <Accordion type="single" collapsible className="space-y-4">
+              {faqs.map((faq, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 + index * 0.05 }}
+                >
+                  <AccordionItem
+                    value={`item-${index}`}
+                    className="glass rounded-2xl px-6 border-border/50 overflow-hidden"
+                  >
+                    <AccordionTrigger className="text-start hover:no-underline py-5 text-base md:text-lg font-semibold text-foreground hover:text-primary transition-colors">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground leading-relaxed pb-5 text-sm md:text-base">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                </motion.div>
+              ))}
+            </Accordion>
+          </motion.div>
+
           {/* Trust Signals */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 1.4 }}
             className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground"
           >
             <span className="flex items-center gap-2">
