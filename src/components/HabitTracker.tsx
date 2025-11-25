@@ -17,6 +17,7 @@ import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightb
 import { getTodayString, calculateStreak, getWeekDays } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from '@/components/ImageUpload';
+import { triggerHaptic } from '@/utils/haptics';
 
 // قالب‌های آماده
 const habitTemplates = [
@@ -595,7 +596,14 @@ const HabitTracker = () => {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => checkHabit(habit.id, today)}
+                            animate={isCompletedToday ? {
+                              scale: [1, 1.2, 1],
+                              transition: { duration: 0.3 }
+                            } : {}}
+                            onClick={async () => {
+                              await triggerHaptic('medium');
+                              checkHabit(habit.id, today);
+                            }}
                             className="flex-shrink-0"
                           >
                             {isCompletedToday ? (

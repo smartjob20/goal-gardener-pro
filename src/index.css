@@ -69,7 +69,7 @@
     
     /* Muted */
     --muted: 240 8% 95%;
-    --muted-foreground: 240 6% 48%;
+    --muted-foreground: 240 6% 43%;
     
     /* Border & Input */
     --border: 240 8% 88%;
@@ -167,12 +167,16 @@
     /* Prevent iOS zoom on input focus */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Prevent overscroll rubber-band effect on mobile */
+    overscroll-behavior-y: none;
   }
   
   html {
     scroll-behavior: smooth;
     direction: rtl;
     text-align: start;
+    /* Prevent overscroll rubber-band effect on mobile */
+    overscroll-behavior-y: none;
   }
   
   * {

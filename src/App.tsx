@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { AnimatePresence } from 'motion/react';
+import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import Install from "./pages/Install";
 import Auth from "./pages/Auth";
@@ -51,6 +54,20 @@ const App = () => {
     if (platform === 'android') {
       document.body.classList.add('is-android');
     }
+
+    // Hide splash screen only after app is ready
+    const hideSplash = async () => {
+      // Wait a bit for initial render
+      setTimeout(async () => {
+        if (Capacitor.isNativePlatform()) {
+          await SplashScreen.hide({
+            fadeOutDuration: 300
+          });
+        }
+      }, 500);
+    };
+
+    hideSplash();
   }, []);
 
   return (
@@ -62,13 +79,15 @@ const App = () => {
           <div className="safe-area-container safe-area-top pt-16">
             <Toaster />
             <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/install" element={<Install />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+                <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+                <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+              </Routes>
+            </AnimatePresence>
           </div>
         </TooltipProvider>
       </BrowserRouter>
