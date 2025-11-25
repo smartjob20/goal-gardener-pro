@@ -95,7 +95,7 @@ const Index = () => {
       case 'tasks':
         return <TaskManager />;
       case 'habits':
-        return <HabitTracker />;
+        return <HabitTracker className="mt-[70px]" />;
       case 'planning':
         return <Planning />;
       case 'goals':
@@ -103,19 +103,15 @@ const Index = () => {
       case 'focus':
         return <Focus />;
       case 'aicoach':
-        return (
-          <ProGate fallback={<p className="text-sm text-center">مربی هوشمند AI فقط برای کاربران Pro در دسترس است</p>}>
+        return <ProGate fallback={<p className="text-sm text-center">مربی هوشمند AI فقط برای کاربران Pro در دسترس است</p>}>
             <AICoach />
-          </ProGate>
-        );
+          </ProGate>;
       case 'rewards':
         return <Rewards />;
       case 'analytics':
-        return (
-          <ProGate fallback={<p className="text-sm text-center">تحلیل‌های پیشرفته فقط برای کاربران Pro در دسترس است</p>}>
+        return <ProGate fallback={<p className="text-sm text-center">تحلیل‌های پیشرفته فقط برای کاربران Pro در دسترس است</p>}>
             <Analytics />
-          </ProGate>
-        );
+          </ProGate>;
       case 'settings':
         return <Settings />;
       case 'profile':
