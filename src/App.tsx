@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
-import { SubscriptionProvider } from "./context/SubscriptionContext";
 import Index from "./pages/Index";
 import Install from "./pages/Install";
 import Auth from "./pages/Auth";
@@ -58,22 +57,20 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <BackButtonHandler />
-        <SubscriptionProvider>
-          <TooltipProvider delayDuration={0}>
-            {/* Safe Area Container with safe area insets support */}
-            <div className="safe-area-container safe-area-top pt-16">
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/install" element={<Install />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-          </TooltipProvider>
-        </SubscriptionProvider>
+        <TooltipProvider delayDuration={0}>
+          {/* Safe Area Container with safe area insets support */}
+          <div className="safe-area-container safe-area-top pt-16">
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/install" element={<Install />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </TooltipProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
