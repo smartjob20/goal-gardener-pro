@@ -98,7 +98,7 @@ const Index = () => {
       case 'planning':
         return <Planning />;
       case 'goals':
-        return <Goals />;
+        return <Goals className="mt-[70px]" />;
       case 'focus':
         return <Focus className="mt-[70px]" />;
       case 'aicoach':
