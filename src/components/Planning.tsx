@@ -595,41 +595,42 @@ const Planning = () => {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="p-6 glass-card hover:shadow-xl transition-all">
-                      <div className="space-y-4">
+                    <Card className="p-4 sm:p-6 glass-card hover:shadow-xl transition-all">
+                      <div className="space-y-3 sm:space-y-4">
                         {/* Header */}
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-xl font-bold">{plan.title}</h3>
-                              <Badge className={priorityColors[plan.priority]}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <h3 className="text-lg sm:text-xl font-bold break-words">{plan.title}</h3>
+                              <Badge className={`${priorityColors[plan.priority]} text-xs whitespace-nowrap`}>
                                 {priorityLabels[plan.priority]}
                               </Badge>
-                              <Badge className={statusColors[plan.status]}>
+                              <Badge className={`${statusColors[plan.status]} text-xs whitespace-nowrap`}>
                                 {statusLabels[plan.status]}
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
-                                <Target className="h-4 w-4" />
+                                <Target className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
                                 {planTypeLabels[plan.type]}
                               </span>
-                              <span>•</span>
+                              <span className="hidden sm:inline">•</span>
                               <span>{plan.category}</span>
-                              <span>•</span>
+                              <span className="hidden sm:inline">•</span>
                               <span>{calculateDaysRemaining(plan.endDate)} روز باقی‌مانده</span>
                             </div>
                             {plan.description && (
-                              <p className="text-sm text-muted-foreground mt-2">
+                              <p className="text-xs sm:text-sm text-muted-foreground mt-2 line-clamp-2">
                                 {plan.description}
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 shrink-0">
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => openEditDialog(plan)}
+                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
                             >
                               <Edit2 className="h-4 w-4" />
                             </Button>
@@ -637,6 +638,7 @@ const Planning = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeletePlan(plan.id)}
+                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -644,6 +646,7 @@ const Planning = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => setExpandedPlan(expandedPlan === plan.id ? null : plan.id)}
+                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
                             >
                               {expandedPlan === plan.id ? (
                                 <ChevronUp className="h-4 w-4" />
@@ -656,13 +659,13 @@ const Planning = () => {
 
                         {/* Progress */}
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span>پیشرفت: {plan.progress}%</span>
-                            <span>
+                          <div className="flex items-center justify-between text-xs sm:text-sm">
+                            <span className="font-medium">پیشرفت: {plan.progress}%</span>
+                            <span className="text-muted-foreground">
                               {plan.checklist.filter(item => item.completed).length} از {plan.checklist.length} مرحله
                             </span>
                           </div>
-                          <Progress value={plan.progress} className="h-3" />
+                          <Progress value={plan.progress} className="h-2 sm:h-3" />
                         </div>
 
                         {/* Checklist */}
@@ -672,19 +675,20 @@ const Planning = () => {
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
                               exit={{ opacity: 0, height: 0 }}
-                              className="space-y-2 pt-4 border-t"
+                              className="space-y-2 pt-3 sm:pt-4 border-t"
                             >
-                              <h4 className="font-semibold mb-3">مراحل اجرایی:</h4>
+                              <h4 className="font-semibold mb-2 sm:mb-3 text-sm sm:text-base">مراحل اجرایی:</h4>
                               {plan.checklist.map((item) => (
                                 <div
                                   key={item.id}
-                                  className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
+                                  className="flex items-start gap-3 p-3 sm:p-3.5 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors min-h-[44px]"
                                 >
                                   <Checkbox
                                     checked={item.completed}
                                     onCheckedChange={() => handleToggleChecklistItem(plan.id, item.id)}
+                                    className="mt-0.5 shrink-0 min-h-[20px] min-w-[20px]"
                                   />
-                                  <span className={item.completed ? 'line-through text-muted-foreground' : ''}>
+                                  <span className={`text-sm sm:text-base leading-relaxed ${item.completed ? 'line-through text-muted-foreground' : ''}`}>
                                     {item.title}
                                   </span>
                                 </div>
@@ -694,14 +698,15 @@ const Planning = () => {
                         </AnimatePresence>
 
                         {/* Actions */}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex flex-col sm:flex-row gap-2 pt-2">
                           {plan.status === 'planning' && (
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleChangeStatus(plan.id, 'active')}
+                              className="w-full sm:w-auto min-h-[44px]"
                             >
-                              <Play className="ml-2 h-4 w-4" />
+                              <Play className="ms-2 h-4 w-4" />
                               شروع برنامه
                             </Button>
                           )}
@@ -710,8 +715,9 @@ const Planning = () => {
                               variant="outline"
                               size="sm"
                               onClick={() => handleChangeStatus(plan.id, 'paused')}
+                              className="w-full sm:w-auto min-h-[44px]"
                             >
-                              <Pause className="ml-2 h-4 w-4" />
+                              <Pause className="ms-2 h-4 w-4" />
                               متوقف کردن
                             </Button>
                           )}
@@ -746,17 +752,17 @@ const Planning = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="p-6 glass-card border-green-500/20">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            <h3 className="text-xl font-bold">{plan.title}</h3>
-                            <Badge className="bg-green-500/20 text-green-700">
+                    <Card className="p-4 sm:p-6 glass-card border-green-500/20">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 shrink-0" />
+                            <h3 className="text-lg sm:text-xl font-bold break-words">{plan.title}</h3>
+                            <Badge className="bg-green-500/20 text-green-700 text-xs whitespace-nowrap">
                               تکمیل شده
                             </Badge>
                           </div>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-xs sm:text-sm text-muted-foreground">
                             {planTypeLabels[plan.type]} • {plan.category}
                           </div>
                         </div>
@@ -764,11 +770,12 @@ const Planning = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDeletePlan(plan.id)}
+                          className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10 shrink-0"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <Progress value={100} className="h-3 mt-4" />
+                      <Progress value={100} className="h-2 sm:h-3 mt-3 sm:mt-4" />
                     </Card>
                   </motion.div>
                 ))}
@@ -795,17 +802,17 @@ const Planning = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="p-6 glass-card opacity-75">
-                      <div className="space-y-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-xl font-bold">{plan.title}</h3>
-                              <Badge className={statusColors.paused}>
+                    <Card className="p-4 sm:p-6 glass-card opacity-75">
+                      <div className="space-y-3 sm:space-y-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <h3 className="text-lg sm:text-xl font-bold break-words">{plan.title}</h3>
+                              <Badge className={`${statusColors.paused} text-xs whitespace-nowrap`}>
                                 متوقف
                               </Badge>
                             </div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-xs sm:text-sm text-muted-foreground">
                               {planTypeLabels[plan.type]} • {plan.category}
                             </div>
                           </div>
@@ -813,17 +820,19 @@ const Planning = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeletePlan(plan.id)}
+                            className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10 shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        <Progress value={plan.progress} className="h-3" />
+                        <Progress value={plan.progress} className="h-2 sm:h-3" />
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleChangeStatus(plan.id, 'active')}
+                          className="w-full sm:w-auto min-h-[44px]"
                         >
-                          <Play className="ml-2 h-4 w-4" />
+                          <Play className="ms-2 h-4 w-4" />
                           ادامه برنامه
                         </Button>
                       </div>
