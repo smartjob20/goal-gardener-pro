@@ -73,7 +73,7 @@ const Profile = () => {
   // Recent activities
   const recentTasks = state.tasks.filter(t => t.completedAt).sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime()).slice(0, 5);
   const recentAchievements = state.achievements.filter(a => a.unlocked && a.unlockedAt).sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime()).slice(0, 5);
-  return <div className="container mx-auto p-4 pb-24 max-w-6xl" dir="rtl">
+  return <div dir="rtl" className="container mx-auto p-4 pb-24 max-w-6xl mt-[70px]">
       <motion.div initial={{
       opacity: 0,
       y: 20
@@ -85,7 +85,7 @@ const Profile = () => {
     }}>
         {/* Header Card */}
         <Card className="mb-6">
-          <CardContent className="pt-6 mt-[70px]">
+          <CardContent className="pt-6 mt-0">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Avatar Section */}
               <div className="flex flex-col items-center space-y-4">
