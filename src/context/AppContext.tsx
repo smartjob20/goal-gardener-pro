@@ -223,6 +223,7 @@ interface AppContextType {
   addPlan: (plan: Plan) => void;
   updatePlan: (id: string, updates: Partial<Plan>) => void;
   deletePlan: (id: string) => void;
+  reorderTasks: (reorderedTasks: Task[]) => void;
   addXP: (amount: number, reason: string) => void;
   checkAchievements: () => void;
 }
