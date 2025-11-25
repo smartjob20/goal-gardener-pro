@@ -225,108 +225,112 @@ const Focus = () => {
         </div>
 
         {/* Stats Cards - Mobile Friendly */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">امروز</p>
-                  <p className="text-2xl font-bold">{todaySessionsCount}</p>
-                  <p className="text-xs text-muted-foreground">جلسه</p>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">امروز</p>
+                  <p className="text-xl sm:text-2xl font-bold">{todaySessionsCount}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">جلسه</p>
                 </div>
-                <Target className="h-8 w-8 text-primary" />
+                <Target className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">زمان تمرکز</p>
-                  <p className="text-2xl font-bold">{todayFocusTime}</p>
-                  <p className="text-xs text-muted-foreground">دقیقه</p>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">زمان تمرکز</p>
+                  <p className="text-xl sm:text-2xl font-bold">{todayFocusTime}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">دقیقه</p>
                 </div>
-                <Clock className="h-8 w-8 text-primary" />
+                <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">هدف روزانه</p>
-                  <p className="text-2xl font-bold">{Math.round((todaySessionsCount / dailyGoal) * 100)}%</p>
-                  <p className="text-xs text-muted-foreground">{todaySessionsCount}/{dailyGoal}</p>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">هدف روزانه</p>
+                  <p className="text-xl sm:text-2xl font-bold">{Math.round((todaySessionsCount / dailyGoal) * 100)}%</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">{todaySessionsCount}/{dailyGoal}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-primary" />
+                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">کل جلسات</p>
-                  <p className="text-2xl font-bold">{state.focusSessions.filter(s => s.completed).length}</p>
-                  <p className="text-xs text-muted-foreground">تکمیل شده</p>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">کل جلسات</p>
+                  <p className="text-xl sm:text-2xl font-bold">{state.focusSessions.filter(s => s.completed).length}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">تکمیل شده</p>
                 </div>
-                <Zap className="h-8 w-8 text-primary" />
+                <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
           {/* Timer Section */}
           <div className="md:col-span-2">
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 {/* Mode Selector - Mobile Friendly */}
-                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-6">
+                <div className="grid grid-cols-2 gap-2 mb-6">
                   <Button
                     variant={mode === 'pomodoro' ? 'default' : 'outline'}
                     onClick={() => changeMode('pomodoro')}
                     disabled={isRunning}
+                    className="h-auto py-2 sm:py-2.5 text-xs sm:text-sm"
                   >
-                    پومودورو ({pomodoroDuration}دقیقه)
+                    <span className="truncate">پومودورو ({pomodoroDuration}د)</span>
                   </Button>
                   <Button
                     variant={mode === 'shortBreak' ? 'default' : 'outline'}
                     onClick={() => changeMode('shortBreak')}
                     disabled={isRunning}
+                    className="h-auto py-2 sm:py-2.5 text-xs sm:text-sm"
                   >
-                    استراحت کوتاه ({shortBreakDuration}دقیقه)
+                    <span className="truncate">استراحت کوتاه ({shortBreakDuration}د)</span>
                   </Button>
                   <Button
                     variant={mode === 'longBreak' ? 'default' : 'outline'}
                     onClick={() => changeMode('longBreak')}
                     disabled={isRunning}
+                    className="h-auto py-2 sm:py-2.5 text-xs sm:text-sm"
                   >
-                    استراحت بلند ({longBreakDuration}دقیقه)
+                    <span className="truncate">استراحت بلند ({longBreakDuration}د)</span>
                   </Button>
                   <Button
                     variant={mode === 'custom' ? 'default' : 'outline'}
                     onClick={() => changeMode('custom')}
                     disabled={isRunning}
+                    className="h-auto py-2 sm:py-2.5 text-xs sm:text-sm"
                   >
-                    سفارشی ({customDuration}دقیقه)
+                    <span className="truncate">سفارشی ({customDuration}د)</span>
                   </Button>
                 </div>
 
                 {/* Timer Display */}
                 <div className="text-center mb-6">
-                  <div className="text-8xl font-bold mb-4 font-mono">
+                  <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-4 font-mono leading-tight">
                     {formatTime(timeLeft)}
                   </div>
-                  <Progress value={progress} className="mb-4" />
-                  <p className="text-sm text-muted-foreground">
+                  <Progress value={progress} className="mb-4 h-2 sm:h-3" />
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     {mode === 'pomodoro' ? 'جلسه تمرکز' : mode === 'shortBreak' ? 'استراحت کوتاه' : mode === 'longBreak' ? 'استراحت بلند' : 'زمان سفارشی'}
                   </p>
                   {mode === 'pomodoro' && (
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                       جلسه {sessionCount % sessionsUntilLongBreak + 1} از {sessionsUntilLongBreak}
                     </p>
                   )}
@@ -335,14 +339,14 @@ const Focus = () => {
                 {/* Task Selection */}
                 {mode === 'pomodoro' && state.tasks.filter(t => !t.completed).length > 0 && (
                   <div className="mb-6">
-                    <Label>روی چه وظیفه‌ای کار می‌کنید؟</Label>
+                    <Label className="text-sm sm:text-base">روی چه وظیفه‌ای کار می‌کنید؟</Label>
                     <Select value={selectedTaskId} onValueChange={setSelectedTaskId} disabled={isRunning}>
-                      <SelectTrigger>
+                      <SelectTrigger className="mt-2 h-11 text-sm sm:text-base">
                         <SelectValue placeholder="انتخاب وظیفه..." />
                       </SelectTrigger>
                       <SelectContent>
                         {state.tasks.filter(t => !t.completed).map(task => (
-                          <SelectItem key={task.id} value={task.id}>
+                          <SelectItem key={task.id} value={task.id} className="text-sm sm:text-base">
                             {task.title}
                           </SelectItem>
                         ))}
@@ -352,20 +356,20 @@ const Focus = () => {
                 )}
 
                 {/* Controls */}
-                <div className="flex gap-3 justify-center">
+                <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
                   <Button
                     size="lg"
                     onClick={toggleTimer}
-                    className="w-32"
+                    className="flex-1 min-w-[120px] sm:flex-initial sm:w-32 h-11 sm:h-12 text-sm sm:text-base"
                   >
                     {isRunning ? (
                       <>
-                        <Pause className="ml-2 h-5 w-5" />
+                        <Pause className="ms-2 h-4 w-4 sm:h-5 sm:w-5" />
                         توقف
                       </>
                     ) : (
                       <>
-                        <Play className="ml-2 h-5 w-5" />
+                        <Play className="ms-2 h-4 w-4 sm:h-5 sm:w-5" />
                         شروع
                       </>
                     )}
@@ -374,22 +378,23 @@ const Focus = () => {
                     size="lg"
                     variant="outline"
                     onClick={resetTimer}
+                    className="flex-1 min-w-[100px] sm:flex-initial h-11 sm:h-12 text-sm sm:text-base"
                   >
-                    <RotateCcw className="ml-2 h-5 w-5" />
+                    <RotateCcw className="ms-2 h-4 w-4 sm:h-5 sm:w-5" />
                     ریست
                   </Button>
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button size="lg" variant="outline">
-                        <Settings className="ml-2 h-5 w-5" />
+                      <Button size="lg" variant="outline" className="flex-1 min-w-[120px] sm:flex-initial h-11 sm:h-12 text-sm sm:text-base">
+                        <Settings className="ms-2 h-4 w-4 sm:h-5 sm:w-5" />
                         تنظیمات
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md">
+                    <DialogContent className="max-w-md mx-4">
                       <DialogHeader>
-                        <DialogTitle>تنظیمات تایمر</DialogTitle>
+                        <DialogTitle className="text-base sm:text-lg">تنظیمات تایمر</DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-4">
+                      <div className="space-y-4 max-h-[60vh] overflow-y-auto px-1">
                         <div>
                           <Label>مدت پومودورو (دقیقه)</Label>
                           <Input
@@ -480,18 +485,18 @@ const Focus = () => {
           </div>
 
           {/* History Section */}
-          <div>
+          <div className="md:col-span-1">
             <Card>
-              <CardHeader>
-                <CardTitle>تاریخچه جلسات امروز</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-base sm:text-lg">تاریخچه جلسات امروز</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   {todaySessionsCount} جلسه تکمیل شده
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3 max-h-[500px] overflow-y-auto">
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <div className="space-y-2 sm:space-y-3 max-h-[300px] sm:max-h-[500px] overflow-y-auto">
                   {todaySessions.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
+                    <p className="text-xs sm:text-sm text-muted-foreground text-center py-6 sm:py-8">
                       هنوز جلسه‌ای تکمیل نکرده‌اید
                     </p>
                   ) : (
@@ -500,19 +505,19 @@ const Focus = () => {
                       return (
                         <div
                           key={session.id}
-                          className="p-3 bg-secondary/50 rounded-lg"
+                          className="p-2.5 sm:p-3 bg-secondary/50 rounded-lg"
                         >
-                          <div className="flex items-start justify-between mb-1">
-                            <p className="text-sm font-medium">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <p className="text-xs sm:text-sm font-medium truncate flex-1">
                               {task ? task.title : 'بدون وظیفه'}
                             </p>
                             {session.completed && (
-                              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                              <span className="text-[10px] sm:text-xs bg-primary/20 text-primary px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap">
                                 +{session.xpEarned} XP
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
                             <span>{format(new Date(session.startTime), 'HH:mm')}</span>
                             <span>{session.duration} دقیقه</span>
                           </div>
