@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote, Infinity as InfinityIcon, BarChart3, Brain, Cloud, FileText, Shield, Rocket, Award, Target, LucideIcon } from 'lucide-react';
+import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote, Infinity as InfinityIcon, BarChart3, Brain, Cloud, FileText, Shield, Rocket, Award, Target, LucideIcon, Bot, Wand2, MessageSquare, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -46,8 +46,8 @@ interface Plan {
 export default function Subscription() {
   const navigate = useNavigate();
   const { refreshSubscription } = useSubscription();
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>('yearly');
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('monthly');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleClose = () => {
@@ -108,22 +108,24 @@ export default function Subscription() {
         {
           id: 'yearly',
           name: 'پریمیوم',
-          subtitle: 'پیشنهاد ویژه',
+          subtitle: 'بهترین ارزش',
           price: '۴۹۰,۰۰۰',
           originalPrice: '۸۸۰,۰۰۰',
           period: 'سالانه',
-          monthlyEquivalent: '۴۰,۸۳۳ تومان در ماه',
-          description: 'تبدیل شوید به بهترین نسخه خودتان',
-          discount: '۴۴٪ تخفیف',
+          monthlyEquivalent: 'معادل ۴۰,۸۳۳ تومان در ماه',
+          description: 'تحول کامل زندگی با قدرت هوش مصنوعی',
+          discount: '۴۴٪ صرفه‌جویی',
           features: [
-            { text: 'عادت‌های نامحدود', icon: InfinityIcon, highlight: true },
-            { text: 'مربی هوش مصنوعی اختصاصی', icon: Brain, highlight: true },
-            { text: 'تحلیل‌های پیشرفته و نمودارها', icon: BarChart3 },
+            { text: 'عادت‌های نامحدود و بدون محدودیت', icon: InfinityIcon, highlight: true },
+            { text: '🤖 مربی هوش مصنوعی شخصی ۲۴/۷', icon: Brain, highlight: true },
+            { text: '✨ پیشنهادات هوشمند روزانه با AI', icon: Wand2, highlight: true },
+            { text: '🧠 تحلیل رفتاری پیشرفته با یادگیری ماشین', icon: Bot, highlight: true },
+            { text: 'تحلیل‌های عمیق و نمودارهای تعاملی', icon: BarChart3 },
             { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
-            { text: 'گزارش PDF دقیق', icon: FileText },
-            { text: 'امنیت و رمزنگاری پیشرفته', icon: Shield },
-            { text: 'همگام‌سازی بین دستگاه‌ها', icon: Rocket },
-            { text: 'اولویت در پشتیبانی', icon: Award },
+            { text: 'گزارش‌های PDF حرفه‌ای', icon: FileText },
+            { text: 'رمزنگاری و امنیت نظامی', icon: Shield },
+            { text: 'همگام‌سازی لحظه‌ای دستگاه‌ها', icon: Rocket },
+            { text: 'پشتیبانی اولویت‌دار', icon: Award },
           ],
           cta: 'شروع تحول با ۴۴٪ تخفیف',
           popular: true,
@@ -132,17 +134,18 @@ export default function Subscription() {
         {
           id: 'free',
           name: 'رایگان',
-          subtitle: 'برای شروع',
+          subtitle: 'برای آشنایی',
           price: '۰',
           period: 'رایگان',
-          description: 'شروع سفر خود با امکانات پایه',
+          description: 'تجربه محدود امکانات پایه',
           features: [
-            { text: 'فقط ۳ عادت فعال', icon: Target, included: true },
-            { text: 'آمار پایه و محدود', icon: BarChart3, included: true },
-            { text: 'بدون مربی هوش مصنوعی', icon: Brain, included: false },
-            { text: 'بدون تحلیل‌های پیشرفته', icon: TrendingUp, included: false },
-            { text: 'بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
-            { text: 'بدون گزارش PDF', icon: FileText, included: false },
+            { text: 'محدود به ۳ عادت فعال', icon: Target, included: true },
+            { text: 'آمار پایه و ساده', icon: BarChart3, included: true },
+            { text: '❌ بدون مربی هوش مصنوعی', icon: Brain, included: false },
+            { text: '❌ بدون پیشنهادات هوشمند', icon: Wand2, included: false },
+            { text: '❌ بدون تحلیل رفتاری', icon: Bot, included: false },
+            { text: '❌ بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
+            { text: '❌ بدون گزارش PDF', icon: FileText, included: false },
           ],
           cta: 'پلن فعلی شما',
           popular: false,
@@ -154,19 +157,21 @@ export default function Subscription() {
         {
           id: 'monthly',
           name: 'پریمیوم',
-          subtitle: 'پرداخت ماهانه',
+          subtitle: 'انعطاف ماهانه',
           price: '۷۹,۰۰۰',
           period: 'ماهانه',
-          description: 'دسترسی کامل به تمام امکانات',
+          description: 'دسترسی کامل با پرداخت ماهانه',
           features: [
-            { text: 'عادت‌های نامحدود', icon: InfinityIcon, highlight: true },
-            { text: 'مربی هوش مصنوعی اختصاصی', icon: Brain, highlight: true },
-            { text: 'تحلیل‌های پیشرفته و نمودارها', icon: BarChart3 },
+            { text: 'عادت‌های نامحدود و بدون محدودیت', icon: InfinityIcon, highlight: true },
+            { text: '🤖 مربی هوش مصنوعی شخصی ۲۴/۷', icon: Brain, highlight: true },
+            { text: '✨ پیشنهادات هوشمند روزانه با AI', icon: Wand2, highlight: true },
+            { text: '🧠 تحلیل رفتاری پیشرفته با یادگیری ماشین', icon: Bot, highlight: true },
+            { text: 'تحلیل‌های عمیق و نمودارهای تعاملی', icon: BarChart3 },
             { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
-            { text: 'گزارش PDF دقیق', icon: FileText },
-            { text: 'امنیت و رمزنگاری پیشرفته', icon: Shield },
-            { text: 'همگام‌سازی بین دستگاه‌ها', icon: Rocket },
-            { text: 'اولویت در پشتیبانی', icon: Award },
+            { text: 'گزارش‌های PDF حرفه‌ای', icon: FileText },
+            { text: 'رمزنگاری و امنیت نظامی', icon: Shield },
+            { text: 'همگام‌سازی لحظه‌ای دستگاه‌ها', icon: Rocket },
+            { text: 'پشتیبانی اولویت‌دار', icon: Award },
           ],
           cta: 'شروع اشتراک ماهانه',
           popular: true,
@@ -175,17 +180,18 @@ export default function Subscription() {
         {
           id: 'free',
           name: 'رایگان',
-          subtitle: 'برای شروع',
+          subtitle: 'برای آشنایی',
           price: '۰',
           period: 'رایگان',
-          description: 'شروع سفر خود با امکانات پایه',
+          description: 'تجربه محدود امکانات پایه',
           features: [
-            { text: 'فقط ۳ عادت فعال', icon: Target, included: true },
-            { text: 'آمار پایه و محدود', icon: BarChart3, included: true },
-            { text: 'بدون مربی هوش مصنوعی', icon: Brain, included: false },
-            { text: 'بدون تحلیل‌های پیشرفته', icon: TrendingUp, included: false },
-            { text: 'بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
-            { text: 'بدون گزارش PDF', icon: FileText, included: false },
+            { text: 'محدود به ۳ عادت فعال', icon: Target, included: true },
+            { text: 'آمار پایه و ساده', icon: BarChart3, included: true },
+            { text: '❌ بدون مربی هوش مصنوعی', icon: Brain, included: false },
+            { text: '❌ بدون پیشنهادات هوشمند', icon: Wand2, included: false },
+            { text: '❌ بدون تحلیل رفتاری', icon: Bot, included: false },
+            { text: '❌ بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
+            { text: '❌ بدون گزارش PDF', icon: FileText, included: false },
           ],
           cta: 'پلن فعلی شما',
           popular: false,
@@ -234,32 +240,36 @@ export default function Subscription() {
 
   const comparisonCategories = [
     {
+      category: "🤖 قدرت هوش مصنوعی",
+      features: [
+        { name: "مربی شخصی AI با یادگیری ماشین", free: false, premium: true, highlight: true },
+        { name: "پیشنهادات هوشمند روزانه سفارشی", free: false, premium: true, highlight: true },
+        { name: "تحلیل رفتاری و الگویابی پیشرفته", free: false, premium: true, highlight: true },
+        { name: "گفتگوی طبیعی با مربی AI", free: false, premium: true },
+        { name: "راهنمایی گام‌به‌گام هوشمند", free: false, premium: true },
+        { name: "پیش‌بینی موفقیت با AI", free: false, premium: true },
+      ]
+    },
+    {
       category: "مدیریت عادت‌ها",
       features: [
-        { name: "تعداد عادت‌های فعال", free: "۳ عادت", premium: "نامحدود", highlight: true },
+        { name: "تعداد عادت‌های فعال", free: "فقط ۳ عادت", premium: "نامحدود", highlight: true },
         { name: "ردیابی روزانه عادت‌ها", free: true, premium: true },
         { name: "یادآوری هوشمند", free: true, premium: true },
-        { name: "تنظیم دسته‌بندی سفارشی", free: false, premium: true },
+        { name: "دسته‌بندی‌های سفارشی", free: false, premium: true },
         { name: "آمار پیشرفت تفصیلی", free: false, premium: true },
+        { name: "تنظیم اهداف هفتگی و ماهانه", free: false, premium: true },
       ]
     },
     {
       category: "تحلیل و گزارش",
       features: [
         { name: "نمودار پیشرفت پایه", free: true, premium: true },
-        { name: "تحلیل‌های پیشرفته", free: false, premium: true, highlight: true },
-        { name: "گزارش PDF دقیق", free: false, premium: true },
+        { name: "تحلیل‌های عمیق و پیشرفته", free: false, premium: true, highlight: true },
+        { name: "گزارش‌های PDF حرفه‌ای", free: false, premium: true },
         { name: "مقایسه دوره‌های زمانی", free: false, premium: true },
-        { name: "نمودارهای تعاملی", free: false, premium: true },
-      ]
-    },
-    {
-      category: "مربی هوش مصنوعی",
-      features: [
-        { name: "مشاوره شخصی‌سازی شده", free: false, premium: true, highlight: true },
-        { name: "پیشنهادات هوشمند روزانه", free: false, premium: true },
-        { name: "تحلیل رفتاری", free: false, premium: true },
-        { name: "راهنمایی گام‌به‌گام", free: false, premium: true },
+        { name: "نمودارهای تعاملی و زنده", free: false, premium: true },
+        { name: "آمار بینش‌های رفتاری", free: false, premium: true },
       ]
     },
     {
@@ -268,8 +278,9 @@ export default function Subscription() {
         { name: "پشتیبان‌گیری ابری خودکار", free: false, premium: true, highlight: true },
         { name: "همگام‌سازی بین دستگاه‌ها", free: false, premium: true },
         { name: "حالت آفلاین کامل", free: true, premium: true },
-        { name: "اولویت در پشتیبانی", free: false, premium: true },
-        { name: "به‌روزرسانی‌های اختصاصی", free: false, premium: true },
+        { name: "پشتیبانی اولویت‌دار", free: false, premium: true },
+        { name: "به‌روزرسانی‌های اختصاصی زودهنگام", free: false, premium: true },
+        { name: "رمزنگاری و امنیت نظامی", free: false, premium: true },
       ]
     },
   ];
@@ -349,22 +360,25 @@ export default function Subscription() {
             </motion.div>
 
             {/* Headline */}
-            <div className="space-y-3 max-w-2xl">
+            <div className="space-y-4 max-w-3xl">
               <motion.h1
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-3xl md:text-5xl font-bold text-foreground leading-tight"
+                className="text-4xl md:text-6xl font-bold text-foreground leading-tight"
               >
-                سرمایه‌گذاری روی خودت
+                تحول زندگی با قدرت
+                <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent"> هوش مصنوعی</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-lg md:text-xl text-muted-foreground"
+                className="text-xl md:text-2xl text-muted-foreground leading-relaxed"
               >
-                ۳۰ روز با ما بودی. حالا وقتشه این مسیر رو برای همیشه ادامه بدی
+                ۳۰ روز با ما بودی و تفاوت رو دیدی.
+                <br />
+                <span className="text-primary font-semibold">حالا وقتشه این مسیر رو برای همیشه ادامه بدی</span>
               </motion.p>
             </div>
 
@@ -391,11 +405,46 @@ export default function Subscription() {
             </motion.div>
           </motion.div>
 
-          {/* Billing Cycle Toggle */}
+          {/* AI Power Highlight */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
+            className="glass-strong rounded-3xl p-8 md:p-10 max-w-4xl mx-auto border-2 border-primary/30"
+          >
+            <div className="text-center space-y-6">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/20 to-primary/10 px-6 py-3 rounded-full">
+                <Brain className="w-6 h-6 text-primary" />
+                <span className="font-bold text-primary text-lg">قدرت هوش مصنوعی پیشرفته</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                مربی شخصی هوشمند که همیشه کنارت هست
+              </h3>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                با تکنولوژی یادگیری ماشین، مربی AI ما رفتار و پیشرفت تو رو تحلیل می‌کنه و هر روز پیشنهادات سفارشی‌سازی شده برای بهبود زندگیت ارائه می‌ده
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20">
+                  <Bot className="w-10 h-10 text-primary" />
+                  <span className="font-semibold text-foreground text-center">تحلیل رفتاری لحظه‌ای</span>
+                </div>
+                <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20">
+                  <Wand2 className="w-10 h-10 text-primary" />
+                  <span className="font-semibold text-foreground text-center">پیشنهادات هوشمند روزانه</span>
+                </div>
+                <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20">
+                  <Lightbulb className="w-10 h-10 text-primary" />
+                  <span className="font-semibold text-foreground text-center">راهنمایی شخصی‌سازی شده</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Billing Cycle Toggle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
             className="flex justify-center"
           >
             <div className="glass-strong rounded-full p-1.5 inline-flex items-center gap-1">
@@ -417,8 +466,8 @@ export default function Subscription() {
                 )}
                 <span className="relative z-10 flex items-center gap-2">
                   سالانه
-                  <span className="text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full">
-                    ۴۴٪ تخفیف
+                  <span className="text-xs bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30 font-bold">
+                    ✨ ۴۴٪ صرفه‌جویی
                   </span>
                 </span>
               </button>
@@ -451,9 +500,9 @@ export default function Subscription() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto"
             >
-              {plans.map((plan, index) => {
+              {plans.reverse().map((plan, index) => {
                 const isSelected = selectedPlan === plan.id;
                 const Icon = plan.icon;
 
@@ -497,11 +546,15 @@ export default function Subscription() {
                       {/* Discount Badge */}
                       {plan.discount && (
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute top-6 left-6 px-3 py-1.5 rounded-full bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30"
+                          initial={{ scale: 0, rotate: -10 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", bounce: 0.5 }}
+                          className="absolute top-6 left-6 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 shadow-lg"
                         >
-                          <span className="text-sm font-bold text-destructive">{plan.discount}</span>
+                          <span className="text-sm font-bold text-white flex items-center gap-1">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            {plan.discount}
+                          </span>
                         </motion.div>
                       )}
 
@@ -557,7 +610,7 @@ export default function Subscription() {
                       </div>
 
                       {/* Features List */}
-                      <div className="space-y-3 mb-8">
+                      <div className="space-y-2.5 mb-8">
                         {plan.features.map((feature, featureIdx) => {
                           const FeatureIcon = feature.icon;
                           const included = feature.included !== false;
@@ -565,38 +618,40 @@ export default function Subscription() {
                           return (
                             <motion.div
                               key={featureIdx}
-                              initial={{ opacity: 0, x: -10 }}
+                              initial={{ opacity: 0, x: 20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 0.5 + featureIdx * 0.05 }}
                               className={cn(
-                                "flex items-start gap-3 p-3 rounded-xl transition-all",
-                                feature.highlight && "bg-primary/5 border border-primary/20",
-                                !included && "opacity-50"
+                                "flex items-center gap-3 p-3 rounded-xl transition-all text-right",
+                                feature.highlight && "bg-gradient-to-l from-primary/10 via-primary/5 to-transparent border-r-2 border-primary shadow-sm",
+                                !included && "opacity-40"
                               )}
                             >
-                              <div className={cn(
-                                "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center",
-                                included
-                                  ? feature.highlight
-                                    ? "bg-primary/20"
-                                    : "bg-primary/10"
-                                  : "bg-muted"
-                              )}>
-                                <FeatureIcon className={cn(
-                                  "w-4 h-4",
-                                  included
-                                    ? feature.highlight
-                                      ? "text-primary"
-                                      : "text-primary/70"
-                                    : "text-muted-foreground"
-                                )} />
-                              </div>
                               <span className={cn(
-                                "text-sm leading-relaxed",
-                                included ? "text-foreground font-medium" : "text-muted-foreground"
+                                "text-sm leading-relaxed flex-1 text-right",
+                                included ? "text-foreground font-medium" : "text-muted-foreground line-through"
                               )}>
                                 {feature.text}
                               </span>
+                              <div className={cn(
+                                "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center shadow-sm",
+                                included
+                                  ? feature.highlight
+                                    ? "bg-gradient-to-br from-primary to-primary/70 shadow-primary/20"
+                                    : "bg-primary/10"
+                                  : "bg-muted"
+                              )}>
+                                {included ? (
+                                  <FeatureIcon className={cn(
+                                    "w-4.5 h-4.5",
+                                    feature.highlight
+                                      ? "text-primary-foreground"
+                                      : "text-primary"
+                                  )} />
+                                ) : (
+                                  <X className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </div>
                             </motion.div>
                           );
                         })}
@@ -691,16 +746,16 @@ export default function Subscription() {
                   className="glass-strong p-6 rounded-2xl space-y-4 hover:shadow-lg transition-shadow"
                 >
                   {/* Header */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
                       <div className={cn(
-                        "w-12 h-12 rounded-full bg-gradient-to-br flex items-center justify-center text-lg font-bold text-primary-foreground",
+                        "w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-xl font-bold text-primary-foreground shadow-lg",
                         testimonial.gradient
                       )}>
                         {testimonial.avatar}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-foreground">
+                      <div className="text-right">
+                        <h4 className="font-bold text-lg text-foreground">
                           {testimonial.name}
                         </h4>
                         <p className="text-sm text-muted-foreground">
@@ -708,18 +763,18 @@ export default function Subscription() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-0.5">
+                    <div className="flex gap-1 flex-shrink-0">
                       {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                        <Star key={i} className="w-5 h-5 fill-amber-500 text-amber-500" />
                       ))}
                     </div>
                   </div>
 
                   {/* Quote Icon */}
-                  <Quote className="w-8 h-8 text-primary/20" />
+                  <Quote className="w-10 h-10 text-primary/20 mb-4" />
 
                   {/* Review Text */}
-                  <p className="text-sm text-foreground leading-relaxed">
+                  <p className="text-base text-foreground leading-relaxed text-right mb-6">
                     {testimonial.text}
                   </p>
 
@@ -742,65 +797,76 @@ export default function Subscription() {
             transition={{ delay: 0.6 }}
             className="space-y-6"
           >
-            <div className="text-center space-y-3">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                مقایسه دقیق امکانات
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                تفاوت‌های کامل پلن رایگان و پریمیوم را به صورت شفاف و کامل ببینید
+            <div className="text-center space-y-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="inline-block"
+              >
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-3">
+                  مقایسه دقیق امکانات
+                </h2>
+                <div className="h-1 w-32 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full mx-auto" />
+              </motion.div>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                ببین با نسخه پریمیوم چه قابلیت‌های قدرتمندی در اختیار داری
               </p>
             </div>
 
-            <Accordion type="multiple" className="space-y-4">
+            <Accordion type="multiple" defaultValue={["category-0"]} className="space-y-4">
               {comparisonCategories.map((category, idx) => (
                 <AccordionItem
                   key={idx}
                   value={`category-${idx}`}
-                  className="glass-strong rounded-2xl border-2 border-border/30 overflow-hidden"
+                  className="glass-strong rounded-3xl border-2 border-border/30 overflow-hidden hover:border-primary/30 transition-all"
                 >
-                  <AccordionTrigger className="hover:no-underline py-6 px-8 text-right">
-                    <div className="flex items-center gap-4 w-full">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
-                        <TrendingUp className="w-6 h-6 text-primary" />
-                      </div>
-                      <span className="text-xl font-bold text-foreground text-right">
+                  <AccordionTrigger className="hover:no-underline py-8 px-8 text-right group">
+                    <div className="flex items-center justify-between gap-4 w-full">
+                      <span className="text-xl md:text-2xl font-bold text-foreground text-right flex items-center gap-3 group-hover:text-primary transition-colors">
                         {category.category}
                       </span>
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        {idx === 0 ? <Brain className="w-7 h-7 text-primary" /> : <TrendingUp className="w-7 h-7 text-primary" />}
+                      </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-8 pb-8">
-                    <div className="space-y-2 mt-6">
+                    <div className="space-y-3 mt-6">
                       {/* Header Row */}
-                      <div className="grid grid-cols-[2fr,1fr,1fr] gap-6 pb-4 border-b-2 border-border/50">
-                        <div className="text-base font-bold text-foreground text-right">ویژگی</div>
-                        <div className="text-base font-bold text-muted-foreground text-center">رایگان</div>
-                        <div className="text-base font-bold text-primary text-center">پریمیوم</div>
+                      <div className="grid grid-cols-[2fr,1.2fr,1.2fr] gap-6 pb-5 border-b-2 border-primary/20">
+                        <div className="text-lg font-bold text-foreground text-right">ویژگی</div>
+                        <div className="text-lg font-bold text-muted-foreground text-center">نسخه رایگان</div>
+                        <div className="text-lg font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">نسخه پریمیوم ⭐</div>
                       </div>
                       
                       {/* Feature Rows */}
                       {category.features.map((feature, featureIdx) => (
                         <motion.div
                           key={featureIdx}
-                          initial={{ opacity: 0, x: 20 }}
+                          initial={{ opacity: 0, x: 30 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.05 * featureIdx }}
                           className={cn(
-                            "grid grid-cols-[2fr,1fr,1fr] gap-6 p-4 rounded-xl transition-all hover:bg-muted/20",
-                            feature.highlight && "bg-primary/5 border-2 border-primary/20 shadow-sm"
+                            "grid grid-cols-[2fr,1.2fr,1.2fr] gap-6 p-4 rounded-2xl transition-all hover:bg-muted/30",
+                            feature.highlight && "bg-gradient-to-l from-primary/10 via-primary/5 to-transparent border-r-4 border-primary shadow-md"
                           )}
                         >
-                          <div className="text-base text-foreground font-medium flex items-center text-right">
+                          <div className={cn(
+                            "text-base font-medium flex items-center text-right",
+                            feature.highlight ? "text-foreground font-bold" : "text-foreground"
+                          )}>
                             {feature.name}
                           </div>
                           <div className="flex items-center justify-center">
                             {typeof feature.free === 'boolean' ? (
                               feature.free ? (
-                                <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
-                                  <Check className="w-5 h-5 text-success" />
+                                <div className="w-10 h-10 rounded-xl bg-success/15 flex items-center justify-center shadow-sm">
+                                  <Check className="w-6 h-6 text-success" />
                                 </div>
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                  <X className="w-5 h-5 text-muted-foreground" />
+                                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                                  <X className="w-6 h-6 text-muted-foreground" />
                                 </div>
                               )
                             ) : (
