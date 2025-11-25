@@ -106,6 +106,26 @@ export default function Subscription() {
     if (billingCycle === 'yearly') {
       return [
         {
+          id: 'free',
+          name: 'رایگان',
+          subtitle: 'برای آشنایی',
+          price: '۰',
+          period: 'رایگان',
+          description: 'تجربه محدود امکانات پایه',
+          features: [
+            { text: 'محدود به ۳ عادت فعال', icon: Target, included: true },
+            { text: 'آمار پایه و ساده', icon: BarChart3, included: true },
+            { text: '❌ بدون مربی هوش مصنوعی', icon: Brain, included: false },
+            { text: '❌ بدون پیشنهادات هوشمند', icon: Wand2, included: false },
+            { text: '❌ بدون تحلیل رفتاری', icon: Bot, included: false },
+            { text: '❌ بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
+            { text: '❌ بدون گزارش PDF', icon: FileText, included: false },
+          ],
+          cta: 'پلن فعلی شما',
+          popular: false,
+          icon: Lock,
+        },
+        {
           id: 'yearly',
           name: 'پریمیوم',
           subtitle: 'بهترین ارزش',
@@ -159,6 +179,9 @@ export default function Subscription() {
           popular: false,
           icon: Star,
         },
+      ];
+    } else {
+      return [
         {
           id: 'free',
           name: 'رایگان',
@@ -179,9 +202,6 @@ export default function Subscription() {
           popular: false,
           icon: Lock,
         },
-      ];
-    } else {
-      return [
         {
           id: 'monthly',
           name: 'پریمیوم',
@@ -229,26 +249,6 @@ export default function Subscription() {
           cta: 'دسترسی VIP',
           popular: false,
           icon: Star,
-        },
-        {
-          id: 'free',
-          name: 'رایگان',
-          subtitle: 'برای آشنایی',
-          price: '۰',
-          period: 'رایگان',
-          description: 'تجربه محدود امکانات پایه',
-          features: [
-            { text: 'محدود به ۳ عادت فعال', icon: Target, included: true },
-            { text: 'آمار پایه و ساده', icon: BarChart3, included: true },
-            { text: '❌ بدون مربی هوش مصنوعی', icon: Brain, included: false },
-            { text: '❌ بدون پیشنهادات هوشمند', icon: Wand2, included: false },
-            { text: '❌ بدون تحلیل رفتاری', icon: Bot, included: false },
-            { text: '❌ بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
-            { text: '❌ بدون گزارش PDF', icon: FileText, included: false },
-          ],
-          cta: 'پلن فعلی شما',
-          popular: false,
-          icon: Lock,
         },
       ];
     }
@@ -390,8 +390,8 @@ export default function Subscription() {
         <X className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
       </motion.button>
 
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-start px-4 py-12 md:py-20">
-        <div className="w-full max-w-6xl space-y-12">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-start px-3 md:px-4 py-8 md:py-12 lg:py-20">
+        <div className="w-full max-w-6xl space-y-8 md:space-y-12">
           
           {/* Header Section */}
           <motion.div
@@ -556,9 +556,9 @@ export default function Subscription() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-7xl mx-auto px-2 md:px-0"
             >
-              {plans.reverse().map((plan, index) => {
+              {plans.map((plan, index) => {
                 const isSelected = selectedPlan === plan.id;
                 const Icon = plan.icon;
 
@@ -592,81 +592,81 @@ export default function Subscription() {
                       whileHover={{ scale: plan.id === 'free' ? 1 : 1.02 }}
                       onClick={() => setSelectedPlan(plan.id)}
                       className={cn(
-                        "relative h-full p-8 rounded-3xl cursor-pointer transition-all duration-300",
+                        "relative h-full p-6 md:p-8 rounded-3xl cursor-pointer transition-all duration-300",
                         plan.popular
                           ? "glass-strong border-2 border-primary/50 shadow-[0_0_50px_-10px_hsl(var(--primary)/0.4)]"
                           : "glass border border-border/50",
                         isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
                       )}
                     >
-                      {/* Discount Badge */}
-                      {plan.discount && (
-                        <motion.div
-                          initial={{ scale: 0, rotate: -10 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ type: "spring", bounce: 0.5 }}
-                          className="absolute top-6 left-6 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 shadow-lg"
-                        >
-                          <span className="text-sm font-bold text-white flex items-center gap-1">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            {plan.discount}
-                          </span>
-                        </motion.div>
-                      )}
 
                       {/* Plan Header */}
-                      <div className="space-y-6 mb-8">
+                      <div className="space-y-4 md:space-y-6 mb-6 md:mb-8">
                         <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-3">
+                          <div className="space-y-2 flex-1">
+                            <div className="flex items-center gap-2 md:gap-3">
                               <div className={cn(
-                                "w-12 h-12 rounded-2xl flex items-center justify-center",
+                                "w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center flex-shrink-0",
                                 plan.popular 
                                   ? "bg-gradient-to-br from-primary to-primary/70" 
                                   : "bg-muted"
                               )}>
                                 <Icon className={cn(
-                                  "w-6 h-6",
+                                  "w-5 h-5 md:w-6 md:h-6",
                                   plan.popular ? "text-primary-foreground" : "text-muted-foreground"
                                 )} />
                               </div>
-                              <div>
-                                <h3 className="text-2xl font-bold text-foreground">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-xl md:text-2xl font-bold text-foreground truncate">
                                   {plan.name}
                                 </h3>
-                                <p className="text-sm text-muted-foreground">{plan.subtitle}</p>
+                                <p className="text-xs md:text-sm text-muted-foreground">{plan.subtitle}</p>
                               </div>
                             </div>
+                            {/* Discount Badge - Moved here */}
+                            {plan.discount && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", bounce: 0.5, delay: 0.2 }}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 shadow-md"
+                              >
+                                <Sparkles className="w-3 h-3 text-white" />
+                                <span className="text-xs font-bold text-white">
+                                  {plan.discount}
+                                </span>
+                              </motion.div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1.5 md:space-y-2">
                           <div className="flex items-baseline gap-2">
-                            <span className="text-5xl font-bold text-foreground">
+                            <span className="text-3xl md:text-5xl font-bold text-foreground">
                               {plan.price}
                             </span>
-                            <span className="text-lg text-muted-foreground">تومان</span>
+                            <span className="text-base md:text-lg text-muted-foreground">تومان</span>
                           </div>
                           {plan.originalPrice && (
                             <div className="flex items-center gap-2">
-                              <span className="text-lg text-muted-foreground line-through">
+                              <span className="text-sm md:text-lg text-muted-foreground line-through">
                                 {plan.originalPrice} تومان
                               </span>
                             </div>
                           )}
                           {plan.monthlyEquivalent && (
-                            <p className="text-sm text-muted-foreground">{plan.monthlyEquivalent}</p>
+                            <p className="text-xs md:text-sm text-muted-foreground">{plan.monthlyEquivalent}</p>
                           )}
-                          <p className="text-sm font-medium text-primary">{plan.period}</p>
+                          <p className="text-xs md:text-sm font-medium text-primary">{plan.period}</p>
                         </div>
 
-                        <p className="text-base text-muted-foreground leading-relaxed">
+                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                           {plan.description}
                         </p>
                       </div>
 
                       {/* Features List */}
-                      <div className="space-y-2.5 mb-8">
+                      <div className="space-y-2 md:space-y-2.5 mb-6 md:mb-8">
                         {plan.features.map((feature, featureIdx) => {
                           const FeatureIcon = feature.icon;
                           const included = feature.included !== false;
@@ -678,19 +678,19 @@ export default function Subscription() {
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 0.5 + featureIdx * 0.05 }}
                               className={cn(
-                                "flex items-center gap-3 p-3 rounded-xl transition-all text-right",
+                                "flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-xl transition-all text-right",
                                 feature.highlight && "bg-gradient-to-l from-primary/10 via-primary/5 to-transparent border-r-2 border-primary shadow-sm",
                                 !included && "opacity-40"
                               )}
                             >
                               <span className={cn(
-                                "text-sm leading-relaxed flex-1 text-right",
+                                "text-xs md:text-sm leading-relaxed flex-1 text-right",
                                 included ? "text-foreground font-medium" : "text-muted-foreground line-through"
                               )}>
                                 {feature.text}
                               </span>
                               <div className={cn(
-                                "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center shadow-sm",
+                                "flex-shrink-0 w-7 h-7 md:w-9 md:h-9 rounded-xl flex items-center justify-center shadow-sm",
                                 included
                                   ? feature.highlight
                                     ? "bg-gradient-to-br from-primary to-primary/70 shadow-primary/20"
@@ -699,13 +699,13 @@ export default function Subscription() {
                               )}>
                                 {included ? (
                                   <FeatureIcon className={cn(
-                                    "w-4.5 h-4.5",
+                                    "w-3.5 h-3.5 md:w-4.5 md:h-4.5",
                                     feature.highlight
                                       ? "text-primary-foreground"
                                       : "text-primary"
                                   )} />
                                 ) : (
-                                  <X className="w-4 h-4 text-muted-foreground" />
+                                  <X className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
                                 )}
                               </div>
                             </motion.div>
@@ -719,7 +719,7 @@ export default function Subscription() {
                         disabled={plan.id === 'free' || isProcessing}
                         size="lg"
                         className={cn(
-                          "w-full text-base font-bold rounded-xl h-14 transition-all duration-300",
+                          "w-full text-sm md:text-base font-bold rounded-xl h-12 md:h-14 transition-all duration-300",
                           plan.popular
                             ? "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl"
                             : "bg-muted text-muted-foreground hover:bg-muted/80",
@@ -732,14 +732,14 @@ export default function Subscription() {
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                             >
-                              <Zap className="w-5 h-5" />
+                              <Zap className="w-4 h-4 md:w-5 md:h-5" />
                             </motion.div>
-                            در حال پردازش...
+                            <span className="text-xs md:text-sm">در حال پردازش...</span>
                           </div>
                         ) : (
                           <div className="flex items-center justify-center gap-2">
-                            {plan.id !== 'free' && <Sparkles className="w-5 h-5" />}
-                            {plan.cta}
+                            {plan.id !== 'free' && <Sparkles className="w-4 h-4 md:w-5 md:h-5" />}
+                            <span className="text-xs md:text-sm">{plan.cta}</span>
                           </div>
                         )}
                       </Button>
@@ -792,51 +792,51 @@ export default function Subscription() {
             </div>
 
             {/* Testimonial Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {testimonials.map((testimonial, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + idx * 0.1 }}
-                  className="glass-strong p-6 rounded-2xl space-y-4 hover:shadow-lg transition-shadow"
+                  className="glass-strong p-4 md:p-6 rounded-2xl space-y-3 md:space-y-4 hover:shadow-lg transition-shadow"
                 >
                   {/* Header */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
+                  <div className="flex items-start justify-between mb-4 md:mb-6">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className={cn(
-                        "w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-xl font-bold text-primary-foreground shadow-lg",
+                        "w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-lg md:text-xl font-bold text-primary-foreground shadow-lg",
                         testimonial.gradient
                       )}>
                         {testimonial.avatar}
                       </div>
                       <div className="text-right">
-                        <h4 className="font-bold text-lg text-foreground">
+                        <h4 className="font-bold text-base md:text-lg text-foreground">
                           {testimonial.name}
                         </h4>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs md:text-sm text-muted-foreground">
                           {testimonial.role}
                         </p>
                       </div>
                     </div>
                     <div className="flex gap-1 flex-shrink-0">
                       {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-amber-500 text-amber-500" />
+                        <Star key={i} className="w-4 h-4 md:w-5 md:h-5 fill-amber-500 text-amber-500" />
                       ))}
                     </div>
                   </div>
 
                   {/* Quote Icon */}
-                  <Quote className="w-10 h-10 text-primary/20 mb-4" />
+                  <Quote className="w-8 h-8 md:w-10 md:h-10 text-primary/20 mb-3 md:mb-4" />
 
                   {/* Review Text */}
-                  <p className="text-base text-foreground leading-relaxed text-right mb-6">
+                  <p className="text-sm md:text-base text-foreground leading-relaxed text-right mb-4 md:mb-6">
                     {testimonial.text}
                   </p>
 
                   {/* Verified Badge */}
                   <div className="flex items-center gap-2 pt-2">
-                    <Check className="w-4 h-4 text-success" />
+                    <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-success" />
                     <span className="text-xs text-success font-medium">
                       کاربر تایید شده
                     </span>
@@ -887,14 +887,14 @@ export default function Subscription() {
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-8 pb-8">
-                    <div className="space-y-3 mt-6">
+                  <AccordionContent className="px-4 md:px-8 pb-6 md:pb-8">
+                    <div className="space-y-2 md:space-y-3 mt-4 md:mt-6 overflow-x-auto">
                       {/* Header Row */}
-                      <div className="grid grid-cols-[2fr,1fr,1fr,1fr] gap-4 pb-5 border-b-2 border-primary/20">
-                        <div className="text-base md:text-lg font-bold text-foreground text-right">ویژگی</div>
-                        <div className="text-sm md:text-base font-bold text-muted-foreground text-center">رایگان</div>
-                        <div className="text-sm md:text-base font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">پریمیوم ⭐</div>
-                        <div className="text-sm md:text-base font-bold text-muted-foreground text-center">اولترا</div>
+                      <div className="grid grid-cols-[minmax(120px,2fr),repeat(3,minmax(60px,1fr))] gap-2 md:gap-4 pb-4 md:pb-5 border-b-2 border-primary/20 min-w-[500px] md:min-w-0">
+                        <div className="text-sm md:text-base lg:text-lg font-bold text-foreground text-right">ویژگی</div>
+                        <div className="text-xs md:text-sm lg:text-base font-bold text-muted-foreground text-center">رایگان</div>
+                        <div className="text-xs md:text-sm lg:text-base font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">پریمیوم ⭐</div>
+                        <div className="text-xs md:text-sm lg:text-base font-bold text-muted-foreground text-center">اولترا</div>
                       </div>
                       
                       {/* Feature Rows */}
@@ -905,12 +905,12 @@ export default function Subscription() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.05 * featureIdx }}
                           className={cn(
-                            "grid grid-cols-[2fr,1fr,1fr,1fr] gap-4 p-3 md:p-4 rounded-2xl transition-all hover:bg-muted/30",
+                            "grid grid-cols-[minmax(120px,2fr),repeat(3,minmax(60px,1fr))] gap-2 md:gap-4 p-2 md:p-3 lg:p-4 rounded-2xl transition-all hover:bg-muted/30 min-w-[500px] md:min-w-0",
                             feature.highlight && "bg-gradient-to-l from-primary/10 via-primary/5 to-transparent border-r-4 border-primary shadow-md"
                           )}
                         >
                           <div className={cn(
-                            "text-sm md:text-base font-medium flex items-center text-right",
+                            "text-xs md:text-sm lg:text-base font-medium flex items-center text-right",
                             feature.highlight ? "text-foreground font-bold" : "text-foreground"
                           )}>
                             {feature.name}
