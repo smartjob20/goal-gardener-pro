@@ -14,12 +14,15 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock } from 'lucide-react';
+import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock, GripVertical } from 'lucide-react';
 import { getTodayString, calculateStreak, getWeekDays } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from '@/components/ImageUpload';
 import { triggerHaptic } from '@/utils/haptics';
 import Paywall from './Paywall';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 // قالب‌های آماده
 const habitTemplates = [
@@ -56,13 +59,180 @@ const difficulties: { value: HabitDifficulty; label: string; xp: number }[] = [
   { value: 'hard', label: 'سخت', xp: 30 },
 ];
 
+// Sortable Habit Card Component for drag & drop
+function SortableHabitCard({
+  habit,
+  today,
+  streak,
+  last7Days,
+  categoryLabel,
+  onCheck,
+  onEdit,
+  onDelete,
+  onToggle,
+}: {
+  habit: Habit;
+  today: string;
+  streak: number;
+  last7Days: string[];
+  categoryLabel: string;
+  onCheck: (id: string) => void;
+  onEdit: (habit: Habit) => void;
+  onDelete: (id: string) => void;
+  onToggle: (habit: Habit) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: habit.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const isCompletedToday = habit.completedDates.includes(today);
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card
+        className={`p-4 glass-strong hover-lift transition-all ${isDragging ? 'shadow-2xl scale-105' : ''}`}
+        style={{ borderLeft: `4px solid ${habit.color}` }}
+      >
+        <div className="space-y-4">
+          {/* Header با Drag Handle */}
+          <div className="flex items-start gap-3">
+            <button
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-1 hover:bg-primary/10 rounded transition-colors touch-none min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+            >
+              <GripVertical className="h-5 w-5 text-muted-foreground" />
+            </button>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 text-right">
+                  <h3 className="font-bold text-lg">{habit.title}</h3>
+                  {habit.description && (
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {habit.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-2 items-center shrink-0">
+                  <Badge variant="outline" className="text-xs">
+                    {categoryLabel}
+                  </Badge>
+                  <Badge
+                    variant={habit.difficulty === 'hard' ? 'destructive' : 'secondary'}
+                    className="text-xs"
+                  >
+                    {habit.difficulty === 'hard' ? '🔴 سخت' : habit.difficulty === 'medium' ? '🟡 متوسط' : '🟢 آسان'}
+                  </Badge>
+                </div>
+              </div>
+
+              {habit.imageUrl && (
+                <div className="mt-3 w-full h-32 rounded-lg overflow-hidden">
+                  <img
+                    src={habit.imageUrl}
+                    alt={habit.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              {/* آمار */}
+              <div className="flex items-center gap-4 mt-3 flex-wrap justify-end">
+                <div className="flex items-center gap-1 text-sm">
+                  <span className="font-semibold">{streak}</span>
+                  <Flame className="h-4 w-4 text-orange-500" />
+                </div>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <span>امتیاز: {habit.xpReward} XP</span>
+                  <Zap className="h-4 w-4" />
+                </div>
+              </div>
+
+              {/* هفته گذشته */}
+              <div className="flex gap-1 mt-3 justify-end">
+                {last7Days.map((date) => (
+                  <div
+                    key={date}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
+                      habit.completedDates.includes(date)
+                        ? 'bg-success text-success-foreground'
+                        : 'bg-muted'
+                    }`}
+                  >
+                    {date === today ? '🔥' : habit.completedDates.includes(date) ? '✓' : ''}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* دکمه‌های عملیات */}
+          <div className="flex gap-2 justify-end pt-2 border-t">
+            <Button
+              onClick={() => onCheck(habit.id)}
+              variant={isCompletedToday ? 'default' : 'outline'}
+              size="sm"
+              className="gap-2 min-h-[44px]"
+            >
+              {isCompletedToday ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+              {isCompletedToday ? 'انجام شد' : 'انجام دادم'}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(habit)}
+              className="min-h-[44px]"
+            >
+              <Edit2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onToggle(habit)}
+              className="min-h-[44px]"
+            >
+              <Power className={`w-4 h-4 ${habit.isActive ? 'text-success' : 'text-muted-foreground'}`} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(habit.id)}
+              className="text-destructive hover:bg-destructive/10 min-h-[44px]"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 const HabitTracker = () => {
-  const { state, dispatch, checkHabit, addHabit } = useApp();
+  const { state, dispatch, checkHabit, addHabit, reorderHabits } = useApp();
   const { isPro } = useSubscription();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
+
+  // Drag and Drop Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   
   // Form states
   const [title, setTitle] = useState('');
@@ -189,8 +359,28 @@ const HabitTracker = () => {
     toast.success(habit.isActive ? 'عادت غیرفعال شد' : 'عادت فعال شد');
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = activeHabits.findIndex((habit) => habit.id === active.id);
+      const newIndex = activeHabits.findIndex((habit) => habit.id === over.id);
+
+      const reorderedHabits = arrayMove(activeHabits, oldIndex, newIndex);
+      reorderHabits(reorderedHabits);
+      toast.success('ترتیب عادات ذخیره شد ✨');
+    }
+  };
+
   const today = getTodayString();
-  const activeHabits = state.habits.filter(h => h.isActive);
+  const activeHabits = state.habits
+    .filter(h => h.isActive)
+    .sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      return 0;
+    });
   const inactiveHabits = state.habits.filter(h => !h.isActive);
 
   // محاسبه آمار کلی
@@ -538,197 +728,89 @@ const HabitTracker = () => {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          <AnimatePresence mode="popLayout">
-            {activeHabits.length === 0 ? (
-              <Card className="p-8 text-center">
-                <Flame className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">هنوز عادتی ندارید!</h3>
-                <p className="text-muted-foreground mb-4">
-                  اولین عادت مثبت خود را اضافه کنید و سفر تغییر را شروع کنید 🚀
-                </p>
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <Plus className="w-4 h-4 ml-2" />
-                  افزودن اولین عادت
-                </Button>
-              </Card>
-            ) : (
-              activeHabits.map((habit, index) => {
-                const streak = getStreakForHabit(habit);
-                const isCompletedToday = habit.completedDates.includes(today);
-                const last7Days = getLast7Days();
-                const categoryInfo = categories.find(c => c.value === habit.category);
-                const isLocked = !isPro && index >= 3;
+          {activeHabits.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Flame className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">هنوز عادتی ندارید!</h3>
+              <p className="text-muted-foreground mb-4">
+                اولین عادت مثبت خود را اضافه کنید و سفر تغییر را شروع کنید 🚀
+              </p>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="w-4 h-4 ml-2" />
+                افزودن اولین عادت
+              </Button>
+            </Card>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={activeHabits.map((habit) => habit.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-4">
+                  {activeHabits.map((habit, index) => {
+                    const streak = getStreakForHabit(habit);
+                    const last7Days = getLast7Days();
+                    const categoryInfo = categories.find(c => c.value === habit.category);
+                    const categoryLabel = categoryInfo?.label || habit.category;
+                    const isLocked = !isPro && index >= 3;
 
-                return (
-                  <motion.div
-                    key={habit.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Card 
-                      className={`p-5 glass hover:shadow-lg transition-all duration-300 border-r-4 ${isLocked ? 'relative overflow-hidden' : ''}`} 
-                      style={{ borderRightColor: habit.color }}
-                    >
-                      {isLocked && (
-                        <div 
-                          className="absolute inset-0 bg-background/60 backdrop-blur-md z-10 flex items-center justify-center cursor-pointer"
-                          onClick={() => setShowPaywall(true)}
+                    if (isLocked) {
+                      return (
+                        <motion.div
+                          key={habit.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
                         >
-                          <div className="text-center space-y-3">
-                            <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                              <Lock className="w-8 h-8 text-primary" />
-                            </div>
-                            <div>
-                              <p className="font-bold text-lg">دوره آزمایشی 30 روزه شما به پایان رسیده</p>
-                              <p className="text-sm text-muted-foreground mt-1">برای مدیریت بیش از 3 عادت، ارتقا دهید</p>
-                            </div>
-                            <Button className="mt-3">
-                              ارتقا به Pro
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                      <div className="space-y-4">
-                        {/* Header */}
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="text-lg font-bold">{habit.title}</h3>
-                              <Badge variant="secondary" className="text-xs">
-                                {categoryInfo?.icon} {categoryInfo?.label}
-                              </Badge>
-                            </div>
-                            {habit.description && (
-                              <p className="text-sm text-muted-foreground">{habit.description}</p>
-                            )}
-                            <div className="flex items-center gap-3 mt-2">
-                              <Badge variant="outline" className="gap-1">
-                                <Flame className="w-3 h-3" />
-                                {streak} روز
-                              </Badge>
-                              <Badge variant="outline" className="gap-1">
-                                <Trophy className="w-3 h-3" />
-                                طولانی‌ترین: {habit.longestStreak}
-                              </Badge>
-                              <Badge variant="outline">
-                                {habit.xpReward} XP
-                              </Badge>
-                            </div>
-                          </div>
-
-                          {/* دکمه چک */}
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            animate={isCompletedToday ? {
-                              scale: [1, 1.2, 1],
-                              transition: { duration: 0.3 }
-                            } : {}}
-                            onClick={async () => {
-                              await triggerHaptic('medium');
-                              checkHabit(habit.id, today);
-                            }}
-                            className="flex-shrink-0"
-                          >
-                            {isCompletedToday ? (
-                              <CheckCircle2 className="w-10 h-10 text-green-500" />
-                            ) : (
-                              <Circle className="w-10 h-10 text-muted-foreground hover:text-primary transition-colors" />
-                            )}
-                          </motion.button>
-                        </div>
-
-                        {/* هدف */}
-                        {habit.habitType === 'quantitative' && (
-                          <div className="text-sm text-muted-foreground">
-                            هدف: {habit.target} {habit.targetUnit} {habit.frequency === 'daily' ? 'روزانه' : 'هفتگی'}
-                          </div>
-                        )}
-
-                        {/* تقویم 7 روز اخیر */}
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
-                          <div className="flex gap-1.5 flex-1">
-                            {last7Days.map((date, idx) => {
-                              const isCompleted = habit.completedDates.includes(date);
-                              const dayName = getWeekDays()[new Date(date).getDay()];
-                              return (
-                                <div key={date} className="flex flex-col items-center gap-1 flex-1">
-                                  <div
-                                    className={`w-full aspect-square rounded-full flex items-center justify-center text-xs font-medium transition-all ${
-                                      isCompleted
-                                        ? 'bg-green-500 text-white scale-110'
-                                        : date === today
-                                        ? 'bg-primary/20 text-primary border-2 border-primary'
-                                        : 'bg-muted text-muted-foreground'
-                                    }`}
-                                    style={isCompleted ? { backgroundColor: habit.color } : {}}
-                                  >
-                                    {isCompleted ? '✓' : new Date(date).getDate()}
-                                  </div>
-                                  <span className="text-[10px] text-muted-foreground">
-                                    {dayName?.slice(0, 2)}
-                                  </span>
+                          <Card className="p-5 glass relative overflow-hidden border-r-4" style={{ borderRightColor: habit.color }}>
+                            <div 
+                              className="absolute inset-0 bg-background/60 backdrop-blur-md z-10 flex items-center justify-center cursor-pointer"
+                              onClick={() => setShowPaywall(true)}
+                            >
+                              <div className="text-center space-y-3">
+                                <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                                  <Lock className="w-8 h-8 text-primary" />
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </div>
+                                <div>
+                                  <p className="font-bold text-lg">دوره آزمایشی 30 روزه شما به پایان رسیده</p>
+                                  <p className="text-sm text-muted-foreground mt-1">برای مدیریت بیش از 3 عادت، ارتقا دهید</p>
+                                </div>
+                                <Button className="mt-3">
+                                  ارتقا به Pro
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="blur-sm">
+                              <h3 className="text-lg font-bold">{habit.title}</h3>
+                              <p className="text-sm text-muted-foreground mt-2">این عادت قفل است</p>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      );
+                    }
 
-                        {/* Progress این هفته */}
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">پیشرفت این هفته</span>
-                            <span className="font-medium">
-                              {last7Days.filter(d => habit.completedDates.includes(d)).length}/7 روز
-                            </span>
-                          </div>
-                          <Progress 
-                            value={(last7Days.filter(d => habit.completedDates.includes(d)).length / 7) * 100} 
-                            className="h-2"
-                          />
-                        </div>
-
-                        {/* دکمه‌های عملیات */}
-                        <div className="flex gap-2 pt-2 border-t">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(habit)}
-                            className="flex-1 gap-2"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                            ویرایش
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleToggleActive(habit)}
-                            className="flex-1 gap-2"
-                          >
-                            <Power className="w-4 h-4" />
-                            غیرفعال
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(habit.id)}
-                            className="flex-1 gap-2 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            حذف
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                );
-              })
-            )}
-          </AnimatePresence>
+                    return (
+                      <SortableHabitCard
+                        key={habit.id}
+                        habit={habit}
+                        today={today}
+                        streak={streak}
+                        last7Days={last7Days}
+                        categoryLabel={categoryLabel}
+                        onCheck={(id) => checkHabit(id, today)}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onToggle={handleToggleActive}
+                      />
+                    );
+                  })}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
         </TabsContent>
 
         <TabsContent value="inactive" className="space-y-4">
