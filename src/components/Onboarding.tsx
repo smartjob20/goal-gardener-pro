@@ -38,6 +38,12 @@ const steps = [
     icon: Target
   },
   {
+    id: 'breathe',
+    title: 'نفس عمیق بکشید',
+    description: 'یک لحظه استراحت',
+    icon: Sparkles
+  },
+  {
     id: 'paywall',
     title: 'نسخه پریمیوم',
     description: 'قفل پتانسیل کامل خود را باز کنید',
@@ -64,6 +70,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [userGoal, setUserGoal] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('system');
   const [isPremium, setIsPremium] = useState(false);
+  const [breathingText, setBreathingText] = useState('ابتدا، یک نفس عمیق بکشیم...');
 
   // Load saved data on mount (migration-safe fallback to localStorage)
   useEffect(() => {
@@ -152,12 +159,68 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const canProceed = () => {
     if (currentStep === 0) return userName.trim().length > 0;
     if (currentStep === 1) return userGoal.length > 0;
-    if (currentStep === 2) return true; // Paywall step (always can proceed)
+    if (currentStep === 2) return false; // Breathing step (auto-advances)
+    if (currentStep === 3) return true; // Paywall step (always can proceed)
     return true;
   };
 
-  // Show paywall as full screen overlay
+  // Breathing animation step
+  useEffect(() => {
+    if (currentStep === 2) {
+      // Change text after 5 seconds
+      const textTimer = setTimeout(() => {
+        setBreathingText('آرامش را احساس می‌کنید؟');
+      }, 5000);
+
+      // Auto-advance to paywall after 10 seconds
+      const advanceTimer = setTimeout(() => {
+        handleNext();
+      }, 10000);
+
+      return () => {
+        clearTimeout(textTimer);
+        clearTimeout(advanceTimer);
+      };
+    }
+  }, [currentStep]);
+
+  // Show breathing step as full screen
   if (currentStep === 2) {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary-light/30 to-accent-light/30 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center space-y-8"
+        >
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="flex justify-center"
+          >
+            <Logo size="xl" />
+          </motion.div>
+          <motion.p
+            key={breathingText}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-medium text-foreground"
+          >
+            {breathingText}
+          </motion.p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Show paywall as full screen overlay
+  if (currentStep === 3) {
     return <Paywall onStartTrial={handleStartTrial} onContinueLimited={handleContinueLimited} />;
   }
 
@@ -252,6 +315,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                       placeholder="نام خود را وارد کنید..."
                       className="text-lg py-6 text-center border-2 focus:border-primary"
                       autoFocus
+                      onFocus={(e) => {
+                        // Scroll input into view on mobile to prevent keyboard covering
+                        setTimeout(() => {
+                          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                      }}
                     />
                     <p className="text-sm text-muted-foreground text-center">
                       این نام در پیام‌های شخصی‌سازی شده استفاده می‌شود
@@ -291,7 +360,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   </motion.div>
                 )}
 
-                {currentStep === 3 && (
+                {currentStep === 4 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}

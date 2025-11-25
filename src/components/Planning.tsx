@@ -314,11 +314,11 @@ const Planning = () => {
                 برنامه جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto pb-safe" dir="rtl">
               <DialogHeader>
                 <DialogTitle>✨ ایجاد برنامه جدید</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className="space-y-4 py-4 pb-20">
                 {/* نوع برنامه */}
                 <div className="space-y-2">
                   <Label>نوع برنامه</Label>

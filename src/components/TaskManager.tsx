@@ -16,6 +16,7 @@ import { Task, TaskCategory, Priority, SubTask } from '@/types';
 import { formatDate, daysUntil } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from './ImageUpload';
+import { triggerHaptic } from '@/utils/haptics';
 const categoryConfig = {
   work: {
     label: 'کار',
@@ -422,9 +423,20 @@ export default function TaskManager() {
               }} layout>
                       <Card className="p-4 glass-strong hover-lift">
                         <div className="flex items-start gap-4">
-                          <button onClick={() => completeTask(task.id)} className="mt-1 transition-transform hover:scale-110">
+                          <motion.button 
+                            onClick={async () => {
+                              await triggerHaptic('medium');
+                              completeTask(task.id);
+                            }} 
+                            className="mt-1 transition-transform hover:scale-110"
+                            animate={task.completed ? {
+                              scale: [1, 1.2, 1],
+                              transition: { duration: 0.3 }
+                            } : {}}
+                            whileTap={{ scale: 0.9 }}
+                          >
                             {task.completed ? <CheckCircle2 className="w-6 h-6 text-success" /> : <Circle className="w-6 h-6 text-muted-foreground hover:text-primary" />}
-                          </button>
+                          </motion.button>
 
                           <div className="flex-1 space-y-3">
                             <div>
