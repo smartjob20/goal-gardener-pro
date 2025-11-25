@@ -53,6 +53,7 @@ export interface Habit {
   createdAt: string;
   isActive: boolean;
   imageUrl?: string;
+  order?: number;
 }
 
 export interface Milestone {

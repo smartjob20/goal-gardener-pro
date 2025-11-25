@@ -67,6 +67,7 @@ type Action =
   | { type: 'ADD_HABIT'; payload: Habit }
   | { type: 'UPDATE_HABIT'; payload: Habit }
   | { type: 'DELETE_HABIT'; payload: string }
+  | { type: 'REORDER_HABITS'; payload: Habit[] }
   | { type: 'ADD_GOAL'; payload: Goal }
   | { type: 'UPDATE_GOAL'; payload: Goal }
   | { type: 'DELETE_GOAL'; payload: string }
@@ -113,6 +114,13 @@ const appReducer = (state: AppState, action: Action): AppState => {
     }
     case 'DELETE_HABIT':
       return { ...state, habits: state.habits.filter(h => h.id !== action.payload) };
+    case 'REORDER_HABITS': {
+      const habitsWithOrder = action.payload.map((habit, index) => ({
+        ...habit,
+        order: index,
+      }));
+      return { ...state, habits: habitsWithOrder };
+    }
     case 'ADD_GOAL':
       return { ...state, goals: [...state.goals, action.payload] };
     case 'UPDATE_GOAL': {
@@ -225,6 +233,7 @@ interface AppContextType {
   reorderTasks: (tasks: Task[]) => void;
   addHabit: (habit: Omit<Habit, 'id' | 'createdAt' | 'currentStreak' | 'longestStreak' | 'completedDates'>) => void;
   checkHabit: (id: string, date: string) => void;
+  reorderHabits: (habits: Habit[]) => void;
   addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'progress' | 'status'>) => void;
   addPlan: (plan: Plan) => void;
   updatePlan: (id: string, updates: Partial<Plan>) => void;
@@ -326,6 +335,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const reorderHabits = (habits: Habit[]) => {
+    dispatch({ type: 'REORDER_HABITS', payload: habits });
+  };
+
   const addGoal = (goal: Omit<Goal, 'id' | 'createdAt' | 'progress' | 'status'>) => {
     const newGoal: Goal = {
       ...goal,
@@ -398,7 +411,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, reorderTasks, addHabit, checkHabit, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, reorderTasks, addHabit, checkHabit, reorderHabits, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
       {children}
     </AppContext.Provider>
   );
