@@ -132,6 +132,34 @@ export default function Subscription() {
           icon: Crown,
         },
         {
+          id: 'yearly',
+          name: 'اولترا',
+          subtitle: 'ویژه حرفه‌ای‌ها',
+          price: '۸۹۰,۰۰۰',
+          originalPrice: '۱,۵۸۰,۰۰۰',
+          period: 'سالانه',
+          monthlyEquivalent: 'معادل ۷۴,۱۶۶ تومان در ماه',
+          description: 'همه چیز + خدمات VIP اختصاصی',
+          discount: '۴۴٪ صرفه‌جویی',
+          features: [
+            { text: 'عادت‌های نامحدود و بدون محدودیت', icon: InfinityIcon, highlight: true },
+            { text: '🤖 مربی هوش مصنوعی شخصی ۲۴/۷', icon: Brain, highlight: true },
+            { text: '✨ پیشنهادات هوشمند روزانه با AI', icon: Wand2, highlight: true },
+            { text: '🧠 تحلیل رفتاری پیشرفته با یادگیری ماشین', icon: Bot, highlight: true },
+            { text: 'تحلیل‌های عمیق و نمودارهای تعاملی', icon: BarChart3 },
+            { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
+            { text: 'گزارش‌های PDF حرفه‌ای', icon: FileText },
+            { text: 'رمزنگاری و امنیت نظامی', icon: Shield },
+            { text: 'همگام‌سازی لحظه‌ای دستگاه‌ها', icon: Rocket },
+            { text: 'پشتیبانی اولویت‌دار VIP', icon: Award, highlight: true },
+            { text: '👨‍💼 مشاوره تلفنی با متخصصین', icon: MessageSquare, highlight: true },
+            { text: '📊 گزارش‌های اختصاصی پیشرفته', icon: TrendingUp, highlight: true },
+          ],
+          cta: 'دسترسی VIP',
+          popular: false,
+          icon: Star,
+        },
+        {
           id: 'free',
           name: 'رایگان',
           subtitle: 'برای آشنایی',
@@ -176,6 +204,31 @@ export default function Subscription() {
           cta: 'شروع اشتراک ماهانه',
           popular: true,
           icon: Crown,
+        },
+        {
+          id: 'monthly',
+          name: 'اولترا',
+          subtitle: 'ویژه حرفه‌ای‌ها',
+          price: '۱۴۹,۰۰۰',
+          period: 'ماهانه',
+          description: 'همه چیز + خدمات VIP اختصاصی',
+          features: [
+            { text: 'عادت‌های نامحدود و بدون محدودیت', icon: InfinityIcon, highlight: true },
+            { text: '🤖 مربی هوش مصنوعی شخصی ۲۴/۷', icon: Brain, highlight: true },
+            { text: '✨ پیشنهادات هوشمند روزانه با AI', icon: Wand2, highlight: true },
+            { text: '🧠 تحلیل رفتاری پیشرفته با یادگیری ماشین', icon: Bot, highlight: true },
+            { text: 'تحلیل‌های عمیق و نمودارهای تعاملی', icon: BarChart3 },
+            { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
+            { text: 'گزارش‌های PDF حرفه‌ای', icon: FileText },
+            { text: 'رمزنگاری و امنیت نظامی', icon: Shield },
+            { text: 'همگام‌سازی لحظه‌ای دستگاه‌ها', icon: Rocket },
+            { text: 'پشتیبانی اولویت‌دار VIP', icon: Award, highlight: true },
+            { text: '👨‍💼 مشاوره تلفنی با متخصصین', icon: MessageSquare, highlight: true },
+            { text: '📊 گزارش‌های اختصاصی پیشرفته', icon: TrendingUp, highlight: true },
+          ],
+          cta: 'دسترسی VIP',
+          popular: false,
+          icon: Star,
         },
         {
           id: 'free',
@@ -242,45 +295,48 @@ export default function Subscription() {
     {
       category: "🤖 قدرت هوش مصنوعی",
       features: [
-        { name: "مربی شخصی AI با یادگیری ماشین", free: false, premium: true, highlight: true },
-        { name: "پیشنهادات هوشمند روزانه سفارشی", free: false, premium: true, highlight: true },
-        { name: "تحلیل رفتاری و الگویابی پیشرفته", free: false, premium: true, highlight: true },
-        { name: "گفتگوی طبیعی با مربی AI", free: false, premium: true },
-        { name: "راهنمایی گام‌به‌گام هوشمند", free: false, premium: true },
-        { name: "پیش‌بینی موفقیت با AI", free: false, premium: true },
+        { name: "مربی شخصی AI با یادگیری ماشین", free: false, premium: true, ultra: true, highlight: true },
+        { name: "پیشنهادات هوشمند روزانه سفارشی", free: false, premium: true, ultra: true, highlight: true },
+        { name: "تحلیل رفتاری و الگویابی پیشرفته", free: false, premium: true, ultra: true, highlight: true },
+        { name: "گفتگوی طبیعی با مربی AI", free: false, premium: true, ultra: true },
+        { name: "راهنمایی گام‌به‌گام هوشمند", free: false, premium: true, ultra: true },
+        { name: "پیش‌بینی موفقیت با AI", free: false, premium: true, ultra: true },
+        { name: "مشاوره تلفنی با متخصصین", free: false, premium: false, ultra: true, highlight: true },
       ]
     },
     {
       category: "مدیریت عادت‌ها",
       features: [
-        { name: "تعداد عادت‌های فعال", free: "فقط ۳ عادت", premium: "نامحدود", highlight: true },
-        { name: "ردیابی روزانه عادت‌ها", free: true, premium: true },
-        { name: "یادآوری هوشمند", free: true, premium: true },
-        { name: "دسته‌بندی‌های سفارشی", free: false, premium: true },
-        { name: "آمار پیشرفت تفصیلی", free: false, premium: true },
-        { name: "تنظیم اهداف هفتگی و ماهانه", free: false, premium: true },
+        { name: "تعداد عادت‌های فعال", free: "فقط ۳ عادت", premium: "نامحدود", ultra: "نامحدود", highlight: true },
+        { name: "ردیابی روزانه عادت‌ها", free: true, premium: true, ultra: true },
+        { name: "یادآوری هوشمند", free: true, premium: true, ultra: true },
+        { name: "دسته‌بندی‌های سفارشی", free: false, premium: true, ultra: true },
+        { name: "آمار پیشرفت تفصیلی", free: false, premium: true, ultra: true },
+        { name: "تنظیم اهداف هفتگی و ماهانه", free: false, premium: true, ultra: true },
       ]
     },
     {
       category: "تحلیل و گزارش",
       features: [
-        { name: "نمودار پیشرفت پایه", free: true, premium: true },
-        { name: "تحلیل‌های عمیق و پیشرفته", free: false, premium: true, highlight: true },
-        { name: "گزارش‌های PDF حرفه‌ای", free: false, premium: true },
-        { name: "مقایسه دوره‌های زمانی", free: false, premium: true },
-        { name: "نمودارهای تعاملی و زنده", free: false, premium: true },
-        { name: "آمار بینش‌های رفتاری", free: false, premium: true },
+        { name: "نمودار پیشرفت پایه", free: true, premium: true, ultra: true },
+        { name: "تحلیل‌های عمیق و پیشرفته", free: false, premium: true, ultra: true, highlight: true },
+        { name: "گزارش‌های PDF حرفه‌ای", free: false, premium: true, ultra: true },
+        { name: "گزارش‌های اختصاصی پیشرفته", free: false, premium: false, ultra: true, highlight: true },
+        { name: "مقایسه دوره‌های زمانی", free: false, premium: true, ultra: true },
+        { name: "نمودارهای تعاملی و زنده", free: false, premium: true, ultra: true },
+        { name: "آمار بینش‌های رفتاری", free: false, premium: true, ultra: true },
       ]
     },
     {
       category: "امکانات پیشرفته",
       features: [
-        { name: "پشتیبان‌گیری ابری خودکار", free: false, premium: true, highlight: true },
-        { name: "همگام‌سازی بین دستگاه‌ها", free: false, premium: true },
-        { name: "حالت آفلاین کامل", free: true, premium: true },
-        { name: "پشتیبانی اولویت‌دار", free: false, premium: true },
-        { name: "به‌روزرسانی‌های اختصاصی زودهنگام", free: false, premium: true },
-        { name: "رمزنگاری و امنیت نظامی", free: false, premium: true },
+        { name: "پشتیبان‌گیری ابری خودکار", free: false, premium: true, ultra: true, highlight: true },
+        { name: "همگام‌سازی بین دستگاه‌ها", free: false, premium: true, ultra: true },
+        { name: "حالت آفلاین کامل", free: true, premium: true, ultra: true },
+        { name: "پشتیبانی اولویت‌دار", free: false, premium: true, ultra: false },
+        { name: "پشتیبانی VIP اختصاصی", free: false, premium: false, ultra: true, highlight: true },
+        { name: "به‌روزرسانی‌های اختصاصی زودهنگام", free: false, premium: false, ultra: true },
+        { name: "رمزنگاری و امنیت نظامی", free: false, premium: true, ultra: true },
       ]
     },
   ];
@@ -500,7 +556,7 @@ export default function Subscription() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto"
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto"
             >
               {plans.reverse().map((plan, index) => {
                 const isSelected = selectedPlan === plan.id;
@@ -834,10 +890,11 @@ export default function Subscription() {
                   <AccordionContent className="px-8 pb-8">
                     <div className="space-y-3 mt-6">
                       {/* Header Row */}
-                      <div className="grid grid-cols-[2fr,1.2fr,1.2fr] gap-6 pb-5 border-b-2 border-primary/20">
-                        <div className="text-lg font-bold text-foreground text-right">ویژگی</div>
-                        <div className="text-lg font-bold text-muted-foreground text-center">نسخه رایگان</div>
-                        <div className="text-lg font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">نسخه پریمیوم ⭐</div>
+                      <div className="grid grid-cols-[2fr,1fr,1fr,1fr] gap-4 pb-5 border-b-2 border-primary/20">
+                        <div className="text-base md:text-lg font-bold text-foreground text-right">ویژگی</div>
+                        <div className="text-sm md:text-base font-bold text-muted-foreground text-center">رایگان</div>
+                        <div className="text-sm md:text-base font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">پریمیوم ⭐</div>
+                        <div className="text-sm md:text-base font-bold text-muted-foreground text-center">اولترا</div>
                       </div>
                       
                       {/* Feature Rows */}
@@ -848,12 +905,12 @@ export default function Subscription() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.05 * featureIdx }}
                           className={cn(
-                            "grid grid-cols-[2fr,1.2fr,1.2fr] gap-6 p-4 rounded-2xl transition-all hover:bg-muted/30",
+                            "grid grid-cols-[2fr,1fr,1fr,1fr] gap-4 p-3 md:p-4 rounded-2xl transition-all hover:bg-muted/30",
                             feature.highlight && "bg-gradient-to-l from-primary/10 via-primary/5 to-transparent border-r-4 border-primary shadow-md"
                           )}
                         >
                           <div className={cn(
-                            "text-base font-medium flex items-center text-right",
+                            "text-sm md:text-base font-medium flex items-center text-right",
                             feature.highlight ? "text-foreground font-bold" : "text-foreground"
                           )}>
                             {feature.name}
@@ -861,31 +918,64 @@ export default function Subscription() {
                           <div className="flex items-center justify-center">
                             {typeof feature.free === 'boolean' ? (
                               feature.free ? (
-                                <div className="w-10 h-10 rounded-xl bg-success/15 flex items-center justify-center shadow-sm">
-                                  <Check className="w-6 h-6 text-success" />
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-success/15 flex items-center justify-center shadow-sm">
+                                  <Check className="w-4 h-4 md:w-5 md:h-5 text-success" />
                                 </div>
                               ) : (
-                                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
-                                  <X className="w-6 h-6 text-muted-foreground" />
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-muted flex items-center justify-center shadow-sm">
+                                  <X className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground/50" />
                                 </div>
                               )
                             ) : (
-                              <span className="text-sm text-muted-foreground text-center font-medium">{feature.free}</span>
+                              <span className="text-xs md:text-sm font-medium text-foreground text-center px-2">
+                                {feature.free}
+                              </span>
                             )}
                           </div>
                           <div className="flex items-center justify-center">
                             {typeof feature.premium === 'boolean' ? (
                               feature.premium ? (
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                                  <Check className="w-5 h-5 text-primary" />
+                                <div className={cn(
+                                  "w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shadow-sm",
+                                  feature.highlight ? "bg-gradient-to-br from-primary to-primary/70 shadow-primary/20" : "bg-success/15"
+                                )}>
+                                  <Check className={cn(
+                                    "w-4 h-4 md:w-5 md:h-5",
+                                    feature.highlight ? "text-primary-foreground" : "text-success"
+                                  )} />
                                 </div>
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                  <X className="w-5 h-5 text-muted-foreground" />
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-muted flex items-center justify-center shadow-sm">
+                                  <X className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground/50" />
                                 </div>
                               )
                             ) : (
-                              <span className="text-sm text-primary font-bold text-center">{feature.premium}</span>
+                              <span className="text-xs md:text-sm font-bold text-primary text-center px-2">
+                                {feature.premium}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-center">
+                            {typeof feature.ultra === 'boolean' ? (
+                              feature.ultra ? (
+                                <div className={cn(
+                                  "w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shadow-sm",
+                                  feature.highlight ? "bg-gradient-to-br from-amber-500 to-orange-500 shadow-amber-500/20" : "bg-success/15"
+                                )}>
+                                  <Check className={cn(
+                                    "w-4 h-4 md:w-5 md:h-5",
+                                    feature.highlight ? "text-white" : "text-success"
+                                  )} />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-muted flex items-center justify-center shadow-sm">
+                                  <X className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground/50" />
+                                </div>
+                              )
+                            ) : (
+                              <span className="text-xs md:text-sm font-bold text-foreground text-center px-2">
+                                {feature.ultra}
+                              </span>
                             )}
                           </div>
                         </motion.div>
