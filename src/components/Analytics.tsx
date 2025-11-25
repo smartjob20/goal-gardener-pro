@@ -5,44 +5,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { 
-  TrendingUp, 
-  Target, 
-  Zap, 
-  Clock, 
-  Award, 
-  CheckCircle, 
-  BarChart3,
-  Calendar,
-  Download,
-  Trophy,
-  FileText
-} from 'lucide-react';
+import { TrendingUp, Target, Zap, Clock, Award, CheckCircle, BarChart3, Calendar, Download, Trophy, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format, subDays, isAfter, isBefore, startOfDay, endOfDay, differenceInDays } from 'date-fns';
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Area,
-  AreaChart
-} from 'recharts';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { generatePDFReport } from './PDFExport';
-
 type TimeRange = '7' | '30' | '90' | '365' | 'all';
-
 const Analytics = () => {
-  const { state } = useApp();
+  const {
+    state
+  } = useApp();
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -50,56 +22,38 @@ const Analytics = () => {
   const getDateRange = () => {
     const now = new Date();
     switch (timeRange) {
-      case '7': return subDays(now, 7);
-      case '30': return subDays(now, 30);
-      case '90': return subDays(now, 90);
-      case '365': return subDays(now, 365);
-      case 'all': return new Date(0);
-      default: return subDays(now, 30);
+      case '7':
+        return subDays(now, 7);
+      case '30':
+        return subDays(now, 30);
+      case '90':
+        return subDays(now, 90);
+      case '365':
+        return subDays(now, 365);
+      case 'all':
+        return new Date(0);
+      default:
+        return subDays(now, 30);
     }
   };
-
   const startDate = getDateRange();
 
   // Filter data by date range
-  const filteredTasks = state.tasks.filter(task => 
-    task.completedAt && isAfter(new Date(task.completedAt), startDate)
-  );
-
-  const filteredHabits = state.habits.filter(habit =>
-    habit.completedDates.some(date => isAfter(new Date(date), startDate))
-  );
-
-  const filteredFocusSessions = state.focusSessions.filter(session =>
-    session.completed && isAfter(new Date(session.startTime), startDate)
-  );
-
-  const filteredGoals = state.goals.filter(goal =>
-    goal.status === 'completed' && isAfter(new Date(goal.createdAt), startDate)
-  );
+  const filteredTasks = state.tasks.filter(task => task.completedAt && isAfter(new Date(task.completedAt), startDate));
+  const filteredHabits = state.habits.filter(habit => habit.completedDates.some(date => isAfter(new Date(date), startDate)));
+  const filteredFocusSessions = state.focusSessions.filter(session => session.completed && isAfter(new Date(session.startTime), startDate));
+  const filteredGoals = state.goals.filter(goal => goal.status === 'completed' && isAfter(new Date(goal.createdAt), startDate));
 
   // Calculate statistics
   const stats = useMemo(() => {
     const totalTasks = filteredTasks.length;
-    const totalHabitsCompleted = filteredHabits.reduce((acc, habit) => 
-      acc + habit.completedDates.filter(date => isAfter(new Date(date), startDate)).length, 0
-    );
+    const totalHabitsCompleted = filteredHabits.reduce((acc, habit) => acc + habit.completedDates.filter(date => isAfter(new Date(date), startDate)).length, 0);
     const totalFocusTime = filteredFocusSessions.reduce((acc, session) => acc + session.duration, 0);
-    const totalXP = filteredTasks.reduce((acc, task) => acc + task.xpReward, 0) +
-                    filteredFocusSessions.reduce((acc, session) => acc + session.xpEarned, 0) +
-                    filteredGoals.reduce((acc, goal) => acc + goal.xpReward, 0);
-
+    const totalXP = filteredTasks.reduce((acc, task) => acc + task.xpReward, 0) + filteredFocusSessions.reduce((acc, session) => acc + session.xpEarned, 0) + filteredGoals.reduce((acc, goal) => acc + goal.xpReward, 0);
     const currentStreak = Math.max(...state.habits.map(h => h.currentStreak), 0);
     const longestStreak = Math.max(...state.habits.map(h => h.longestStreak), 0);
-
-    const completionRate = state.tasks.length > 0 
-      ? (state.tasks.filter(t => t.completed).length / state.tasks.length) * 100 
-      : 0;
-
-    const avgFocusSession = filteredFocusSessions.length > 0
-      ? totalFocusTime / filteredFocusSessions.length
-      : 0;
-
+    const completionRate = state.tasks.length > 0 ? state.tasks.filter(t => t.completed).length / state.tasks.length * 100 : 0;
+    const avgFocusSession = filteredFocusSessions.length > 0 ? totalFocusTime / filteredFocusSessions.length : 0;
     return {
       totalTasks,
       totalHabitsCompleted,
@@ -116,13 +70,25 @@ const Analytics = () => {
 
   // Productivity over time data
   const productivityData = useMemo(() => {
-    const days: { [key: string]: { tasks: number; habits: number; focus: number; xp: number } } = {};
-    
+    const days: {
+      [key: string]: {
+        tasks: number;
+        habits: number;
+        focus: number;
+        xp: number;
+      };
+    } = {};
+
     // Initialize days
     const dayCount = timeRange === 'all' ? 30 : parseInt(timeRange);
     for (let i = 0; i < Math.min(dayCount, 30); i++) {
       const date = format(subDays(new Date(), dayCount - i - 1), 'yyyy-MM-dd');
-      days[date] = { tasks: 0, habits: 0, focus: 0, xp: 0 };
+      days[date] = {
+        tasks: 0,
+        habits: 0,
+        focus: 0,
+        xp: 0
+      };
     }
 
     // Aggregate data
@@ -135,7 +101,6 @@ const Analytics = () => {
         }
       }
     });
-
     filteredFocusSessions.forEach(session => {
       const date = format(new Date(session.startTime), 'yyyy-MM-dd');
       if (days[date]) {
@@ -143,7 +108,6 @@ const Analytics = () => {
         days[date].xp += session.xpEarned;
       }
     });
-
     filteredHabits.forEach(habit => {
       habit.completedDates.forEach(dateStr => {
         const date = format(new Date(dateStr), 'yyyy-MM-dd');
@@ -152,7 +116,6 @@ const Analytics = () => {
         }
       });
     });
-
     return Object.entries(days).map(([date, data]) => ({
       date: format(new Date(date), 'MM/dd'),
       وظایف: data.tasks,
@@ -164,33 +127,37 @@ const Analytics = () => {
 
   // Category breakdown
   const taskCategoryData = useMemo(() => {
-    const categories: { [key: string]: number } = {};
+    const categories: {
+      [key: string]: number;
+    } = {};
     filteredTasks.forEach(task => {
       categories[task.category] = (categories[task.category] || 0) + 1;
     });
-    
-    const labels: { [key: string]: string } = {
+    const labels: {
+      [key: string]: string;
+    } = {
       work: 'کار',
       study: 'مطالعه',
       health: 'سلامت',
       personal: 'شخصی',
       project: 'پروژه'
     };
-
     return Object.entries(categories).map(([name, value]) => ({
       name: labels[name] || name,
       value
     }));
   }, [filteredTasks]);
-
   const habitCategoryData = useMemo(() => {
-    const categories: { [key: string]: number } = {};
+    const categories: {
+      [key: string]: number;
+    } = {};
     filteredHabits.forEach(habit => {
       const count = habit.completedDates.filter(date => isAfter(new Date(date), startDate)).length;
       categories[habit.category] = (categories[habit.category] || 0) + count;
     });
-
-    const labels: { [key: string]: string } = {
+    const labels: {
+      [key: string]: string;
+    } = {
       health: 'سلامت',
       fitness: 'ورزش',
       nutrition: 'تغذیه',
@@ -202,7 +169,6 @@ const Analytics = () => {
       finance: 'مالی',
       relationship: 'روابط'
     };
-
     return Object.entries(categories).map(([name, value]) => ({
       name: labels[name] || name,
       value
@@ -211,17 +177,23 @@ const Analytics = () => {
 
   // Priority distribution
   const priorityData = useMemo(() => {
-    const priorities: { [key: string]: number } = { high: 0, medium: 0, low: 0 };
+    const priorities: {
+      [key: string]: number;
+    } = {
+      high: 0,
+      medium: 0,
+      low: 0
+    };
     filteredTasks.forEach(task => {
       priorities[task.priority] += 1;
     });
-
-    const labels: { [key: string]: string } = {
+    const labels: {
+      [key: string]: string;
+    } = {
       high: 'بالا',
       medium: 'متوسط',
       low: 'پایین'
     };
-
     return Object.entries(priorities).map(([name, value]) => ({
       name: labels[name],
       value
@@ -242,22 +214,25 @@ const Analytics = () => {
       goals: filteredGoals,
       exportDate: new Date().toISOString()
     };
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `analytics-${format(new Date(), 'yyyy-MM-dd')}.json`;
     a.click();
   };
-
-  return (
-    <div className="container mx-auto p-4 pb-24 max-w-7xl" dir="rtl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+  return <div className="container mx-auto p-4 pb-24 max-w-7xl" dir="rtl">
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }} className="mt-[70px]">
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div>
@@ -265,7 +240,7 @@ const Analytics = () => {
             <p className="text-muted-foreground">بررسی عملکرد و پیشرفت شما</p>
           </div>
           <div className="flex gap-2">
-            <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
+            <Select value={timeRange} onValueChange={v => setTimeRange(v as TimeRange)}>
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
@@ -409,12 +384,12 @@ const Analytics = () => {
                   <AreaChart data={productivityData}>
                     <defs>
                       <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorXP" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -441,19 +416,8 @@ const Analytics = () => {
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
-                      <Pie
-                        data={taskCategoryData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={(entry) => `${entry.name}: ${entry.value}`}
-                        outerRadius={80}
-                        fill="hsl(var(--primary))"
-                        dataKey="value"
-                      >
-                        {taskCategoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                      <Pie data={taskCategoryData} cx="50%" cy="50%" labelLine={false} label={entry => `${entry.name}: ${entry.value}`} outerRadius={80} fill="hsl(var(--primary))" dataKey="value">
+                        {taskCategoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                       </Pie>
                       <Tooltip />
                     </PieChart>
@@ -485,11 +449,7 @@ const Analytics = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {filteredTasks
-                    .sort((a, b) => b.xpReward - a.xpReward)
-                    .slice(0, 10)
-                    .map((task, index) => (
-                      <div key={task.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
+                  {filteredTasks.sort((a, b) => b.xpReward - a.xpReward).slice(0, 10).map((task, index) => <div key={task.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-lg">#{index + 1}</span>
                           <div>
@@ -498,8 +458,7 @@ const Analytics = () => {
                           </div>
                         </div>
                         <span className="font-bold text-primary">{task.xpReward} XP</span>
-                      </div>
-                    ))}
+                      </div>)}
                 </div>
               </CardContent>
             </Card>
@@ -532,11 +491,7 @@ const Analytics = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {state.habits
-                    .sort((a, b) => b.longestStreak - a.longestStreak)
-                    .slice(0, 10)
-                    .map((habit, index) => (
-                      <div key={habit.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
+                  {state.habits.sort((a, b) => b.longestStreak - a.longestStreak).slice(0, 10).map((habit, index) => <div key={habit.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-lg">#{index + 1}</span>
                           <div>
@@ -547,8 +502,7 @@ const Analytics = () => {
                           </div>
                         </div>
                         <span className="font-bold text-primary">{habit.completedDates.length} بار</span>
-                      </div>
-                    ))}
+                      </div>)}
                 </div>
               </CardContent>
             </Card>
@@ -594,10 +548,9 @@ const Analytics = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {filteredFocusSessions.slice().reverse().slice(0, 20).map((session) => {
-                    const task = session.taskId ? state.tasks.find(t => t.id === session.taskId) : null;
-                    return (
-                      <div key={session.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
+                  {filteredFocusSessions.slice().reverse().slice(0, 20).map(session => {
+                  const task = session.taskId ? state.tasks.find(t => t.id === session.taskId) : null;
+                  return <div key={session.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
                         <div>
                           <p className="font-medium">{task ? task.title : 'بدون وظیفه'}</p>
                           <p className="text-xs text-muted-foreground">
@@ -608,9 +561,8 @@ const Analytics = () => {
                           <p className="font-bold">{session.duration} دقیقه</p>
                           <p className="text-xs text-primary">+{session.xpEarned} XP</p>
                         </div>
-                      </div>
-                    );
-                  })}
+                      </div>;
+                })}
                 </div>
               </CardContent>
             </Card>
@@ -669,29 +621,23 @@ const Analytics = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {state.achievements.map((achievement) => (
-                    <Card key={achievement.id} className={achievement.unlocked ? 'bg-primary/10' : 'opacity-50'}>
+                  {state.achievements.map(achievement => <Card key={achievement.id} className={achievement.unlocked ? 'bg-primary/10' : 'opacity-50'}>
                       <CardContent className="p-4 text-center">
                         <div className="text-4xl mb-2">{achievement.icon}</div>
                         <p className="font-bold text-sm mb-1">{achievement.title}</p>
                         <p className="text-xs text-muted-foreground mb-2">{achievement.description}</p>
                         <span className="text-xs font-bold text-primary">+{achievement.xpReward} XP</span>
-                        {achievement.unlocked && achievement.unlockedAt && (
-                          <p className="text-xs text-muted-foreground mt-2">
+                        {achievement.unlocked && achievement.unlockedAt && <p className="text-xs text-muted-foreground mt-2">
                             {format(new Date(achievement.unlockedAt), 'yyyy/MM/dd')}
-                          </p>
-                        )}
+                          </p>}
                       </CardContent>
-                    </Card>
-                  ))}
+                    </Card>)}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </motion.div>
-    </div>
-  );
+    </div>;
 };
-
 export default Analytics;
