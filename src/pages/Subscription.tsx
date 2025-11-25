@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote } from 'lucide-react';
+import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote, Infinity, BarChart3, Brain, Cloud, FileText, Shield, Rocket, Award, Target, LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -18,10 +18,35 @@ import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 
 type PlanType = 'free' | 'monthly' | 'yearly';
+type BillingCycle = 'monthly' | 'yearly';
+
+interface Feature {
+  text: string;
+  icon: LucideIcon;
+  highlight?: boolean;
+  included?: boolean;
+}
+
+interface Plan {
+  id: PlanType;
+  name: string;
+  subtitle: string;
+  price: string;
+  originalPrice?: string;
+  period: string;
+  monthlyEquivalent?: string;
+  description: string;
+  discount?: string;
+  features: Feature[];
+  cta: string;
+  popular: boolean;
+  icon: LucideIcon;
+}
 
 export default function Subscription() {
   const navigate = useNavigate();
   const { refreshSubscription } = useSubscription();
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('yearly');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -77,49 +102,100 @@ export default function Subscription() {
     }
   };
 
-  const plans = [
-    {
-      id: 'free' as PlanType,
-      name: 'رایگان',
-      subtitle: 'برای شروع',
-      price: '۰',
-      period: 'رایگان',
-      description: 'شروع سفر خود با امکانات پایه',
-      features: [
-        { text: '۳ عادت فعال', included: true },
-        { text: 'آمار پایه', included: true },
-        { text: 'مربی هوش مصنوعی', included: false },
-        { text: 'تحلیل‌های پیشرفته', included: false },
-        { text: 'پشتیبان‌گیری ابری', included: false },
-        { text: 'عادت‌های نامحدود', included: false },
-      ],
-      cta: 'پلن فعلی شما',
-      popular: false,
-      icon: Lock,
-    },
-    {
-      id: 'yearly' as PlanType,
-      name: 'سالانه',
-      subtitle: 'پیشنهاد ویژه',
-      price: '۴۹۰,۰۰۰',
-      originalPrice: '۸۸۰,۰۰۰',
-      period: 'سالانه',
-      monthlyEquivalent: '۴۰,۸۳۳ تومان در ماه',
-      description: 'تبدیل شوید به بهترین نسخه خودتان',
-      discount: '۴۴٪ تخفیف',
-      features: [
-        { text: 'عادت‌های نامحدود', included: true, highlight: true },
-        { text: 'مربی هوش مصنوعی اختصاصی', included: true, highlight: true },
-        { text: 'تحلیل‌های پیشرفته و نمودارها', included: true },
-        { text: 'پشتیبان‌گیری ابری خودکار', included: true },
-        { text: 'گزارش PDF دقیق', included: true },
-        { text: 'اولویت در پشتیبانی', included: true },
-      ],
-      cta: 'شروع تحول',
-      popular: true,
-      icon: Crown,
-    },
-  ];
+  const getPlansData = (): Plan[] => {
+    if (billingCycle === 'yearly') {
+      return [
+        {
+          id: 'yearly',
+          name: 'پریمیوم',
+          subtitle: 'پیشنهاد ویژه',
+          price: '۴۹۰,۰۰۰',
+          originalPrice: '۸۸۰,۰۰۰',
+          period: 'سالانه',
+          monthlyEquivalent: '۴۰,۸۳۳ تومان در ماه',
+          description: 'تبدیل شوید به بهترین نسخه خودتان',
+          discount: '۴۴٪ تخفیف',
+          features: [
+            { text: 'عادت‌های نامحدود', icon: Infinity, highlight: true },
+            { text: 'مربی هوش مصنوعی اختصاصی', icon: Brain, highlight: true },
+            { text: 'تحلیل‌های پیشرفته و نمودارها', icon: BarChart3 },
+            { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
+            { text: 'گزارش PDF دقیق', icon: FileText },
+            { text: 'امنیت و رمزنگاری پیشرفته', icon: Shield },
+            { text: 'همگام‌سازی بین دستگاه‌ها', icon: Rocket },
+            { text: 'اولویت در پشتیبانی', icon: Award },
+          ],
+          cta: 'شروع تحول با ۴۴٪ تخفیف',
+          popular: true,
+          icon: Crown,
+        },
+        {
+          id: 'free',
+          name: 'رایگان',
+          subtitle: 'برای شروع',
+          price: '۰',
+          period: 'رایگان',
+          description: 'شروع سفر خود با امکانات پایه',
+          features: [
+            { text: 'فقط ۳ عادت فعال', icon: Target, included: true },
+            { text: 'آمار پایه و محدود', icon: BarChart3, included: true },
+            { text: 'بدون مربی هوش مصنوعی', icon: Brain, included: false },
+            { text: 'بدون تحلیل‌های پیشرفته', icon: TrendingUp, included: false },
+            { text: 'بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
+            { text: 'بدون گزارش PDF', icon: FileText, included: false },
+          ],
+          cta: 'پلن فعلی شما',
+          popular: false,
+          icon: Lock,
+        },
+      ];
+    } else {
+      return [
+        {
+          id: 'monthly',
+          name: 'پریمیوم',
+          subtitle: 'پرداخت ماهانه',
+          price: '۷۹,۰۰۰',
+          period: 'ماهانه',
+          description: 'دسترسی کامل به تمام امکانات',
+          features: [
+            { text: 'عادت‌های نامحدود', icon: Infinity, highlight: true },
+            { text: 'مربی هوش مصنوعی اختصاصی', icon: Brain, highlight: true },
+            { text: 'تحلیل‌های پیشرفته و نمودارها', icon: BarChart3 },
+            { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
+            { text: 'گزارش PDF دقیق', icon: FileText },
+            { text: 'امنیت و رمزنگاری پیشرفته', icon: Shield },
+            { text: 'همگام‌سازی بین دستگاه‌ها', icon: Rocket },
+            { text: 'اولویت در پشتیبانی', icon: Award },
+          ],
+          cta: 'شروع اشتراک ماهانه',
+          popular: true,
+          icon: Crown,
+        },
+        {
+          id: 'free',
+          name: 'رایگان',
+          subtitle: 'برای شروع',
+          price: '۰',
+          period: 'رایگان',
+          description: 'شروع سفر خود با امکانات پایه',
+          features: [
+            { text: 'فقط ۳ عادت فعال', icon: Target, included: true },
+            { text: 'آمار پایه و محدود', icon: BarChart3, included: true },
+            { text: 'بدون مربی هوش مصنوعی', icon: Brain, included: false },
+            { text: 'بدون تحلیل‌های پیشرفته', icon: TrendingUp, included: false },
+            { text: 'بدون پشتیبان‌گیری ابری', icon: Cloud, included: false },
+            { text: 'بدون گزارش PDF', icon: FileText, included: false },
+          ],
+          cta: 'پلن فعلی شما',
+          popular: false,
+          icon: Lock,
+        },
+      ];
+    }
+  };
+
+  const plans = getPlansData();
 
   const testimonials = [
     {
@@ -315,471 +391,510 @@ export default function Subscription() {
             </motion.div>
           </motion.div>
 
-          {/* Plans Grid */}
+          {/* Billing Cycle Toggle */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+            transition={{ delay: 0.35 }}
+            className="flex justify-center"
           >
-            {plans.map((plan, index) => {
-              const isSelected = selectedPlan === plan.id;
-              const Icon = plan.icon;
-
-              return (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                  className="relative"
-                >
-                  {/* Popular Badge */}
-                  {plan.popular && (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.7, type: "spring" }}
-                      className="absolute -top-4 right-1/2 translate-x-1/2 z-10"
-                    >
-                      <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-primary to-primary/80 shadow-lg flex items-center gap-2">
-                        <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
-                        <span className="text-xs font-bold text-primary-foreground">
-                          محبوب‌ترین انتخاب
-                        </span>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Plan Card */}
+            <div className="glass-strong rounded-full p-1.5 inline-flex items-center gap-1">
+              <button
+                onClick={() => setBillingCycle('yearly')}
+                className={cn(
+                  "relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300",
+                  billingCycle === 'yearly'
+                    ? "bg-primary text-primary-foreground shadow-lg"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {billingCycle === 'yearly' && (
                   <motion.div
-                    whileHover={{ scale: plan.id === 'free' ? 1 : 1.02 }}
-                    onClick={() => setSelectedPlan(plan.id)}
-                    className={cn(
-                      "relative h-full p-6 md:p-8 rounded-3xl cursor-pointer transition-all duration-300",
-                      plan.popular
-                        ? "glass-strong border-2 border-primary/50 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.3)]"
-                        : "glass border border-border/50",
-                      isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
-                    )}
+                    layoutId="activePill"
+                    className="absolute inset-0 bg-primary rounded-full"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  سالانه
+                  <span className="text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full">
+                    ۴۴٪ تخفیف
+                  </span>
+                </span>
+              </button>
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                className={cn(
+                  "relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300",
+                  billingCycle === 'monthly'
+                    ? "bg-primary text-primary-foreground shadow-lg"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {billingCycle === 'monthly' && (
+                  <motion.div
+                    layoutId="activePill"
+                    className="absolute inset-0 bg-primary rounded-full"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <span className="relative z-10">ماهانه</span>
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Plans Grid */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={billingCycle}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+            >
+              {plans.map((plan, index) => {
+                const isSelected = selectedPlan === plan.id;
+                const Icon = plan.icon;
+
+                return (
+                  <motion.div
+                    key={plan.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + index * 0.1 }}
+                    className="relative"
                   >
-                    {/* Discount Badge */}
-                    {plan.discount && (
-                      <div className="absolute top-6 left-6 px-3 py-1 rounded-full bg-destructive/10 border border-destructive/20">
-                        <span className="text-xs font-bold text-destructive">{plan.discount}</span>
-                      </div>
+                    {/* Popular Badge */}
+                    {plan.popular && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.3, type: "spring" }}
+                        className="absolute -top-4 right-1/2 translate-x-1/2 z-10"
+                      >
+                        <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-primary to-primary/80 shadow-lg flex items-center gap-2">
+                          <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
+                          <span className="text-xs font-bold text-primary-foreground">
+                            محبوب‌ترین انتخاب
+                          </span>
+                        </div>
+                      </motion.div>
                     )}
 
-                    {/* Plan Header */}
-                    <div className="space-y-4 mb-6">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                            <Icon className={cn(
-                              "w-6 h-6",
-                              plan.popular ? "text-primary" : "text-muted-foreground"
-                            )} />
-                            {plan.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">{plan.subtitle}</p>
-                        </div>
-                      </div>
+                    {/* Plan Card */}
+                    <motion.div
+                      whileHover={{ scale: plan.id === 'free' ? 1 : 1.02 }}
+                      onClick={() => setSelectedPlan(plan.id)}
+                      className={cn(
+                        "relative h-full p-8 rounded-3xl cursor-pointer transition-all duration-300",
+                        plan.popular
+                          ? "glass-strong border-2 border-primary/50 shadow-[0_0_50px_-10px_hsl(var(--primary)/0.4)]"
+                          : "glass border border-border/50",
+                        isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      )}
+                    >
+                      {/* Discount Badge */}
+                      {plan.discount && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-6 left-6 px-3 py-1.5 rounded-full bg-gradient-to-r from-destructive/20 to-destructive/10 border border-destructive/30"
+                        >
+                          <span className="text-sm font-bold text-destructive">{plan.discount}</span>
+                        </motion.div>
+                      )}
 
-                      {/* Pricing */}
-                      <div className="space-y-1">
-                        <div className="flex items-baseline gap-2">
-                          {plan.originalPrice && (
-                            <span className="text-lg text-muted-foreground line-through">
-                              {plan.originalPrice}
-                            </span>
-                          )}
-                          <span className="text-4xl md:text-5xl font-bold text-foreground">
-                            {plan.price}
-                          </span>
-                          <span className="text-lg text-muted-foreground">تومان</span>
+                      {/* Plan Header */}
+                      <div className="space-y-6 mb-8">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              <div className={cn(
+                                "w-12 h-12 rounded-2xl flex items-center justify-center",
+                                plan.popular 
+                                  ? "bg-gradient-to-br from-primary to-primary/70" 
+                                  : "bg-muted"
+                              )}>
+                                <Icon className={cn(
+                                  "w-6 h-6",
+                                  plan.popular ? "text-primary-foreground" : "text-muted-foreground"
+                                )} />
+                              </div>
+                              <div>
+                                <h3 className="text-2xl font-bold text-foreground">
+                                  {plan.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">{plan.subtitle}</p>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {plan.monthlyEquivalent || plan.period}
+
+                        <div className="space-y-2">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-5xl font-bold text-foreground">
+                              {plan.price}
+                            </span>
+                            <span className="text-lg text-muted-foreground">تومان</span>
+                          </div>
+                          {plan.originalPrice && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg text-muted-foreground line-through">
+                                {plan.originalPrice} تومان
+                              </span>
+                            </div>
+                          )}
+                          {plan.monthlyEquivalent && (
+                            <p className="text-sm text-muted-foreground">{plan.monthlyEquivalent}</p>
+                          )}
+                          <p className="text-sm font-medium text-primary">{plan.period}</p>
+                        </div>
+
+                        <p className="text-base text-muted-foreground leading-relaxed">
+                          {plan.description}
                         </p>
                       </div>
 
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {plan.description}
-                      </p>
-                    </div>
+                      {/* Features List */}
+                      <div className="space-y-3 mb-8">
+                        {plan.features.map((feature, featureIdx) => {
+                          const FeatureIcon = feature.icon;
+                          const included = feature.included !== false;
+                          
+                          return (
+                            <motion.div
+                              key={featureIdx}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.5 + featureIdx * 0.05 }}
+                              className={cn(
+                                "flex items-start gap-3 p-3 rounded-xl transition-all",
+                                feature.highlight && "bg-primary/5 border border-primary/20",
+                                !included && "opacity-50"
+                              )}
+                            >
+                              <div className={cn(
+                                "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center",
+                                included
+                                  ? feature.highlight
+                                    ? "bg-primary/20"
+                                    : "bg-primary/10"
+                                  : "bg-muted"
+                              )}>
+                                <FeatureIcon className={cn(
+                                  "w-4 h-4",
+                                  included
+                                    ? feature.highlight
+                                      ? "text-primary"
+                                      : "text-primary/70"
+                                    : "text-muted-foreground"
+                                )} />
+                              </div>
+                              <span className={cn(
+                                "text-sm leading-relaxed",
+                                included ? "text-foreground font-medium" : "text-muted-foreground"
+                              )}>
+                                {feature.text}
+                              </span>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
 
-                    {/* Features List */}
-                    <div className="space-y-3 mb-8">
-                      {plan.features.map((feature, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.6 + i * 0.05 }}
-                          className="flex items-start gap-3"
-                        >
-                          <div className={cn(
-                            "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5",
-                            feature.included
-                              ? "bg-primary/20"
-                              : "bg-muted"
-                          )}>
-                            <Check className={cn(
-                              "w-3 h-3",
-                              feature.included
-                                ? "text-primary"
-                                : "text-muted-foreground opacity-30"
-                            )} />
+                      {/* CTA Button */}
+                      <Button
+                        onClick={() => handlePurchase(plan.id)}
+                        disabled={plan.id === 'free' || isProcessing}
+                        size="lg"
+                        className={cn(
+                          "w-full text-base font-bold rounded-xl h-14 transition-all duration-300",
+                          plan.popular
+                            ? "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl"
+                            : "bg-muted text-muted-foreground hover:bg-muted/80",
+                          isProcessing && "opacity-50 cursor-not-allowed"
+                        )}
+                      >
+                        {isProcessing && plan.id !== 'free' ? (
+                          <div className="flex items-center gap-2">
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            >
+                              <Zap className="w-5 h-5" />
+                            </motion.div>
+                            در حال پردازش...
                           </div>
-                          <span className={cn(
-                            "text-sm leading-relaxed",
-                            feature.included
-                              ? feature.highlight
-                                ? "text-foreground font-semibold"
-                                : "text-foreground"
-                              : "text-muted-foreground line-through opacity-50"
-                          )}>
-                            {feature.text}
-                          </span>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    {/* CTA Button */}
-                    <Button
-                      onClick={() => handlePurchase(plan.id)}
-                      disabled={isProcessing || plan.id === 'free'}
-                      size="lg"
-                      className={cn(
-                        "w-full h-12 text-base font-bold rounded-xl transition-all duration-300",
-                        plan.popular
-                          ? "bg-gradient-to-r from-primary via-primary/90 to-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105"
-                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                      )}
-                    >
-                      {isProcessing && selectedPlan === plan.id ? (
-                        <span className="flex items-center gap-2">
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-5 h-5 border-2 border-current border-t-transparent rounded-full"
-                          />
-                          در حال پردازش...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          {plan.popular && <Zap className="w-5 h-5" />}
-                          {plan.cta}
-                        </span>
-                      )}
-                    </Button>
+                        ) : (
+                          <div className="flex items-center justify-center gap-2">
+                            {plan.id !== 'free' && <Sparkles className="w-5 h-5" />}
+                            {plan.cta}
+                          </div>
+                        )}
+                      </Button>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Testimonials Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="w-full max-w-6xl mx-auto"
+            transition={{ delay: 0.5 }}
+            className="space-y-8"
           >
-            <div className="text-center mb-10">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.8, type: "spring" }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-4"
-              >
-                <Star className="w-4 h-4 text-warning fill-warning" />
-                <span className="text-sm font-semibold text-foreground">رضایت ۹۸٪ کاربران</span>
-              </motion.div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-                داستان موفقیت کاربران ما
+            <div className="text-center space-y-3">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                نظرات کاربران راضی
               </h2>
-              <p className="text-muted-foreground">
-                ببینید Deep Breath چطور زندگی دیگران را تغییر داده
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                کاربران Deep Breath از تحول در زندگیشان می‌گویند
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {testimonials.map((testimonial, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9 + index * 0.1 }}
-                  className="relative glass-strong p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg group"
-                >
-                  {/* Quote Icon */}
-                  <div className="absolute top-4 left-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Quote className="w-12 h-12 text-primary" />
-                  </div>
-
-                  {/* Header */}
-                  <div className="flex items-start gap-4 mb-4 relative z-10">
-                    {/* Avatar */}
-                    <div className={cn(
-                      "w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg bg-gradient-to-br",
-                      testimonial.gradient
-                    )}>
-                      {testimonial.avatar}
-                    </div>
-
-                    {/* Name & Role */}
-                    <div className="flex-1">
-                      <h4 className="text-lg font-bold text-foreground">
-                        {testimonial.name}
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        {testimonial.role}
-                      </p>
-
-                      {/* Rating Stars */}
-                      <div className="flex gap-1 mt-2">
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-4 h-4 text-warning fill-warning"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Testimonial Text */}
-                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed relative z-10">
-                    {testimonial.text}
-                  </p>
-
-                  {/* Verified Badge */}
-                  <div className="flex items-center gap-2 mt-4 relative z-10">
-                    <div className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-success" />
-                    </div>
-                    <span className="text-xs text-success">کاربر تایید شده</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Overall Stats */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.3 }}
-              className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4"
-            >
+            {/* Stats Overview */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {[
-                { value: "+۱۰,۰۰۰", label: "کاربر فعال" },
-                { value: "۹۸٪", label: "رضایت کاربران" },
-                { value: "+۵۰۰k", label: "عادت ثبت شده" },
-                { value: "۴.۹", label: "امتیاز میانگین" },
-              ].map((stat, index) => (
+                { value: '۱۰,۰۰۰+', label: 'کاربر فعال' },
+                { value: '۴.۹/۵', label: 'امتیاز کاربران' },
+                { value: '۹۵٪', label: 'رضایت کاربران' },
+                { value: '۲ میلیون', label: 'عادت تکمیل شده' },
+              ].map((stat, i) => (
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4 + index * 0.05 }}
-                  className="glass p-4 rounded-xl text-center"
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 + i * 0.1 }}
+                  className="glass-strong p-6 rounded-2xl text-center"
                 >
                   <div className="text-2xl md:text-3xl font-bold text-primary mb-1">
                     {stat.value}
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     {stat.label}
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
+
+            {/* Testimonial Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {testimonials.map((testimonial, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + idx * 0.1 }}
+                  className="glass-strong p-6 rounded-2xl space-y-4 hover:shadow-lg transition-shadow"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-12 h-12 rounded-full bg-gradient-to-br flex items-center justify-center text-lg font-bold text-primary-foreground",
+                        testimonial.gradient
+                      )}>
+                        {testimonial.avatar}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-foreground">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {testimonial.role}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: testimonial.rating }).map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quote Icon */}
+                  <Quote className="w-8 h-8 text-primary/20" />
+
+                  {/* Review Text */}
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {testimonial.text}
+                  </p>
+
+                  {/* Verified Badge */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <Check className="w-4 h-4 text-success" />
+                    <span className="text-xs text-success font-medium">
+                      کاربر تایید شده
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
 
           {/* Feature Comparison Table */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5 }}
-            className="w-full max-w-4xl mx-auto"
+            transition={{ delay: 0.6 }}
+            className="space-y-6"
           >
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <div className="text-center space-y-3">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                 مقایسه دقیق امکانات
               </h2>
-              <p className="text-muted-foreground">
-                ببینید چه امکاناتی با اشتراک پریمیوم در اختیارتان قرار می‌گیرد
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                تفاوت‌های کامل پلن رایگان و پریمیوم را به صورت شفاف و کامل ببینید
               </p>
             </div>
 
-            <div className="glass-strong rounded-3xl overflow-hidden border border-border/50">
-              {/* Table Header */}
-              <div className="grid grid-cols-3 gap-4 p-6 bg-muted/30 border-b border-border/50">
-                <div className="text-sm font-semibold text-muted-foreground">
-                  دسته‌بندی
-                </div>
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
-                    <Lock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-bold text-foreground">رایگان</span>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30">
-                    <Crown className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-bold text-primary">پریمیوم</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Expandable Categories */}
-              <Accordion type="single" collapsible className="divide-y divide-border/30">
-                {comparisonCategories.map((category, catIndex) => (
-                  <AccordionItem
-                    key={catIndex}
-                    value={`category-${catIndex}`}
-                    className="border-0"
-                  >
-                    <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/20 transition-colors group">
-                      <div className="flex items-center gap-3 text-start">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                          <span className="text-sm font-bold text-primary">{catIndex + 1}</span>
-                        </div>
-                        <span className="text-base font-semibold text-foreground">
-                          {category.category}
-                        </span>
+            <Accordion type="multiple" className="space-y-4">
+              {comparisonCategories.map((category, idx) => (
+                <AccordionItem
+                  key={idx}
+                  value={`category-${idx}`}
+                  className="glass-strong rounded-2xl border-2 border-border/30 overflow-hidden"
+                >
+                  <AccordionTrigger className="hover:no-underline py-6 px-8 text-right">
+                    <div className="flex items-center gap-4 w-full">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
+                        <TrendingUp className="w-6 h-6 text-primary" />
                       </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-6 pb-4">
-                      <div className="space-y-3 pt-2">
-                        {category.features.map((feature, featureIndex) => (
-                          <motion.div
-                            key={featureIndex}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: featureIndex * 0.05 }}
-                            className={cn(
-                              "grid grid-cols-3 gap-4 items-center p-3 rounded-xl transition-colors",
-                              feature.highlight ? "bg-primary/5" : "hover:bg-muted/30"
+                      <span className="text-xl font-bold text-foreground text-right">
+                        {category.category}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-8 pb-8">
+                    <div className="space-y-2 mt-6">
+                      {/* Header Row */}
+                      <div className="grid grid-cols-[2fr,1fr,1fr] gap-6 pb-4 border-b-2 border-border/50">
+                        <div className="text-base font-bold text-foreground text-right">ویژگی</div>
+                        <div className="text-base font-bold text-muted-foreground text-center">رایگان</div>
+                        <div className="text-base font-bold text-primary text-center">پریمیوم</div>
+                      </div>
+                      
+                      {/* Feature Rows */}
+                      {category.features.map((feature, featureIdx) => (
+                        <motion.div
+                          key={featureIdx}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.05 * featureIdx }}
+                          className={cn(
+                            "grid grid-cols-[2fr,1fr,1fr] gap-6 p-4 rounded-xl transition-all hover:bg-muted/20",
+                            feature.highlight && "bg-primary/5 border-2 border-primary/20 shadow-sm"
+                          )}
+                        >
+                          <div className="text-base text-foreground font-medium flex items-center text-right">
+                            {feature.name}
+                          </div>
+                          <div className="flex items-center justify-center">
+                            {typeof feature.free === 'boolean' ? (
+                              feature.free ? (
+                                <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
+                                  <Check className="w-5 h-5 text-success" />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                  <X className="w-5 h-5 text-muted-foreground" />
+                                </div>
+                              )
+                            ) : (
+                              <span className="text-sm text-muted-foreground text-center font-medium">{feature.free}</span>
                             )}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className={cn(
-                                "text-sm",
-                                feature.highlight ? "font-semibold text-foreground" : "text-muted-foreground"
-                              )}>
-                                {feature.name}
-                              </span>
-                            </div>
-                            
-                            {/* Free Column */}
-                            <div className="text-center">
-                              {typeof feature.free === 'boolean' ? (
-                                <div className={cn(
-                                  "inline-flex items-center justify-center w-6 h-6 rounded-full",
-                                  feature.free ? "bg-success/20" : "bg-muted"
-                                )}>
-                                  {feature.free ? (
-                                    <Check className="w-4 h-4 text-success" />
-                                  ) : (
-                                    <X className="w-4 h-4 text-muted-foreground" />
-                                  )}
+                          </div>
+                          <div className="flex items-center justify-center">
+                            {typeof feature.premium === 'boolean' ? (
+                              feature.premium ? (
+                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                  <Check className="w-5 h-5 text-primary" />
                                 </div>
                               ) : (
-                                <span className="text-sm text-muted-foreground">
-                                  {feature.free}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Premium Column */}
-                            <div className="text-center">
-                              {typeof feature.premium === 'boolean' ? (
-                                <div className={cn(
-                                  "inline-flex items-center justify-center w-6 h-6 rounded-full",
-                                  feature.premium ? "bg-primary/20" : "bg-muted"
-                                )}>
-                                  {feature.premium ? (
-                                    <Check className="w-4 h-4 text-primary" />
-                                  ) : (
-                                    <X className="w-4 h-4 text-muted-foreground" />
-                                  )}
+                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                  <X className="w-5 h-5 text-muted-foreground" />
                                 </div>
-                              ) : (
-                                <span className="text-sm font-semibold text-primary">
-                                  {feature.premium}
-                                </span>
-                              )}
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
+                              )
+                            ) : (
+                              <span className="text-sm text-primary font-bold text-center">{feature.premium}</span>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </motion.div>
 
           {/* FAQ Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1 }}
-            className="w-full max-w-3xl mx-auto"
+            transition={{ delay: 0.7 }}
+            className="space-y-6"
           >
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <div className="text-center space-y-3">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                 سوالات متداول
               </h2>
-              <p className="text-muted-foreground">
-                پاسخ سوالات رایج درباره اشتراک و امکانات
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                پاسخ سوالاتی که ممکن است داشته باشید
               </p>
             </div>
 
             <Accordion type="single" collapsible className="space-y-4">
-              {faqs.map((faq, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + index * 0.05 }}
+              {faqs.map((faq, idx) => (
+                <AccordionItem
+                  key={idx}
+                  value={`faq-${idx}`}
+                  className="glass rounded-2xl border border-border/50 px-6 overflow-hidden"
                 >
-                  <AccordionItem
-                    value={`item-${index}`}
-                    className="glass rounded-2xl px-6 border-border/50 overflow-hidden"
-                  >
-                    <AccordionTrigger className="text-start hover:no-underline py-5 text-base md:text-lg font-semibold text-foreground hover:text-primary transition-colors">
+                  <AccordionTrigger className="text-right hover:no-underline py-5">
+                    <span className="text-base font-semibold text-foreground pr-2">
                       {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground leading-relaxed pb-5 text-sm md:text-base">
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6">
+                    <p className="text-sm text-muted-foreground leading-relaxed pr-2">
                       {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                </motion.div>
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
               ))}
             </Accordion>
           </motion.div>
 
-          {/* Trust Signals */}
+          {/* Trust Signals & Security */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4 }}
-            className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="glass-strong rounded-2xl p-8 text-center space-y-6"
           >
-            <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary" />
-              تضمین بازگشت وجه
-            </span>
-            <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary" />
-              لغو آسان
-            </span>
-            <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary" />
-              پرداخت امن
-            </span>
+            <div className="flex items-center justify-center gap-8 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-success" />
+                <span className="text-sm font-medium text-foreground">پرداخت امن</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="w-5 h-5 text-success" />
+                <span className="text-sm font-medium text-foreground">تضمین بازگشت وجه</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Crown className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-foreground">پشتیبانی ۲۴/۷</span>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              تمام پرداخت‌ها با رمزنگاری SSL انجام می‌شود. اطلاعات شما کاملاً محرمانه و امن است.
+              در صورت عدم رضایت، تا ۱۴ روز بعد از خرید می‌توانید درخواست بازگشت کامل وجه بدهید.
+            </p>
           </motion.div>
 
         </div>
