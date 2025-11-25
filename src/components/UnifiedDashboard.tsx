@@ -171,6 +171,13 @@ const UnifiedDashboard = () => {
       }
       return false;
     }).sort((a, b) => {
+      // Sort by order first, then by priority
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      
       const priorityOrder = {
         high: 0,
         medium: 1,
