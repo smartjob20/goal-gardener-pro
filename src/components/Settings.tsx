@@ -8,66 +8,41 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { 
-  Palette, 
-  Globe, 
-  Bell, 
-  Volume2, 
-  Clock, 
-  Shield,
-  Database,
-  Download,
-  Upload,
-  Trash2,
-  Calendar,
-  Smartphone,
-  Moon,
-  Sun,
-  Monitor,
-  Save,
-  RotateCcw,
-  Tags,
-  Plus,
-  X
-} from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Palette, Globe, Bell, Volume2, Clock, Shield, Database, Download, Upload, Trash2, Calendar, Smartphone, Moon, Sun, Monitor, Save, RotateCcw, Tags, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
-
 const Settings = () => {
-  const { state, dispatch } = useApp();
+  const {
+    state,
+    dispatch
+  } = useApp();
   const [settings, setSettings] = useState({
     ...state.settings,
     customTaskCategories: state.settings.customTaskCategories || [],
     customHabitCategories: state.settings.customHabitCategories || [],
-    customGoalCategories: state.settings.customGoalCategories || [],
+    customGoalCategories: state.settings.customGoalCategories || []
   });
   const [hasChanges, setHasChanges] = useState(false);
-  
+
   // Custom categories state
   const [newTaskCategory, setNewTaskCategory] = useState('');
   const [newHabitCategory, setNewHabitCategory] = useState('');
   const [newGoalCategory, setNewGoalCategory] = useState('');
-
   const handleSettingChange = (key: keyof typeof settings, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
     setHasChanges(true);
   };
-
   const saveSettings = () => {
-    dispatch({ type: 'UPDATE_SETTINGS', payload: settings });
-    
+    dispatch({
+      type: 'UPDATE_SETTINGS',
+      payload: settings
+    });
+
     // Apply theme to document
     const root = document.documentElement;
     if (settings.theme === 'dark') {
@@ -83,17 +58,14 @@ const Settings = () => {
         root.classList.remove('dark');
       }
     }
-    
     setHasChanges(false);
     toast.success('تنظیمات با موفقیت ذخیره شد! ✅');
   };
-
   const resetSettings = () => {
     setSettings(state.settings);
     setHasChanges(false);
     toast.info('تغییرات لغو شد');
   };
-
   const exportData = () => {
     const data = {
       user: state.user,
@@ -107,8 +79,9 @@ const Settings = () => {
       exportDate: new Date().toISOString(),
       version: '1.0.0'
     };
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -117,22 +90,22 @@ const Settings = () => {
     URL.revokeObjectURL(url);
     toast.success('داده‌ها با موفقیت دانلود شد! 💾');
   };
-
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       try {
         const data = JSON.parse(e.target?.result as string);
-        
+
         // Validate data structure
         if (!data.user || !data.tasks || !data.habits) {
           throw new Error('فرمت فایل نامعتبر است');
         }
-
-        dispatch({ type: 'LOAD_STATE', payload: data });
+        dispatch({
+          type: 'LOAD_STATE',
+          payload: data
+        });
         toast.success('داده‌ها با موفقیت بازیابی شد! ✨');
       } catch (error) {
         toast.error('خطا در بازیابی داده‌ها. لطفاً فایل صحیح را انتخاب کنید');
@@ -140,34 +113,33 @@ const Settings = () => {
     };
     reader.readAsText(file);
   };
-
   const clearAllData = () => {
     localStorage.clear();
     window.location.reload();
   };
-
   const getStorageSize = () => {
     const data = JSON.stringify(state);
     const bytes = new Blob([data]).size;
     const kb = (bytes / 1024).toFixed(2);
     return kb;
   };
-
-  return (
-    <div className="container mx-auto p-4 pb-24 max-w-4xl" dir="rtl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+  return <div className="container mx-auto p-4 pb-24 max-w-4xl" dir="rtl">
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }} className="mt-[70px]">
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-3xl font-bold mb-2">تنظیمات</h1>
             <p className="text-muted-foreground">شخصی‌سازی تجربه خود</p>
           </div>
-          {hasChanges && (
-            <div className="flex gap-2">
+          {hasChanges && <div className="flex gap-2">
               <Button onClick={saveSettings}>
                 <Save className="ml-2 h-4 w-4" />
                 ذخیره تغییرات
@@ -176,8 +148,7 @@ const Settings = () => {
                 <RotateCcw className="ml-2 h-4 w-4" />
                 لغو
               </Button>
-            </div>
-          )}
+            </div>}
         </div>
 
         <Tabs defaultValue="appearance" className="space-y-6">
@@ -203,27 +174,15 @@ const Settings = () => {
                 <div className="space-y-3">
                   <Label>تم رنگی</Label>
                   <div className="grid grid-cols-3 gap-3">
-                    <Button
-                      variant={settings.theme === 'light' ? 'default' : 'outline'}
-                      className="flex items-center justify-center gap-2"
-                      onClick={() => handleSettingChange('theme', 'light')}
-                    >
+                    <Button variant={settings.theme === 'light' ? 'default' : 'outline'} className="flex items-center justify-center gap-2" onClick={() => handleSettingChange('theme', 'light')}>
                       <Sun className="h-4 w-4" />
                       روشن
                     </Button>
-                    <Button
-                      variant={settings.theme === 'dark' ? 'default' : 'outline'}
-                      className="flex items-center justify-center gap-2"
-                      onClick={() => handleSettingChange('theme', 'dark')}
-                    >
+                    <Button variant={settings.theme === 'dark' ? 'default' : 'outline'} className="flex items-center justify-center gap-2" onClick={() => handleSettingChange('theme', 'dark')}>
                       <Moon className="h-4 w-4" />
                       تیره
                     </Button>
-                    <Button
-                      variant={settings.theme === 'auto' ? 'default' : 'outline'}
-                      className="flex items-center justify-center gap-2"
-                      onClick={() => handleSettingChange('theme', 'auto')}
-                    >
+                    <Button variant={settings.theme === 'auto' ? 'default' : 'outline'} className="flex items-center justify-center gap-2" onClick={() => handleSettingChange('theme', 'auto')}>
                       <Monitor className="h-4 w-4" />
                       خودکار
                     </Button>
@@ -245,10 +204,7 @@ const Settings = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>زبان برنامه</Label>
-                  <Select 
-                    value={settings.language} 
-                    onValueChange={(value) => handleSettingChange('language', value)}
-                  >
+                  <Select value={settings.language} onValueChange={value => handleSettingChange('language', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -262,10 +218,7 @@ const Settings = () => {
 
                 <div className="space-y-2">
                   <Label>نوع تقویم</Label>
-                  <Select 
-                    value={settings.calendar} 
-                    onValueChange={(value) => handleSettingChange('calendar', value)}
-                  >
+                  <Select value={settings.calendar} onValueChange={value => handleSettingChange('calendar', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -307,10 +260,7 @@ const Settings = () => {
                       دریافت اعلان برای وظایف، عادات و یادآورها
                     </p>
                   </div>
-                  <Switch
-                    checked={settings.notifications}
-                    onCheckedChange={(checked) => handleSettingChange('notifications', checked)}
-                  />
+                  <Switch checked={settings.notifications} onCheckedChange={checked => handleSettingChange('notifications', checked)} />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -320,21 +270,12 @@ const Settings = () => {
                       یادآوری روزانه برای انجام عادات
                     </p>
                   </div>
-                  <Switch
-                    checked={settings.habitReminders}
-                    onCheckedChange={(checked) => handleSettingChange('habitReminders', checked)}
-                    disabled={!settings.notifications}
-                  />
+                  <Switch checked={settings.habitReminders} onCheckedChange={checked => handleSettingChange('habitReminders', checked)} disabled={!settings.notifications} />
                 </div>
 
                 <div className="space-y-2">
                   <Label>زمان یادآور روزانه</Label>
-                  <Input
-                    type="time"
-                    value={settings.dailyReminderTime}
-                    onChange={(e) => handleSettingChange('dailyReminderTime', e.target.value)}
-                    disabled={!settings.notifications}
-                  />
+                  <Input type="time" value={settings.dailyReminderTime} onChange={e => handleSettingChange('dailyReminderTime', e.target.value)} disabled={!settings.notifications} />
                   <p className="text-xs text-muted-foreground">
                     زمان دریافت یادآور روزانه برای مرور وظایف و عادات
                   </p>
@@ -357,10 +298,7 @@ const Settings = () => {
                       پخش صدا برای رویدادهای مختلف
                     </p>
                   </div>
-                  <Switch
-                    checked={settings.sounds}
-                    onCheckedChange={(checked) => handleSettingChange('sounds', checked)}
-                  />
+                  <Switch checked={settings.sounds} onCheckedChange={checked => handleSettingChange('sounds', checked)} />
                 </div>
 
                 <div className="space-y-2">
@@ -368,13 +306,7 @@ const Settings = () => {
                     <Label>میزان صدا</Label>
                     <span className="text-sm text-muted-foreground">{settings.volume}%</span>
                   </div>
-                  <Slider
-                    value={[settings.volume]}
-                    onValueChange={([value]) => handleSettingChange('volume', value)}
-                    max={100}
-                    step={5}
-                    disabled={!settings.sounds}
-                  />
+                  <Slider value={[settings.volume]} onValueChange={([value]) => handleSettingChange('volume', value)} max={100} step={5} disabled={!settings.sounds} />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -384,10 +316,7 @@ const Settings = () => {
                       لرزش هنگام تعامل با برنامه
                     </p>
                   </div>
-                  <Switch
-                    checked={settings.haptics}
-                    onCheckedChange={(checked) => handleSettingChange('haptics', checked)}
-                  />
+                  <Switch checked={settings.haptics} onCheckedChange={checked => handleSettingChange('haptics', checked)} />
                 </div>
               </CardContent>
             </Card>
@@ -408,54 +337,36 @@ const Settings = () => {
                 <div className="space-y-3">
                   <Label className="text-base">دسته‌بندی‌های وظایف</Label>
                   <div className="flex gap-2">
-                    <Input
-                      value={newTaskCategory}
-                      onChange={(e) => setNewTaskCategory(e.target.value)}
-                      placeholder="نام دسته‌بندی جدید..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && newTaskCategory.trim()) {
-                          const updated = [...settings.customTaskCategories, newTaskCategory.trim()];
-                          handleSettingChange('customTaskCategories', updated);
-                          setNewTaskCategory('');
-                          toast.success('دسته‌بندی اضافه شد!');
-                        }
-                      }}
-                    />
-                    <Button
-                      onClick={() => {
-                        if (newTaskCategory.trim()) {
-                          const updated = [...settings.customTaskCategories, newTaskCategory.trim()];
-                          handleSettingChange('customTaskCategories', updated);
-                          setNewTaskCategory('');
-                          toast.success('دسته‌بندی اضافه شد!');
-                        }
-                      }}
-                      size="icon"
-                    >
+                    <Input value={newTaskCategory} onChange={e => setNewTaskCategory(e.target.value)} placeholder="نام دسته‌بندی جدید..." onKeyPress={e => {
+                    if (e.key === 'Enter' && newTaskCategory.trim()) {
+                      const updated = [...settings.customTaskCategories, newTaskCategory.trim()];
+                      handleSettingChange('customTaskCategories', updated);
+                      setNewTaskCategory('');
+                      toast.success('دسته‌بندی اضافه شد!');
+                    }
+                  }} />
+                    <Button onClick={() => {
+                    if (newTaskCategory.trim()) {
+                      const updated = [...settings.customTaskCategories, newTaskCategory.trim()];
+                      handleSettingChange('customTaskCategories', updated);
+                      setNewTaskCategory('');
+                      toast.success('دسته‌بندی اضافه شد!');
+                    }
+                  }} size="icon">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {settings.customTaskCategories.map((category, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm"
-                      >
+                    {settings.customTaskCategories.map((category, index) => <div key={index} className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm">
                         <span>{category}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-0 ml-1"
-                          onClick={() => {
-                            const updated = settings.customTaskCategories.filter((_, i) => i !== index);
-                            handleSettingChange('customTaskCategories', updated);
-                            toast.success('دسته‌بندی حذف شد');
-                          }}
-                        >
+                        <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => {
+                      const updated = settings.customTaskCategories.filter((_, i) => i !== index);
+                      handleSettingChange('customTaskCategories', updated);
+                      toast.success('دسته‌بندی حذف شد');
+                    }}>
                           <X className="h-3 w-3" />
                         </Button>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
@@ -463,54 +374,36 @@ const Settings = () => {
                 <div className="space-y-3">
                   <Label className="text-base">دسته‌بندی‌های عادات</Label>
                   <div className="flex gap-2">
-                    <Input
-                      value={newHabitCategory}
-                      onChange={(e) => setNewHabitCategory(e.target.value)}
-                      placeholder="نام دسته‌بندی جدید..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && newHabitCategory.trim()) {
-                          const updated = [...settings.customHabitCategories, newHabitCategory.trim()];
-                          handleSettingChange('customHabitCategories', updated);
-                          setNewHabitCategory('');
-                          toast.success('دسته‌بندی اضافه شد!');
-                        }
-                      }}
-                    />
-                    <Button
-                      onClick={() => {
-                        if (newHabitCategory.trim()) {
-                          const updated = [...settings.customHabitCategories, newHabitCategory.trim()];
-                          handleSettingChange('customHabitCategories', updated);
-                          setNewHabitCategory('');
-                          toast.success('دسته‌بندی اضافه شد!');
-                        }
-                      }}
-                      size="icon"
-                    >
+                    <Input value={newHabitCategory} onChange={e => setNewHabitCategory(e.target.value)} placeholder="نام دسته‌بندی جدید..." onKeyPress={e => {
+                    if (e.key === 'Enter' && newHabitCategory.trim()) {
+                      const updated = [...settings.customHabitCategories, newHabitCategory.trim()];
+                      handleSettingChange('customHabitCategories', updated);
+                      setNewHabitCategory('');
+                      toast.success('دسته‌بندی اضافه شد!');
+                    }
+                  }} />
+                    <Button onClick={() => {
+                    if (newHabitCategory.trim()) {
+                      const updated = [...settings.customHabitCategories, newHabitCategory.trim()];
+                      handleSettingChange('customHabitCategories', updated);
+                      setNewHabitCategory('');
+                      toast.success('دسته‌بندی اضافه شد!');
+                    }
+                  }} size="icon">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {settings.customHabitCategories.map((category, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm"
-                      >
+                    {settings.customHabitCategories.map((category, index) => <div key={index} className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm">
                         <span>{category}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-0 ml-1"
-                          onClick={() => {
-                            const updated = settings.customHabitCategories.filter((_, i) => i !== index);
-                            handleSettingChange('customHabitCategories', updated);
-                            toast.success('دسته‌بندی حذف شد');
-                          }}
-                        >
+                        <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => {
+                      const updated = settings.customHabitCategories.filter((_, i) => i !== index);
+                      handleSettingChange('customHabitCategories', updated);
+                      toast.success('دسته‌بندی حذف شد');
+                    }}>
                           <X className="h-3 w-3" />
                         </Button>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
@@ -518,54 +411,36 @@ const Settings = () => {
                 <div className="space-y-3">
                   <Label className="text-base">دسته‌بندی‌های اهداف</Label>
                   <div className="flex gap-2">
-                    <Input
-                      value={newGoalCategory}
-                      onChange={(e) => setNewGoalCategory(e.target.value)}
-                      placeholder="نام دسته‌بندی جدید..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && newGoalCategory.trim()) {
-                          const updated = [...settings.customGoalCategories, newGoalCategory.trim()];
-                          handleSettingChange('customGoalCategories', updated);
-                          setNewGoalCategory('');
-                          toast.success('دسته‌بندی اضافه شد!');
-                        }
-                      }}
-                    />
-                    <Button
-                      onClick={() => {
-                        if (newGoalCategory.trim()) {
-                          const updated = [...settings.customGoalCategories, newGoalCategory.trim()];
-                          handleSettingChange('customGoalCategories', updated);
-                          setNewGoalCategory('');
-                          toast.success('دسته‌بندی اضافه شد!');
-                        }
-                      }}
-                      size="icon"
-                    >
+                    <Input value={newGoalCategory} onChange={e => setNewGoalCategory(e.target.value)} placeholder="نام دسته‌بندی جدید..." onKeyPress={e => {
+                    if (e.key === 'Enter' && newGoalCategory.trim()) {
+                      const updated = [...settings.customGoalCategories, newGoalCategory.trim()];
+                      handleSettingChange('customGoalCategories', updated);
+                      setNewGoalCategory('');
+                      toast.success('دسته‌بندی اضافه شد!');
+                    }
+                  }} />
+                    <Button onClick={() => {
+                    if (newGoalCategory.trim()) {
+                      const updated = [...settings.customGoalCategories, newGoalCategory.trim()];
+                      handleSettingChange('customGoalCategories', updated);
+                      setNewGoalCategory('');
+                      toast.success('دسته‌بندی اضافه شد!');
+                    }
+                  }} size="icon">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {settings.customGoalCategories.map((category, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm"
-                      >
+                    {settings.customGoalCategories.map((category, index) => <div key={index} className="flex items-center gap-1 px-3 py-1 bg-secondary rounded-full text-sm">
                         <span>{category}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-0 ml-1"
-                          onClick={() => {
-                            const updated = settings.customGoalCategories.filter((_, i) => i !== index);
-                            handleSettingChange('customGoalCategories', updated);
-                            toast.success('دسته‌بندی حذف شد');
-                          }}
-                        >
+                        <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => {
+                      const updated = settings.customGoalCategories.filter((_, i) => i !== index);
+                      handleSettingChange('customGoalCategories', updated);
+                      toast.success('دسته‌بندی حذف شد');
+                    }}>
                           <X className="h-3 w-3" />
                         </Button>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
@@ -637,11 +512,7 @@ const Settings = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-3">
-                  <Button 
-                    onClick={exportData}
-                    variant="outline"
-                    className="justify-start"
-                  >
+                  <Button onClick={exportData} variant="outline" className="justify-start">
                     <Download className="ml-2 h-4 w-4" />
                     دانلود نسخه پشتیبان
                   </Button>
@@ -652,22 +523,12 @@ const Settings = () => {
 
                 <div className="grid gap-3">
                   <Label htmlFor="import-file">
-                    <Button 
-                      variant="outline"
-                      className="justify-start w-full"
-                      onClick={() => document.getElementById('import-file')?.click()}
-                    >
+                    <Button variant="outline" className="justify-start w-full" onClick={() => document.getElementById('import-file')?.click()}>
                       <Upload className="ml-2 h-4 w-4" />
                       بازیابی از نسخه پشتیبان
                     </Button>
                   </Label>
-                  <input
-                    id="import-file"
-                    type="file"
-                    accept=".json"
-                    onChange={importData}
-                    className="hidden"
-                  />
+                  <input id="import-file" type="file" accept=".json" onChange={importData} className="hidden" />
                   <p className="text-sm text-muted-foreground px-2">
                     داده‌های خود را از یک فایل پشتیبان بازیابی کنید
                   </p>
@@ -769,8 +630,6 @@ const Settings = () => {
           </TabsContent>
         </Tabs>
       </motion.div>
-    </div>
-  );
+    </div>;
 };
-
 export default Settings;
