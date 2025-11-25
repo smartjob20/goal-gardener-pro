@@ -63,6 +63,7 @@ type Action =
   | { type: 'ADD_TASK'; payload: Task }
   | { type: 'UPDATE_TASK'; payload: Task }
   | { type: 'DELETE_TASK'; payload: string }
+  | { type: 'REORDER_TASKS'; payload: Task[] }
   | { type: 'ADD_HABIT'; payload: Habit }
   | { type: 'UPDATE_HABIT'; payload: Habit }
   | { type: 'DELETE_HABIT'; payload: string }
@@ -97,6 +98,8 @@ const appReducer = (state: AppState, action: Action): AppState => {
     }
     case 'DELETE_TASK':
       return { ...state, tasks: state.tasks.filter(t => t.id !== action.payload) };
+    case 'REORDER_TASKS':
+      return { ...state, tasks: action.payload };
     case 'ADD_HABIT':
       return { ...state, habits: [...state.habits, action.payload] };
     case 'UPDATE_HABIT': {
