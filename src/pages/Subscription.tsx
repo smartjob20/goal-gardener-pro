@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown } from 'lucide-react';
+import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -118,6 +118,41 @@ export default function Subscription() {
       cta: 'شروع تحول',
       popular: true,
       icon: Crown,
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: "سارا احمدی",
+      role: "مدیر پروژه",
+      avatar: "س",
+      rating: 5,
+      text: "Deep Breath واقعاً زندگیم رو متحول کرد. قبلاً همیشه برنامه‌هام رو نیمه‌کاره رها می‌کردم، اما با مربی هوش مصنوعی و سیستم پاداش‌دهی این برنامه، الان ۶ ماهه که روزانه ورزش می‌کنم و کتاب می‌خونم. این سرمایه‌گذاری بهترین تصمیمی بود که برای خودم گرفتم.",
+      gradient: "from-primary to-primary/60"
+    },
+    {
+      name: "امیر رضایی",
+      role: "کارآفرین",
+      avatar: "ا",
+      rating: 5,
+      text: "به عنوان یک کارآفرین، زمان برام خیلی ارزشمنده. این برنامه کمک کرد تا عادت‌های بهره‌وری رو در زندگیم جا بندازم. تحلیل‌های دقیق و گزارش‌های PDF برای ارائه به تیمم عالیه. ارزش هر ریالش رو داره!",
+      gradient: "from-accent to-accent/60"
+    },
+    {
+      name: "مریم کریمی",
+      role: "دانشجو",
+      avatar: "م",
+      rating: 5,
+      text: "اول فکر می‌کردم یه برنامه معمولی دیگه‌ست، اما وقتی مربی هوش مصنوعی شروع کرد به دادن پیشنهادهای شخصی‌سازی شده، متوجه شدم این برنامه فرق داره. الان دو ماهه که عادت مطالعه روزانه رو حفظ کردم و نمرات درسیم هم بهتر شده.",
+      gradient: "from-success to-success/60"
+    },
+    {
+      name: "حسین محمدی",
+      role: "معلم",
+      avatar: "ح",
+      rating: 5,
+      text: "به دنبال یک برنامه فارسی و با طراحی زیبا بودم که به من در ایجاد عادت‌های سالم کمک کنه. Deep Breath هم زیباست، هم کاربردی، هم به زبان فارسی. پشتیبان‌گیری ابری باعث شد که دیگر نگران از دست دادن اطلاعاتم نباشم.",
+      gradient: "from-info to-info/60"
     },
   ];
 
@@ -444,11 +479,128 @@ export default function Subscription() {
             })}
           </motion.div>
 
+          {/* Testimonials Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <div className="text-center mb-10">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.8, type: "spring" }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-4"
+              >
+                <Star className="w-4 h-4 text-warning fill-warning" />
+                <span className="text-sm font-semibold text-foreground">رضایت ۹۸٪ کاربران</span>
+              </motion.div>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                داستان موفقیت کاربران ما
+              </h2>
+              <p className="text-muted-foreground">
+                ببینید Deep Breath چطور زندگی دیگران را تغییر داده
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 + index * 0.1 }}
+                  className="relative glass-strong p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg group"
+                >
+                  {/* Quote Icon */}
+                  <div className="absolute top-4 left-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Quote className="w-12 h-12 text-primary" />
+                  </div>
+
+                  {/* Header */}
+                  <div className="flex items-start gap-4 mb-4 relative z-10">
+                    {/* Avatar */}
+                    <div className={cn(
+                      "w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg bg-gradient-to-br",
+                      testimonial.gradient
+                    )}>
+                      {testimonial.avatar}
+                    </div>
+
+                    {/* Name & Role */}
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold text-foreground">
+                        {testimonial.name}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {testimonial.role}
+                      </p>
+
+                      {/* Rating Stars */}
+                      <div className="flex gap-1 mt-2">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className="w-4 h-4 text-warning fill-warning"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Testimonial Text */}
+                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed relative z-10">
+                    {testimonial.text}
+                  </p>
+
+                  {/* Verified Badge */}
+                  <div className="flex items-center gap-2 mt-4 relative z-10">
+                    <div className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-success" />
+                    </div>
+                    <span className="text-xs text-success">کاربر تایید شده</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Overall Stats */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.3 }}
+              className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4"
+            >
+              {[
+                { value: "+۱۰,۰۰۰", label: "کاربر فعال" },
+                { value: "۹۸٪", label: "رضایت کاربران" },
+                { value: "+۵۰۰k", label: "عادت ثبت شده" },
+                { value: "۴.۹", label: "امتیاز میانگین" },
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.4 + index * 0.05 }}
+                  className="glass p-4 rounded-xl text-center"
+                >
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
           {/* Feature Comparison Table */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 1.5 }}
             className="w-full max-w-4xl mx-auto"
           >
             <div className="text-center mb-8">
