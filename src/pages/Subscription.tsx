@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, Check, Sparkles, Loader2 } from 'lucide-react';
+import { X, CheckCircle2, Crown, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -67,21 +67,44 @@ export default function Subscription() {
     }
   };
 
+  const premiumFeatures = [
+    {
+      icon: CheckCircle2,
+      text: 'دسترسی نامحدود به ساخت عادت‌ها',
+    },
+    {
+      icon: CheckCircle2,
+      text: 'مربی هوشمند با هوش مصنوعی اختصاصی',
+    },
+    {
+      icon: CheckCircle2,
+      text: 'تحلیل‌های دقیق و نمودارهای پیشرفته',
+    },
+    {
+      icon: CheckCircle2,
+      text: 'پشتیبان‌گیری ابری و امنیت کامل',
+    },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-[#1a1c2e] via-[#161825] to-black overflow-y-auto">
-      {/* Close Button */}
+    <div 
+      dir="rtl" 
+      className="fixed inset-0 z-50 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#1a1b26] to-black overflow-y-auto font-sans"
+    >
+      {/* Close Button - Top Left in RTL */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.5 }}
         whileHover={{ opacity: 1 }}
         onClick={handleClose}
-        className="fixed top-8 left-8 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all"
+        className="fixed top-8 left-8 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all"
       >
-        <X className="w-5 h-5 text-white" />
+        <X className="w-6 h-6 text-white" />
       </motion.button>
 
       <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-16">
-        <div className="w-full max-w-4xl space-y-12">
+        <div className="w-full max-w-2xl space-y-8">
+          
           {/* Logo with Breathing Animation */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -97,110 +120,51 @@ export default function Subscription() {
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="drop-shadow-[0_0_40px_rgba(234,179,8,0.4)]"
+              className="drop-shadow-[0_0_50px_rgba(234,179,8,0.4)]"
             >
               <Logo size="xl" animated />
             </motion.div>
           </motion.div>
 
-          {/* Hero Copy */}
+          {/* Headline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-center space-y-4"
           >
-            <h1 className="text-5xl md:text-6xl font-serif font-bold text-white tracking-tight">
-              Invest in Your Peace of Mind
+            <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 leading-relaxed">
+              روی بهترین نسخه خودت سرمایه‌گذاری کن
             </h1>
-            <p className="text-xl md:text-2xl text-white/70 font-light">
-              You are 30 days into your journey. Secure your habits forever.
+            <p className="text-lg md:text-xl text-muted-foreground">
+              ۳۰ روز تلاش کردی. نذار این زنجیره موفقیت قطع بشه.
             </p>
           </motion.div>
 
-          {/* Social Proof */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col items-center gap-3"
-          >
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-[#1a1c2e] flex items-center justify-center text-white font-bold"
-                >
-                  {i}
-                </div>
-              ))}
-            </div>
-            <p className="text-white/60 text-sm">Join 10,000+ mindful achievers</p>
-          </motion.div>
-
-          {/* Comparison Cards */}
+          {/* Premium Features - Glass Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto"
+            transition={{ delay: 0.4 }}
+            className="glass-strong p-8 rounded-3xl border border-yellow-500/20 shadow-[0_0_40px_-10px_rgba(234,179,8,0.2)]"
           >
-            {/* Free Tier - Muted */}
-            <div className="relative p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 opacity-60">
-              <div className="absolute inset-0 backdrop-blur-sm rounded-2xl" />
-              <div className="relative space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-white/70">Free</h3>
-                  <p className="text-white/50">Limited Access</p>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-white/50">
-                    <div className="w-5 h-5 rounded-full border border-white/30" />
-                    <span>3 Habits Only</span>
+            <div className="space-y-5">
+              {premiumFeatures.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                    <feature.icon className="w-5 h-5 text-yellow-500" />
                   </div>
-                  <div className="flex items-center gap-3 text-white/50">
-                    <div className="w-5 h-5 rounded-full border border-white/30" />
-                    <span>No AI Coach</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white/50">
-                    <div className="w-5 h-5 rounded-full border border-white/30" />
-                    <span>Basic Analytics</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Pro Tier - Shining */}
-            <div className="relative p-8 rounded-2xl bg-gradient-to-br from-yellow-400/20 via-orange-400/20 to-yellow-500/20 backdrop-blur-sm border-2 border-yellow-400/50 shadow-[0_0_60px_rgba(234,179,8,0.3)]">
-              <div className="absolute top-4 right-4">
-                <div className="px-3 py-1 rounded-full bg-yellow-400 text-black text-xs font-bold">
-                  RECOMMENDED
-                </div>
-              </div>
-              <div className="relative space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-white">Pro</h3>
-                  <p className="text-white/80">Unlimited Power</p>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-white">
-                    <Check className="w-5 h-5 text-yellow-400" />
-                    <span>Infinite Habits</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white">
-                    <Check className="w-5 h-5 text-yellow-400" />
-                    <span>Personal AI Coach</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white">
-                    <Check className="w-5 h-5 text-yellow-400" />
-                    <span>Cloud Sync</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white">
-                    <Check className="w-5 h-5 text-yellow-400" />
-                    <span>Advanced Analytics</span>
-                  </div>
-                </div>
-              </div>
+                  <span className="text-lg text-white/90 font-medium">
+                    {feature.text}
+                  </span>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
@@ -209,67 +173,90 @@ export default function Subscription() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="max-w-md mx-auto"
+            className="flex flex-col items-center gap-6"
           >
-            <div className="flex items-center justify-center gap-4 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
-              <span className={`text-lg font-medium transition-colors ${!isYearly ? 'text-white' : 'text-white/50'}`}>
-                Monthly
+            {/* Toggle Switch */}
+            <div className="flex items-center gap-4 p-4 rounded-2xl glass-strong border border-white/10">
+              <span className={`text-lg font-semibold transition-all ${!isYearly ? 'text-white' : 'text-white/40'}`}>
+                ماهانه
               </span>
               <Switch
                 checked={isYearly}
                 onCheckedChange={setIsYearly}
-                className="data-[state=checked]:bg-yellow-400"
+                className="data-[state=checked]:bg-yellow-500"
               />
-              <span className={`text-lg font-medium transition-colors ${isYearly ? 'text-white' : 'text-white/50'}`}>
-                Yearly
+              <span className={`text-lg font-semibold transition-all ${isYearly ? 'text-white' : 'text-white/40'}`}>
+                سالانه
               </span>
               {isYearly && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-bold border border-green-400/30"
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border border-yellow-500/50"
                 >
-                  -40%
-                </motion.span>
+                  <span className="text-sm font-bold text-yellow-300">
+                    ۲۰٪ تخفیف
+                  </span>
+                </motion.div>
               )}
             </div>
 
-            {/* Price Display */}
+            {/* Pricing Card - Credit Card Style */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="text-center mt-6 space-y-2"
+              animate={{
+                scale: isYearly ? 1 : 0.95,
+              }}
+              transition={{ duration: 0.3 }}
+              className={`w-full p-8 rounded-3xl transition-all ${
+                isYearly
+                  ? 'bg-gradient-to-br from-yellow-500/10 via-yellow-400/5 to-transparent border-2 border-yellow-500/50 shadow-[0_0_30px_-10px_rgba(234,179,8,0.3)]'
+                  : 'bg-white/5 border border-white/10'
+              }`}
             >
-              <p className="text-4xl font-bold text-white">
-                {isYearly ? '$99' : '$15'}{' '}
-                <span className="text-xl text-white/50 font-normal">
-                  / {isYearly ? 'year' : 'month'}
-                </span>
-              </p>
               {isYearly && (
-                <p className="text-white/60 text-sm">
-                  That's just $8.25/month
-                </p>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 mb-6"
+                >
+                  <Crown className="w-4 h-4 text-black" />
+                  <span className="text-sm font-bold text-black">پیشنهاد ویژه</span>
+                </motion.div>
               )}
+
+              <div className="space-y-4">
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-5xl font-bold text-white">
+                    {isYearly ? '۴۹۰,۰۰۰' : '۴۹,۰۰۰'}
+                  </span>
+                  <span className="text-xl text-white/60">تومان</span>
+                </div>
+                <p className="text-center text-white/70 text-lg">
+                  {isYearly ? 'اشتراک سالانه' : 'اشتراک ماهانه'}
+                </p>
+                {isYearly && (
+                  <p className="text-center text-yellow-400 text-sm font-semibold">
+                    معادل ۴۰,۸۳۳ تومان در ماه
+                  </p>
+                )}
+              </div>
             </motion.div>
           </motion.div>
 
-          {/* CTA Button - Fixed on Mobile */}
+          {/* CTA Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
-            className="max-w-2xl mx-auto"
+            transition={{ delay: 1 }}
           >
             <Button
               onClick={handlePurchase}
               disabled={isProcessing}
-              className="relative w-full py-8 text-xl font-bold rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-500 text-black hover:scale-105 transition-all shadow-[0_0_60px_rgba(234,179,8,0.5)] overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="relative w-full h-14 text-xl font-bold rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-600 text-black hover:scale-105 transition-all shadow-[0_0_60px_rgba(234,179,8,0.5)] overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {/* Shimmer Effect */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 animate={{
                   x: ['-100%', '200%'],
                 }}
@@ -282,22 +269,29 @@ export default function Subscription() {
               />
               
               {isProcessing ? (
-                <span className="flex items-center justify-center gap-3">
+                <span className="flex items-center justify-center gap-3 relative z-10">
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  Processing...
+                  در حال پردازش...
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-3 relative z-10">
-                  <Sparkles className="w-6 h-6" />
-                  Start My Transformation
+                  <Crown className="w-6 h-6" />
+                  شروع عضویت ویژه
                 </span>
               )}
             </Button>
 
-            <p className="text-center text-white/50 text-sm mt-6">
-              🔒 Cancel anytime • No commitment • 30-day money-back guarantee
-            </p>
+            {/* Trust Footer */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2 }}
+              className="text-center text-white/40 text-sm mt-6"
+            >
+              🔒 تضمین بازگشت وجه • لغو آسان • هیچ تعهد طولانی مدت
+            </motion.p>
           </motion.div>
+
         </div>
       </div>
     </div>
