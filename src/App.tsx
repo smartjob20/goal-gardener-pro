@@ -58,8 +58,8 @@ const App = () => {
       <BrowserRouter>
         <BackButtonHandler />
         <TooltipProvider delayDuration={0}>
-          {/* Safe Area Container */}
-          <div className="safe-area-container">
+          {/* Safe Area Container with top padding for header */}
+          <div className="safe-area-container pt-16">
             <Toaster />
             <Sonner />
             <Routes>
