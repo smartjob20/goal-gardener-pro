@@ -242,7 +242,7 @@ const HabitTracker = () => {
                 عادت جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
               <DialogHeader>
                 <DialogTitle>{editingHabit ? 'ویرایش عادت' : 'افزودن عادت جدید'}</DialogTitle>
               </DialogHeader>
@@ -285,9 +285,9 @@ const HabitTracker = () => {
                 </motion.div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {/* عنوان */}
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2">
                   <Label htmlFor="title">عنوان عادت *</Label>
                   <Input
                     id="title"
@@ -298,7 +298,7 @@ const HabitTracker = () => {
                 </div>
 
                 {/* توضیحات */}
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2">
                   <Label htmlFor="description">توضیحات</Label>
                   <Textarea
                     id="description"
@@ -310,7 +310,7 @@ const HabitTracker = () => {
                 </div>
 
                 {/* دسته‌بندی */}
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2">
                   <Label>دسته‌بندی</Label>
                   <Select value={category} onValueChange={(v) => setCategory(v)}>
                     <SelectTrigger>
@@ -337,7 +337,7 @@ const HabitTracker = () => {
                 </div>
 
                 {/* نوع عادت */}
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2">
                   <Label>نوع عادت</Label>
                   <Select value={habitType} onValueChange={(v) => setHabitType(v as HabitType)}>
                     <SelectTrigger>
@@ -352,8 +352,8 @@ const HabitTracker = () => {
 
                 {/* هدف و واحد */}
                 {habitType === 'quantitative' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5 sm:space-y-2">
                       <Label htmlFor="target">هدف</Label>
                       <Input
                         id="target"
@@ -363,7 +363,7 @@ const HabitTracker = () => {
                         min="1"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5 sm:space-y-2">
                       <Label htmlFor="targetUnit">واحد</Label>
                       <Select value={targetUnit} onValueChange={setTargetUnit}>
                         <SelectTrigger>
@@ -384,8 +384,8 @@ const HabitTracker = () => {
                 )}
 
                 {/* فرکانس و سختی */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <Label>فرکانس</Label>
                     <Select value={frequency} onValueChange={(v) => setFrequency(v as HabitFrequency)}>
                       <SelectTrigger>
@@ -398,7 +398,7 @@ const HabitTracker = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <Label>سختی</Label>
                     <Select value={difficulty} onValueChange={(v) => setDifficulty(v as HabitDifficulty)}>
                       <SelectTrigger>
@@ -416,9 +416,9 @@ const HabitTracker = () => {
                 </div>
 
                 {/* رنگ */}
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2">
                   <Label htmlFor="color">رنگ شخصی</Label>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center">
                     <Input
                       id="color"
                       type="color"
@@ -426,12 +426,12 @@ const HabitTracker = () => {
                       onChange={(e) => setColor(e.target.value)}
                       className="w-20 h-10"
                     />
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'].map(c => (
                         <button
                           key={c}
                           onClick={() => setColor(c)}
-                          className="w-8 h-8 rounded-full border-2 border-border hover:scale-110 transition-transform"
+                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-full border-2 border-border hover:scale-110 transition-transform active:scale-95"
                           style={{ backgroundColor: c }}
                         />
                       ))}
@@ -440,7 +440,7 @@ const HabitTracker = () => {
                 </div>
 
                 {/* یادآوری */}
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex items-center justify-between">
                     <Label>یادآوری</Label>
                     <Switch
@@ -465,12 +465,12 @@ const HabitTracker = () => {
                 />
 
                 {/* دکمه‌ها */}
-                <div className="flex gap-2 pt-4">
-                  <Button onClick={handleSubmit} className="flex-1">
-                    {editingHabit ? 'ذخیره تغییرات' : 'افزودن عادت'}
-                  </Button>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 pt-3 sm:pt-4">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
                     انصراف
+                  </Button>
+                  <Button onClick={handleSubmit} className="flex-1 w-full">
+                    {editingHabit ? 'ذخیره تغییرات' : 'افزودن عادت'}
                   </Button>
                 </div>
               </div>
