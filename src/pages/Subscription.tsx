@@ -121,6 +121,48 @@ export default function Subscription() {
     },
   ];
 
+  const comparisonCategories = [
+    {
+      category: "مدیریت عادت‌ها",
+      features: [
+        { name: "تعداد عادت‌های فعال", free: "۳ عادت", premium: "نامحدود", highlight: true },
+        { name: "ردیابی روزانه عادت‌ها", free: true, premium: true },
+        { name: "یادآوری هوشمند", free: true, premium: true },
+        { name: "تنظیم دسته‌بندی سفارشی", free: false, premium: true },
+        { name: "آمار پیشرفت تفصیلی", free: false, premium: true },
+      ]
+    },
+    {
+      category: "تحلیل و گزارش",
+      features: [
+        { name: "نمودار پیشرفت پایه", free: true, premium: true },
+        { name: "تحلیل‌های پیشرفته", free: false, premium: true, highlight: true },
+        { name: "گزارش PDF دقیق", free: false, premium: true },
+        { name: "مقایسه دوره‌های زمانی", free: false, premium: true },
+        { name: "نمودارهای تعاملی", free: false, premium: true },
+      ]
+    },
+    {
+      category: "مربی هوش مصنوعی",
+      features: [
+        { name: "مشاوره شخصی‌سازی شده", free: false, premium: true, highlight: true },
+        { name: "پیشنهادات هوشمند روزانه", free: false, premium: true },
+        { name: "تحلیل رفتاری", free: false, premium: true },
+        { name: "راهنمایی گام‌به‌گام", free: false, premium: true },
+      ]
+    },
+    {
+      category: "امکانات پیشرفته",
+      features: [
+        { name: "پشتیبان‌گیری ابری خودکار", free: false, premium: true, highlight: true },
+        { name: "همگام‌سازی بین دستگاه‌ها", free: false, premium: true },
+        { name: "حالت آفلاین کامل", free: true, premium: true },
+        { name: "اولویت در پشتیبانی", free: false, premium: true },
+        { name: "به‌روزرسانی‌های اختصاصی", free: false, premium: true },
+      ]
+    },
+  ];
+
   const faqs = [
     {
       question: "آیا می‌توانم اشتراک خود را لغو کنم؟",
@@ -402,11 +444,136 @@ export default function Subscription() {
             })}
           </motion.div>
 
-          {/* FAQ Section */}
+          {/* Feature Comparison Table */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
+            className="w-full max-w-4xl mx-auto"
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                مقایسه دقیق امکانات
+              </h2>
+              <p className="text-muted-foreground">
+                ببینید چه امکاناتی با اشتراک پریمیوم در اختیارتان قرار می‌گیرد
+              </p>
+            </div>
+
+            <div className="glass-strong rounded-3xl overflow-hidden border border-border/50">
+              {/* Table Header */}
+              <div className="grid grid-cols-3 gap-4 p-6 bg-muted/30 border-b border-border/50">
+                <div className="text-sm font-semibold text-muted-foreground">
+                  دسته‌بندی
+                </div>
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-bold text-foreground">رایگان</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30">
+                    <Crown className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-bold text-primary">پریمیوم</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expandable Categories */}
+              <Accordion type="single" collapsible className="divide-y divide-border/30">
+                {comparisonCategories.map((category, catIndex) => (
+                  <AccordionItem
+                    key={catIndex}
+                    value={`category-${catIndex}`}
+                    className="border-0"
+                  >
+                    <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/20 transition-colors group">
+                      <div className="flex items-center gap-3 text-start">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                          <span className="text-sm font-bold text-primary">{catIndex + 1}</span>
+                        </div>
+                        <span className="text-base font-semibold text-foreground">
+                          {category.category}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-4">
+                      <div className="space-y-3 pt-2">
+                        {category.features.map((feature, featureIndex) => (
+                          <motion.div
+                            key={featureIndex}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: featureIndex * 0.05 }}
+                            className={cn(
+                              "grid grid-cols-3 gap-4 items-center p-3 rounded-xl transition-colors",
+                              feature.highlight ? "bg-primary/5" : "hover:bg-muted/30"
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className={cn(
+                                "text-sm",
+                                feature.highlight ? "font-semibold text-foreground" : "text-muted-foreground"
+                              )}>
+                                {feature.name}
+                              </span>
+                            </div>
+                            
+                            {/* Free Column */}
+                            <div className="text-center">
+                              {typeof feature.free === 'boolean' ? (
+                                <div className={cn(
+                                  "inline-flex items-center justify-center w-6 h-6 rounded-full",
+                                  feature.free ? "bg-success/20" : "bg-muted"
+                                )}>
+                                  {feature.free ? (
+                                    <Check className="w-4 h-4 text-success" />
+                                  ) : (
+                                    <X className="w-4 h-4 text-muted-foreground" />
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">
+                                  {feature.free}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Premium Column */}
+                            <div className="text-center">
+                              {typeof feature.premium === 'boolean' ? (
+                                <div className={cn(
+                                  "inline-flex items-center justify-center w-6 h-6 rounded-full",
+                                  feature.premium ? "bg-primary/20" : "bg-muted"
+                                )}>
+                                  {feature.premium ? (
+                                    <Check className="w-4 h-4 text-primary" />
+                                  ) : (
+                                    <X className="w-4 h-4 text-muted-foreground" />
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-sm font-semibold text-primary">
+                                  {feature.premium}
+                                </span>
+                              )}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </motion.div>
+
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
             className="w-full max-w-3xl mx-auto"
           >
             <div className="text-center mb-8">
