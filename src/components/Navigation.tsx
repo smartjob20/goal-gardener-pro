@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { Home, CheckSquare, Flame, Calendar, Target, Clock, BarChart3, Settings, User, Gift, Sparkles, Menu, Plus, LogOut } from 'lucide-react';
+import { Home, CheckSquare, Flame, Calendar, Target, Clock, BarChart3, Settings, User, Gift, Sparkles, Menu, Plus, LogOut, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import Logo from './Logo';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState as useStateHook } from 'react';
 interface NavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -65,6 +69,7 @@ export default function Navigation({
   onAddClick
 }: NavigationProps) {
   const [open, setOpen] = useState(false);
+  const [daysRemaining, setDaysRemaining] = useStateHook<number | null>(null);
   const {
     state
   } = useApp();
@@ -72,6 +77,66 @@ export default function Navigation({
     user,
     signOut
   } = useAuth();
+  const { isPro, subscriptionInfo } = useSubscription();
+
+  useEffect(() => {
+    const fetchTrialStatus = async () => {
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('trial_start_date, is_pro, subscription_status')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile) return;
+
+      // If user has active paid subscription
+      if (profile.is_pro && profile.subscription_status === 'active') {
+        setDaysRemaining(null);
+        return;
+      }
+
+      // Calculate days remaining in trial
+      const trialStartDate = profile.trial_start_date ? new Date(profile.trial_start_date) : null;
+      if (!trialStartDate) {
+        setDaysRemaining(null);
+        return;
+      }
+
+      const now = new Date();
+      const daysSinceStart = Math.floor((now.getTime() - trialStartDate.getTime()) / (1000 * 60 * 60 * 24));
+      const remaining = 30 - daysSinceStart;
+
+      setDaysRemaining(remaining > 0 ? remaining : null);
+    };
+
+    fetchTrialStatus();
+  }, [user]);
+
+  const getStatusBadge = () => {
+    if (subscriptionInfo?.isPro && subscriptionInfo.status === 'active') {
+      return (
+        <Badge className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white gap-1">
+          <Crown className="w-3 h-3" />
+          Pro
+        </Badge>
+      );
+    }
+    if (daysRemaining !== null && daysRemaining > 0) {
+      return (
+        <Badge className="bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-900 gap-1">
+          <Crown className="w-3 h-3" />
+          Premium Trial
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary" className="text-muted-foreground">
+        Basic
+      </Badge>
+    );
+  };
   const handleNavClick = (tabId: string) => {
     onTabChange(tabId);
     setOpen(false);
@@ -125,6 +190,9 @@ export default function Navigation({
                       <span className="text-xs text-muted-foreground">سطح {state.user.level}</span>
                       <Separator orientation="vertical" className="h-3" />
                       <span className="text-xs text-primary font-semibold">{state.user.xp} XP</span>
+                    </div>
+                    <div className="mt-2">
+                      {getStatusBadge()}
                     </div>
                   </div>
                 </div>

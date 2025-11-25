@@ -39,14 +39,24 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('is_pro, subscription_tier, subscription_status, current_period_end')
+        .select('is_pro, subscription_tier, subscription_status, current_period_end, trial_start_date')
         .eq('id', user.id)
         .single();
 
       if (error) throw error;
 
+      // Calculate if user is within 30-day trial
+      const trialStartDate = profile.trial_start_date ? new Date(profile.trial_start_date) : null;
+      const now = new Date();
+      const daysSinceTrialStart = trialStartDate 
+        ? Math.floor((now.getTime() - trialStartDate.getTime()) / (1000 * 60 * 60 * 24))
+        : 999; // If no trial_start_date, assume trial expired
+      
+      const isWithinTrial = daysSinceTrialStart < 30;
+      const hasActiveSubscription = profile.is_pro && profile.subscription_status === 'active';
+
       const info: SubscriptionInfo = {
-        isPro: profile.is_pro || false,
+        isPro: hasActiveSubscription || isWithinTrial,
         tier: (profile.subscription_tier as any) || 'free',
         status: (profile.subscription_status as any) || 'active',
         currentPeriodEnd: profile.current_period_end ? new Date(profile.current_period_end) : null,
