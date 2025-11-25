@@ -24,7 +24,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2, CheckSquare, Calendar } from 'lucide-react';
 import { storage, STORAGE_KEYS } from '@/utils/storage';
-
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showWelcome, setShowWelcome] = useState(false);
@@ -33,8 +32,13 @@ const Index = () => {
   const [quickAddType, setQuickAddType] = useState<'task' | 'plan'>('task');
   const [quickTitle, setQuickTitle] = useState('');
   const [quickPriority, setQuickPriority] = useState<'high' | 'medium' | 'low'>('medium');
-  const { user, loading } = useAuth();
-  const { addTask } = useApp();
+  const {
+    user,
+    loading
+  } = useAuth();
+  const {
+    addTask
+  } = useApp();
   const navigate = useNavigate();
 
   // Check authentication
@@ -48,15 +52,12 @@ const Index = () => {
   useEffect(() => {
     const checkOnboarding = async () => {
       if (user) {
-        const onboardingCompleted = await storage.get(STORAGE_KEYS.ONBOARDING_COMPLETED)
-          || localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
-        
+        const onboardingCompleted = (await storage.get(STORAGE_KEYS.ONBOARDING_COMPLETED)) || localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
         if (!onboardingCompleted) {
           setShowWelcome(true);
         }
       }
     };
-    
     checkOnboarding();
   }, [user]);
 
@@ -65,9 +66,10 @@ const Index = () => {
     const savedSettings = localStorage.getItem('appState');
     if (savedSettings) {
       try {
-        const { settings } = JSON.parse(savedSettings);
+        const {
+          settings
+        } = JSON.parse(savedSettings);
         const root = document.documentElement;
-        
         if (settings.theme === 'dark') {
           root.classList.add('dark');
         } else if (settings.theme === 'light') {
@@ -85,13 +87,12 @@ const Index = () => {
       }
     }
   }, []);
-
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
         return <UnifiedDashboard />;
       case 'tasks':
-        return <TaskManager />;
+        return <TaskManager className="mb-[70px]" />;
       case 'habits':
         return <HabitTracker />;
       case 'planning':
@@ -114,70 +115,56 @@ const Index = () => {
         return <UnifiedDashboard />;
     }
   };
-
   const handleQuickAdd = () => {
     if (!quickTitle.trim()) return;
-
     if (quickAddType === 'task') {
       addTask({
         title: quickTitle,
         priority: quickPriority,
         category: 'personal',
-        xpReward: quickPriority === 'high' ? 30 : quickPriority === 'medium' ? 20 : 10,
+        xpReward: quickPriority === 'high' ? 30 : quickPriority === 'medium' ? 20 : 10
       });
     } else {
       // For plans, switch to planning tab
       setActiveTab('planning');
     }
-
     setQuickTitle('');
     setQuickPriority('medium');
     setQuickAddOpen(false);
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+    return <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
           <p className="text-muted-foreground">در حال بارگذاری...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!user) {
     return null;
   }
-
-  return (
-    <>
-      {showWelcome ? (
-        <Welcome onStart={() => {
-          setShowWelcome(false);
-          setShowOnboarding(true);
-        }} />
-      ) : showOnboarding ? (
-        <Onboarding onComplete={() => setShowOnboarding(false)} />
-      ) : (
-        <div className="min-h-screen bg-background pb-24" dir="rtl">
+  return <>
+      {showWelcome ? <Welcome onStart={() => {
+      setShowWelcome(false);
+      setShowOnboarding(true);
+    }} /> : showOnboarding ? <Onboarding onComplete={() => setShowOnboarding(false)} /> : <div className="min-h-screen bg-background pb-24" dir="rtl">
           <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="min-h-screen"
-            >
+            <motion.div key={activeTab} initial={{
+          opacity: 0,
+          x: 20
+        }} animate={{
+          opacity: 1,
+          x: 0
+        }} exit={{
+          opacity: 0,
+          x: -20
+        }} transition={{
+          duration: 0.2
+        }} className="min-h-screen">
               {renderContent()}
             </motion.div>
           </AnimatePresence>
-          <Navigation 
-            activeTab={activeTab} 
-            onTabChange={setActiveTab}
-            onAddClick={() => setQuickAddOpen(true)}
-          />
+          <Navigation activeTab={activeTab} onTabChange={setActiveTab} onAddClick={() => setQuickAddOpen(true)} />
 
           {/* Quick Add Dialog */}
           <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
@@ -188,21 +175,11 @@ const Index = () => {
               <div className="space-y-4">
                 {/* Type Selection */}
                 <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    type="button"
-                    variant={quickAddType === 'task' ? 'default' : 'outline'}
-                    onClick={() => setQuickAddType('task')}
-                    className="gap-2"
-                  >
+                  <Button type="button" variant={quickAddType === 'task' ? 'default' : 'outline'} onClick={() => setQuickAddType('task')} className="gap-2">
                     <CheckSquare className="w-4 h-4" />
                     وظیفه
                   </Button>
-                  <Button
-                    type="button"
-                    variant={quickAddType === 'plan' ? 'default' : 'outline'}
-                    onClick={() => setQuickAddType('plan')}
-                    className="gap-2"
-                  >
+                  <Button type="button" variant={quickAddType === 'plan' ? 'default' : 'outline'} onClick={() => setQuickAddType('plan')} className="gap-2">
                     <Calendar className="w-4 h-4" />
                     برنامه
                   </Button>
@@ -213,17 +190,11 @@ const Index = () => {
                   <label className="text-sm font-medium mb-2 block">
                     {quickAddType === 'task' ? 'عنوان وظیفه' : 'عنوان برنامه'}
                   </label>
-                  <Input
-                    value={quickTitle}
-                    onChange={(e) => setQuickTitle(e.target.value)}
-                    placeholder={quickAddType === 'task' ? 'مثال: خرید مواد غذایی' : 'مثال: برنامه هفتگی'}
-                    onKeyDown={(e) => e.key === 'Enter' && handleQuickAdd()}
-                  />
+                  <Input value={quickTitle} onChange={e => setQuickTitle(e.target.value)} placeholder={quickAddType === 'task' ? 'مثال: خرید مواد غذایی' : 'مثال: برنامه هفتگی'} onKeyDown={e => e.key === 'Enter' && handleQuickAdd()} />
                 </div>
 
                 {/* Priority (only for tasks) */}
-                {quickAddType === 'task' && (
-                  <div>
+                {quickAddType === 'task' && <div>
                     <label className="text-sm font-medium mb-2 block">اولویت</label>
                     <Select value={quickPriority} onValueChange={(v: any) => setQuickPriority(v)}>
                       <SelectTrigger>
@@ -235,36 +206,23 @@ const Index = () => {
                         <SelectItem value="low">🟢 پایین</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                )}
+                  </div>}
 
                 {/* Actions */}
                 <div className="flex gap-2 justify-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setQuickAddOpen(false)}
-                  >
+                  <Button type="button" variant="outline" onClick={() => setQuickAddOpen(false)}>
                     انصراف
                   </Button>
-                  <Button
-                    onClick={handleQuickAdd}
-                    disabled={!quickTitle.trim()}
-                    className="bg-gradient-metallic-silver"
-                    style={{
-                      background: 'linear-gradient(135deg, #E0E0E0 0%, #FFFFFF 50%, #BDBDBD 100%)',
-                    }}
-                  >
+                  <Button onClick={handleQuickAdd} disabled={!quickTitle.trim()} className="bg-gradient-metallic-silver" style={{
+                background: 'linear-gradient(135deg, #E0E0E0 0%, #FFFFFF 50%, #BDBDBD 100%)'
+              }}>
                     افزودن
                   </Button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-      )}
-    </>
-  );
+        </div>}
+    </>;
 };
-
 export default Index;
