@@ -1,10 +1,13 @@
 import { motion } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { breathingHaptic } from '@/utils/haptics';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showText?: boolean;
   animated?: boolean;
   className?: string;
+  celebrateMilestone?: boolean; // Trigger breathing animation + haptic
 }
 
 const sizeMap = {
@@ -25,10 +28,12 @@ export default function Logo({
   size = 'md', 
   showText = true, 
   animated = true,
-  className = '' 
+  className = '',
+  celebrateMilestone = false
 }: LogoProps) {
   const iconSize = sizeMap[size];
   const textSize = textSizeMap[size];
+  const [isCelebrating, setIsCelebrating] = useState(false);
 
   const MotionWrapper = animated ? motion.div : 'div';
   const animationProps = animated ? {
@@ -36,6 +41,15 @@ export default function Logo({
     animate: { scale: 1, opacity: 1 },
     transition: { duration: 0.5 }
   } : {};
+
+  // Breathing celebration effect
+  useEffect(() => {
+    if (celebrateMilestone) {
+      setIsCelebrating(true);
+      breathingHaptic();
+      setTimeout(() => setIsCelebrating(false), 2000);
+    }
+  }, [celebrateMilestone]);
 
   return (
     <MotionWrapper 
@@ -46,13 +60,13 @@ export default function Logo({
       <div className={`relative ${iconSize}`}>
         <motion.div
           className="absolute inset-0 bg-gradient-to-br from-primary via-info to-accent rounded-2xl opacity-20 blur-lg"
-          animate={animated ? {
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0.3, 0.2],
+          animate={animated || isCelebrating ? {
+            scale: isCelebrating ? [1, 1.4, 1] : [1, 1.2, 1],
+            opacity: isCelebrating ? [0.2, 0.5, 0.2] : [0.2, 0.3, 0.2],
           } : {}}
           transition={{
-            duration: 3,
-            repeat: Infinity,
+            duration: isCelebrating ? 1.5 : 3,
+            repeat: isCelebrating ? 1 : Infinity,
             ease: "easeInOut"
           }}
         />

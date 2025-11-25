@@ -18,6 +18,7 @@ import Rewards from '@/components/Rewards';
 import AICoach from '@/components/AICoach';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
+import { storage, STORAGE_KEYS } from '@/utils/storage';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -33,14 +34,20 @@ const Index = () => {
     }
   }, [user, loading, navigate]);
 
-  // Check if user has completed onboarding
+  // Check if user has completed onboarding (with Capacitor Preferences)
   useEffect(() => {
-    if (user) {
-      const onboardingCompleted = localStorage.getItem('deepbreath_onboarding_completed');
-      if (!onboardingCompleted) {
-        setShowWelcome(true);
+    const checkOnboarding = async () => {
+      if (user) {
+        const onboardingCompleted = await storage.get(STORAGE_KEYS.ONBOARDING_COMPLETED)
+          || localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+        
+        if (!onboardingCompleted) {
+          setShowWelcome(true);
+        }
       }
-    }
+    };
+    
+    checkOnboarding();
   }, [user]);
 
   // Apply theme on mount
