@@ -110,7 +110,7 @@ const Index = () => {
       case 'settings':
         return <Settings />;
       case 'profile':
-        return <Profile />;
+        return <Profile className="mt-[70px]" />;
       default:
         return <UnifiedDashboard />;
     }
