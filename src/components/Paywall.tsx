@@ -1,7 +1,13 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Crown, Check, Sparkles, Star, Zap, TrendingUp } from 'lucide-react';
+import { Crown, Check, Sparkles, Star, Zap, TrendingUp, Loader2 } from 'lucide-react';
+import { paymentService } from '@/services/payment/PaymentService';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { toast } from '@/hooks/use-toast';
+import { triggerHaptic } from '@/utils/haptics';
+import confetti from 'canvas-confetti';
 
 interface PaywallProps {
   onStartTrial: () => void;
@@ -9,13 +15,70 @@ interface PaywallProps {
 }
 
 export default function Paywall({ onStartTrial, onContinueLimited }: PaywallProps) {
+  const { refreshSubscription } = useSubscription();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingTier, setProcessingTier] = useState<'monthly' | 'yearly' | null>(null);
+
   const premiumFeatures = [
     { icon: Crown, text: 'دسترسی به مربی هوشمند AI' },
     { icon: Zap, text: 'همگام‌سازی ابری نامحدود' },
     { icon: TrendingUp, text: 'تحلیل‌های پیشرفته و گزارش‌های جامع' },
     { icon: Star, text: 'محافظت از نوار (Streak Protection)' },
-    { icon: Sparkles, text: 'تم‌های اختصاصی و شخصی‌سازی کامل' },
+    { icon: Sparkles, text: 'تم‌های اختصاصی و شخسی‌سازی کامل' },
   ];
+
+  const handlePurchase = async (tier: 'monthly' | 'yearly') => {
+    setIsProcessing(true);
+    setProcessingTier(tier);
+    
+    try {
+      await triggerHaptic('medium');
+      
+      const success = await paymentService.purchase(tier);
+      
+      if (success) {
+        // Trigger success haptic
+        await triggerHaptic('success');
+        
+        // Show confetti
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        
+        // Refresh subscription status
+        await refreshSubscription();
+        
+        // Show success toast
+        toast({
+          title: '🎉 خوش آمدید به Deep Breath Pro!',
+          description: 'اکنون می‌توانید از تمام امکانات پریمیوم استفاده کنید',
+        });
+        
+        // Call success callback
+        onStartTrial();
+      } else {
+        await triggerHaptic('error');
+        toast({
+          title: 'خطا در پردازش',
+          description: 'لطفاً دوباره تلاش کنید',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      await triggerHaptic('error');
+      toast({
+        title: 'خطا',
+        description: 'مشکلی پیش آمده است. لطفاً دوباره تلاش کنید',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+      setProcessingTier(null);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary-light/40 to-accent-light/40 flex items-center justify-center p-4">
@@ -104,17 +167,28 @@ export default function Paywall({ onStartTrial, onContinueLimited }: PaywallProp
             className="space-y-4"
           >
             <Button
-              onClick={onStartTrial}
-              className="w-full py-6 text-lg font-bold bg-gradient-metallic-silver text-foreground hover:scale-105 transition-transform shadow-2xl border border-border/30"
+              onClick={() => handlePurchase('yearly')}
+              disabled={isProcessing}
+              className="w-full py-6 text-lg font-bold bg-gradient-metallic-silver text-foreground hover:scale-105 transition-transform shadow-2xl border border-border/30 disabled:opacity-50 disabled:cursor-not-allowed"
               size="lg"
             >
-              <Sparkles className="w-5 h-5 ml-2" />
-              شروع دوره آزمایشی رایگان
+              {isProcessing && processingTier === 'yearly' ? (
+                <>
+                  <Loader2 className="w-5 h-5 ms-2 animate-spin" />
+                  در حال پردازش...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5 ms-2" />
+                  شروع دوره آزمایشی رایگان
+                </>
+              )}
             </Button>
 
             <button
               onClick={onContinueLimited}
-              className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+              disabled={isProcessing}
+              className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline disabled:opacity-50"
             >
               ادامه با نسخه محدود
             </button>
