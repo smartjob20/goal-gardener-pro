@@ -314,15 +314,15 @@ const Planning = () => {
                 برنامه جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto pb-safe" dir="rtl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto pb-safe p-4 sm:p-6" dir="rtl">
               <DialogHeader>
-                <DialogTitle>✨ ایجاد برنامه جدید</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">✨ ایجاد برنامه جدید</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4 pb-20">
+              <div className="space-y-3 sm:space-y-4 py-3 sm:py-4 pb-20">
                 {/* نوع برنامه */}
                 <div className="space-y-2">
-                  <Label>نوع برنامه</Label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <Label className="text-sm">نوع برنامه</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {(Object.keys(planTypeLabels) as PlanType[]).map((type) => (
                       <Button
                         key={type}
@@ -341,33 +341,35 @@ const Planning = () => {
 
                 {/* عنوان */}
                 <div className="space-y-2">
-                  <Label htmlFor="title">عنوان برنامه *</Label>
+                  <Label htmlFor="title" className="text-sm">عنوان برنامه *</Label>
                   <Input
                     id="title"
                     placeholder="مثلاً: برنامه ورزش صبحگاهی"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    className="min-h-[44px] text-base"
                   />
                 </div>
 
                 {/* توضیحات */}
                 <div className="space-y-2">
-                  <Label htmlFor="description">توضیحات</Label>
+                  <Label htmlFor="description" className="text-sm">توضیحات</Label>
                   <Textarea
                     id="description"
                     placeholder="جزئیات برنامه خود را بنویسید..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
+                    className="text-base"
                   />
                 </div>
 
                 {/* دسته‌بندی و اولویت */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-2">
-                    <Label>دسته‌بندی *</Label>
+                    <Label className="text-sm">دسته‌بندی *</Label>
                     <Select value={category} onValueChange={setCategory}>
-                      <SelectTrigger>
+                      <SelectTrigger className="min-h-[44px]">
                         <SelectValue placeholder="انتخاب دسته" />
                       </SelectTrigger>
                       <SelectContent>
@@ -381,9 +383,9 @@ const Planning = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>اولویت</Label>
+                    <Label className="text-sm">اولویت</Label>
                     <Select value={priority} onValueChange={(v) => setPriority(v as Priority)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -396,11 +398,11 @@ const Planning = () => {
                 </div>
 
                 {/* مدت زمان و تاریخ شروع */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-2">
-                    <Label>مدت زمان</Label>
+                    <Label className="text-sm">مدت زمان</Label>
                     <Select value={duration.toString()} onValueChange={(v) => setDuration(parseInt(v))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -418,12 +420,13 @@ const Planning = () => {
                         value={customDuration}
                         onChange={(e) => setCustomDuration(e.target.value)}
                         min="1"
+                        className="min-h-[44px] text-base"
                       />
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label>تاریخ شروع</Label>
+                    <Label className="text-sm">تاریخ شروع</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button variant="outline" className="w-full justify-start min-h-[44px]">
@@ -455,16 +458,17 @@ const Planning = () => {
                 </div>
 
                 {/* چک‌لیست مراحل */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>مراحل اجرایی *</Label>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-sm">مراحل اجرایی *</Label>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={addChecklistItem}
+                      className="h-8 min-h-[32px]"
                     >
-                      <Plus className="ml-1 h-4 w-4" />
+                      <Plus className="ms-1 h-4 w-4" />
                       افزودن مرحله
                     </Button>
                   </div>
@@ -475,6 +479,7 @@ const Planning = () => {
                           placeholder={`مرحله ${index + 1}`}
                           value={item}
                           onChange={(e) => updateChecklistItem(index, e.target.value)}
+                          className="min-h-[44px] text-base"
                         />
                         {checklistItems.length > 1 && (
                           <Button
@@ -482,6 +487,7 @@ const Planning = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => removeChecklistItem(index)}
+                            className="min-h-[44px] min-w-[44px] shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -498,8 +504,8 @@ const Planning = () => {
                   label="تصویر انگیزشی"
                 />
 
-                <Button onClick={handleAddPlan} className="w-full">
-                  <Target className="ml-2 h-5 w-5" />
+                <Button onClick={handleAddPlan} className="w-full min-h-[44px]">
+                  <Target className="ms-2 h-5 w-5" />
                   ایجاد برنامه
                 </Button>
               </div>
@@ -832,35 +838,37 @@ const Planning = () => {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 pb-safe" dir="rtl">
           <DialogHeader>
-            <DialogTitle>✏️ ویرایش برنامه</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">✏️ ویرایش برنامه</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 sm:space-y-4 py-3 sm:py-4 pb-20">
             <div className="space-y-2">
-              <Label htmlFor="edit-title">عنوان برنامه</Label>
+              <Label htmlFor="edit-title" className="text-sm">عنوان برنامه</Label>
               <Input
                 id="edit-title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                className="min-h-[44px] text-base"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-description">توضیحات</Label>
+              <Label htmlFor="edit-description" className="text-sm">توضیحات</Label>
               <Textarea
                 id="edit-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
+                className="text-base"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label>دسته‌بندی</Label>
+                <Label className="text-sm">دسته‌بندی</Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -874,9 +882,9 @@ const Planning = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>اولویت</Label>
+                <Label className="text-sm">اولویت</Label>
                 <Select value={priority} onValueChange={(v) => setPriority(v as Priority)}>
-                  <SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -888,16 +896,17 @@ const Planning = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>مراحل اجرایی</Label>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-sm">مراحل اجرایی</Label>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={addChecklistItem}
+                  className="h-8 min-h-[32px]"
                 >
-                  <Plus className="ml-1 h-4 w-4" />
+                  <Plus className="ms-1 h-4 w-4" />
                   افزودن مرحله
                 </Button>
               </div>
@@ -907,6 +916,7 @@ const Planning = () => {
                     <Input
                       value={item}
                       onChange={(e) => updateChecklistItem(index, e.target.value)}
+                      className="min-h-[44px] text-base"
                     />
                     {checklistItems.length > 1 && (
                       <Button
@@ -914,6 +924,7 @@ const Planning = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeChecklistItem(index)}
+                        className="min-h-[44px] min-w-[44px] shrink-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -923,7 +934,7 @@ const Planning = () => {
               </div>
             </div>
 
-            <Button onClick={handleEditPlan} className="w-full">
+            <Button onClick={handleEditPlan} className="w-full min-h-[44px]">
               ذخیره تغییرات
             </Button>
           </div>
