@@ -8,29 +8,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  CheckCircle2, 
-  Circle, 
-  Target, 
-  Flame, 
-  Calendar as CalendarIcon,
-  Clock,
-  TrendingUp,
-  Zap,
-  Star,
-  Award,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
+import { CheckCircle2, Circle, Target, Flame, Calendar as CalendarIcon, Clock, TrendingUp, Zap, Star, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, addDays, addWeeks, addMonths, addYears, isSameDay } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
 import { toast } from 'sonner';
-
 type ViewMode = 'day' | 'week' | 'month' | 'year';
-
 const UnifiedDashboard = () => {
-  const { state, completeTask, checkHabit, dispatch, addXP } = useApp();
+  const {
+    state,
+    completeTask,
+    checkHabit,
+    dispatch,
+    addXP
+  } = useApp();
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const useJalali = state.settings.calendar === 'jalali';
@@ -39,16 +30,31 @@ const UnifiedDashboard = () => {
   const getDateRange = () => {
     switch (viewMode) {
       case 'day':
-        return { start: startOfDay(selectedDate), end: endOfDay(selectedDate) };
+        return {
+          start: startOfDay(selectedDate),
+          end: endOfDay(selectedDate)
+        };
       case 'week':
-        return { start: startOfWeek(selectedDate, { weekStartsOn: 6 }), end: endOfWeek(selectedDate, { weekStartsOn: 6 }) };
+        return {
+          start: startOfWeek(selectedDate, {
+            weekStartsOn: 6
+          }),
+          end: endOfWeek(selectedDate, {
+            weekStartsOn: 6
+          })
+        };
       case 'month':
-        return { start: startOfMonth(selectedDate), end: endOfMonth(selectedDate) };
+        return {
+          start: startOfMonth(selectedDate),
+          end: endOfMonth(selectedDate)
+        };
       case 'year':
-        return { start: startOfYear(selectedDate), end: endOfYear(selectedDate) };
+        return {
+          start: startOfYear(selectedDate),
+          end: endOfYear(selectedDate)
+        };
     }
   };
-
   const dateRange = getDateRange();
 
   // Navigate dates
@@ -83,55 +89,43 @@ const UnifiedDashboard = () => {
       }
       return false;
     }).sort((a, b) => {
-      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      const priorityOrder = {
+        high: 0,
+        medium: 1,
+        low: 2
+      };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
   }, [state.tasks, dateRange, viewMode, selectedDate]);
-
   const filteredHabits = useMemo(() => {
     return state.habits.filter(h => h.isActive);
   }, [state.habits]);
-
   const filteredGoals = useMemo(() => {
     return state.goals.filter(goal => {
-      return isWithinInterval(new Date(goal.targetDate), dateRange) ||
-             isWithinInterval(new Date(goal.createdAt), dateRange);
+      return isWithinInterval(new Date(goal.targetDate), dateRange) || isWithinInterval(new Date(goal.createdAt), dateRange);
     });
   }, [state.goals, dateRange]);
-
   const filteredPlans = useMemo(() => {
     return state.plans.filter(plan => {
-      return isWithinInterval(new Date(plan.startDate), dateRange) || 
-             isWithinInterval(new Date(plan.endDate), dateRange) ||
-             (new Date(plan.startDate) <= dateRange.start && new Date(plan.endDate) >= dateRange.end);
+      return isWithinInterval(new Date(plan.startDate), dateRange) || isWithinInterval(new Date(plan.endDate), dateRange) || new Date(plan.startDate) <= dateRange.start && new Date(plan.endDate) >= dateRange.end;
     });
   }, [state.plans, dateRange]);
-
   const filteredFocusSessions = useMemo(() => {
-    return state.focusSessions.filter(session => 
-      session.completed && isWithinInterval(new Date(session.startTime), dateRange)
-    );
+    return state.focusSessions.filter(session => session.completed && isWithinInterval(new Date(session.startTime), dateRange));
   }, [state.focusSessions, dateRange]);
 
   // Calculate statistics
   const stats = useMemo(() => {
     const completedTasks = filteredTasks.filter(t => t.completed).length;
     const totalTasks = filteredTasks.length;
-    const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-
+    const completionRate = totalTasks > 0 ? completedTasks / totalTasks * 100 : 0;
     const todayString = format(new Date(), 'yyyy-MM-dd');
-    const habitsCompletedToday = filteredHabits.filter(h => 
-      h.completedDates.includes(todayString)
-    ).length;
+    const habitsCompletedToday = filteredHabits.filter(h => h.completedDates.includes(todayString)).length;
     const habitsTotal = filteredHabits.length;
-    const habitCompletionRate = habitsTotal > 0 ? (habitsCompletedToday / habitsTotal) * 100 : 0;
-
+    const habitCompletionRate = habitsTotal > 0 ? habitsCompletedToday / habitsTotal * 100 : 0;
     const totalFocusTime = filteredFocusSessions.reduce((sum, s) => sum + s.duration, 0);
-    
     const goalsProgress = filteredGoals.reduce((sum, g) => sum + g.progress, 0) / (filteredGoals.length || 1);
-    
     const plansProgress = filteredPlans.reduce((sum, p) => sum + p.progress, 0) / (filteredPlans.length || 1);
-
     return {
       completedTasks,
       totalTasks,
@@ -154,11 +148,16 @@ const UnifiedDashboard = () => {
       switch (viewMode) {
         case 'day':
           return `${getPersianDayName(selectedDate)} ${formatPersianDate(selectedDate)}`;
-        case 'week': {
-          const start = startOfWeek(selectedDate, { weekStartsOn: 6 });
-          const end = endOfWeek(selectedDate, { weekStartsOn: 6 });
-          return `${formatPersianDate(start)} - ${formatPersianDate(end)}`;
-        }
+        case 'week':
+          {
+            const start = startOfWeek(selectedDate, {
+              weekStartsOn: 6
+            });
+            const end = endOfWeek(selectedDate, {
+              weekStartsOn: 6
+            });
+            return `${formatPersianDate(start)} - ${formatPersianDate(end)}`;
+          }
         case 'month':
           return formatPersianDate(selectedDate, 'MMMM yyyy');
         case 'year':
@@ -167,28 +166,28 @@ const UnifiedDashboard = () => {
     } else {
       switch (viewMode) {
         case 'day':
-          return format(selectedDate, 'EEEE، d MMMM yyyy', { locale: faIR });
+          return format(selectedDate, 'EEEE، d MMMM yyyy', {
+            locale: faIR
+          });
         case 'week':
           return `${format(dateRange.start, 'd MMM')} - ${format(dateRange.end, 'd MMM yyyy')}`;
         case 'month':
-          return format(selectedDate, 'MMMM yyyy', { locale: faIR });
+          return format(selectedDate, 'MMMM yyyy', {
+            locale: faIR
+          });
         case 'year':
           return format(selectedDate, 'yyyy');
       }
     }
   };
-
   const handleTaskComplete = (taskId: string) => {
     completeTask(taskId);
   };
-
   const handleHabitCheck = (habitId: string) => {
     const habit = state.habits.find(h => h.id === habitId);
     if (!habit) return;
-    
     const today = format(new Date(), 'yyyy-MM-dd');
     const isCompleted = habit.completedDates.includes(today);
-    
     if (isCompleted) {
       // Remove today from completed dates
       const updatedDates = habit.completedDates.filter(d => d !== today);
@@ -217,49 +216,45 @@ const UnifiedDashboard = () => {
       toast.success(`عادت تکمیل شد! +${habit.xpReward} XP 🎉`);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary-light/20 to-accent-light/20 pb-24" dir="rtl">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-primary-light/20 to-accent-light/20 pb-24" dir="rtl">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-primary/5"
-            style={{
-              width: Math.random() * 150 + 50,
-              height: Math.random() * 150 + 50,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, Math.random() * 50 - 25],
-              x: [0, Math.random() * 50 - 25],
-              scale: [1, Math.random() + 0.5, 1],
-              opacity: [0.05, 0.15, 0.05]
-            }}
-            transition={{
-              duration: Math.random() * 15 + 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
+        {[...Array(15)].map((_, i) => <motion.div key={i} className="absolute rounded-full bg-primary/5" style={{
+        width: Math.random() * 150 + 50,
+        height: Math.random() * 150 + 50,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`
+      }} animate={{
+        y: [0, Math.random() * 50 - 25],
+        x: [0, Math.random() * 50 - 25],
+        scale: [1, Math.random() + 0.5, 1],
+        opacity: [0.05, 0.15, 0.05]
+      }} transition={{
+        duration: Math.random() * 15 + 10,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }} />)}
       </div>
 
-      <div className="container mx-auto p-4 md:p-6 max-w-7xl relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
+      <div className="container mx-auto p-4 md:p-6 max-w-7xl relative z-10 mt-[70px]">
+        <motion.div initial={{
+        opacity: 0,
+        y: -20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} className="space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: 20
+          }} animate={{
+            opacity: 1,
+            x: 0
+          }} transition={{
+            delay: 0.1
+          }}>
               <h1 className="text-3xl md:text-4xl font-bold gradient-text">
                 داشبورد یکپارچه
               </h1>
@@ -269,53 +264,40 @@ const UnifiedDashboard = () => {
             </motion.div>
             
             {/* View Mode Selector */}
-            <motion.div 
-              className="flex flex-row-reverse gap-2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Button
-                variant={viewMode === 'day' ? 'default' : 'outline'}
-                onClick={() => setViewMode('day')}
-                size="sm"
-                className={viewMode === 'day' ? 'gradient-bg-primary shadow-lg' : ''}
-              >
+            <motion.div className="flex flex-row-reverse gap-2" initial={{
+            opacity: 0,
+            x: -20
+          }} animate={{
+            opacity: 1,
+            x: 0
+          }} transition={{
+            delay: 0.2
+          }}>
+              <Button variant={viewMode === 'day' ? 'default' : 'outline'} onClick={() => setViewMode('day')} size="sm" className={viewMode === 'day' ? 'gradient-bg-primary shadow-lg' : ''}>
                 روزانه
               </Button>
-              <Button
-                variant={viewMode === 'week' ? 'default' : 'outline'}
-                onClick={() => setViewMode('week')}
-                size="sm"
-                className={viewMode === 'week' ? 'gradient-bg-primary shadow-lg' : ''}
-              >
+              <Button variant={viewMode === 'week' ? 'default' : 'outline'} onClick={() => setViewMode('week')} size="sm" className={viewMode === 'week' ? 'gradient-bg-primary shadow-lg' : ''}>
                 هفتگی
               </Button>
-              <Button
-                variant={viewMode === 'month' ? 'default' : 'outline'}
-                onClick={() => setViewMode('month')}
-                size="sm"
-                className={viewMode === 'month' ? 'gradient-bg-primary shadow-lg' : ''}
-              >
+              <Button variant={viewMode === 'month' ? 'default' : 'outline'} onClick={() => setViewMode('month')} size="sm" className={viewMode === 'month' ? 'gradient-bg-primary shadow-lg' : ''}>
                 ماهانه
               </Button>
-              <Button
-                variant={viewMode === 'year' ? 'default' : 'outline'}
-                onClick={() => setViewMode('year')}
-                size="sm"
-                className={viewMode === 'year' ? 'gradient-bg-primary shadow-lg' : ''}
-              >
+              <Button variant={viewMode === 'year' ? 'default' : 'outline'} onClick={() => setViewMode('year')} size="sm" className={viewMode === 'year' ? 'gradient-bg-primary shadow-lg' : ''}>
                 سالانه
               </Button>
             </motion.div>
           </div>
 
           {/* Date Navigator */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.3
+        }}>
             <Card className="glass-strong hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -324,12 +306,7 @@ const UnifiedDashboard = () => {
                   </Button>
                   <div className="text-center">
                     <h3 className="text-lg font-semibold gradient-text">{getDateRangeLabel()}</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedDate(new Date())}
-                      className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/5"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date())} className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/5">
                       برگشت به امروز
                     </Button>
                   </div>
@@ -343,11 +320,15 @@ const UnifiedDashboard = () => {
 
           {/* Stats Overview - Mobile Friendly */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: 0.4
+          }}>
               <Card className="glass-strong hover-lift border-2 border-transparent hover:border-primary/20">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
@@ -441,12 +422,15 @@ const UnifiedDashboard = () => {
           {/* Main Content - Mobile Friendly */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Tasks Section */}
-            <motion.div
-              className="lg:col-span-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
+            <motion.div className="lg:col-span-2" initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: 0.5
+          }}>
                 <Card className="glass-strong border-2 border-transparent hover:border-primary/20">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -457,40 +441,31 @@ const UnifiedDashboard = () => {
               <CardContent>
                 <ScrollArea className="h-[400px] pr-4">
                   <AnimatePresence mode="popLayout">
-                    {filteredTasks.length === 0 ? (
-                      <div className="text-center py-12 text-muted-foreground">
+                    {filteredTasks.length === 0 ? <div className="text-center py-12 text-muted-foreground">
                         <Circle className="h-12 w-12 mx-auto mb-2 opacity-50" />
                         <p>بدون وظیفه در این بازه زمانی</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {filteredTasks.map((task, index) => (
-                          <motion.div
-                            key={task.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ delay: index * 0.05 }}
-                            className="p-4 bg-card border rounded-lg hover:shadow-md transition-all"
-                          >
+                      </div> : <div className="space-y-3">
+                        {filteredTasks.map((task, index) => <motion.div key={task.id} initial={{
+                        opacity: 0,
+                        x: -20
+                      }} animate={{
+                        opacity: 1,
+                        x: 0
+                      }} exit={{
+                        opacity: 0,
+                        scale: 0.9
+                      }} transition={{
+                        delay: index * 0.05
+                      }} className="p-4 bg-card border rounded-lg hover:shadow-md transition-all">
                             <div className="flex items-start gap-3">
-                              <button
-                                onClick={() => handleTaskComplete(task.id)}
-                                className="mt-1"
-                              >
-                                {task.completed ? (
-                                  <CheckCircle2 className="h-5 w-5 text-success" />
-                                ) : (
-                                  <Circle className="h-5 w-5 text-muted-foreground" />
-                                )}
+                              <button onClick={() => handleTaskComplete(task.id)} className="mt-1">
+                                {task.completed ? <CheckCircle2 className="h-5 w-5 text-success" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
                               </button>
                               <div className="flex-1">
                                 <h4 className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
                                   {task.title}
                                 </h4>
-                                {task.description && (
-                                  <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
-                                )}
+                                {task.description && <p className="text-sm text-muted-foreground mt-1">{task.description}</p>}
                                 <div className="flex gap-2 mt-2 flex-wrap">
                                   <Badge variant="outline" className="text-xs">
                                     {task.category}
@@ -498,18 +473,14 @@ const UnifiedDashboard = () => {
                                   <Badge variant={task.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
                                     {task.priority}
                                   </Badge>
-                                  {task.deadline && (
-                                    <Badge variant="outline" className="text-xs">
+                                  {task.deadline && <Badge variant="outline" className="text-xs">
                                       📅 {format(new Date(task.deadline), 'dd MMM')}
-                                    </Badge>
-                                  )}
+                                    </Badge>}
                                 </div>
                               </div>
                             </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    )}
+                          </motion.div>)}
+                      </div>}
                   </AnimatePresence>
                   </ScrollArea>
                 </CardContent>
@@ -519,11 +490,15 @@ const UnifiedDashboard = () => {
             {/* Right Sidebar */}
             <div className="space-y-6">
               {/* Habits Section */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-              >
+              <motion.div initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              delay: 0.6
+            }}>
                 <Card className="glass-strong border-2 border-transparent hover:border-success/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -534,27 +509,14 @@ const UnifiedDashboard = () => {
                 <CardContent>
                   <ScrollArea className="h-[300px]">
                     <div className="space-y-3">
-                      {filteredHabits.length === 0 ? (
-                        <p className="text-center text-muted-foreground py-8">
+                      {filteredHabits.length === 0 ? <p className="text-center text-muted-foreground py-8">
                           بدون عادت فعال
-                        </p>
-                      ) : (
-                        filteredHabits.map((habit) => {
-                          const todayString = format(new Date(), 'yyyy-MM-dd');
-                          const isCompleted = habit.completedDates.includes(todayString);
-                          
-                          return (
-                            <div
-                              key={habit.id}
-                              className="p-3 bg-card border rounded-lg hover:shadow-md transition-all cursor-pointer"
-                              onClick={() => handleHabitCheck(habit.id)}
-                            >
+                        </p> : filteredHabits.map(habit => {
+                        const todayString = format(new Date(), 'yyyy-MM-dd');
+                        const isCompleted = habit.completedDates.includes(todayString);
+                        return <div key={habit.id} className="p-3 bg-card border rounded-lg hover:shadow-md transition-all cursor-pointer" onClick={() => handleHabitCheck(habit.id)}>
                               <div className="flex items-center gap-3">
-                                {isCompleted ? (
-                                  <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
-                                ) : (
-                                  <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                )}
+                                {isCompleted ? <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" /> : <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />}
                                 <div className="flex-1 min-w-0">
                                   <p className={`font-medium text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
                                     {habit.title}
@@ -566,10 +528,8 @@ const UnifiedDashboard = () => {
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })
-                      )}
+                            </div>;
+                      })}
                     </div>
                     </ScrollArea>
                   </CardContent>
@@ -577,11 +537,15 @@ const UnifiedDashboard = () => {
               </motion.div>
 
               {/* Quick Stats */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-              >
+              <motion.div initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              delay: 0.7
+            }}>
                 <Card className="glass-strong border-2 border-transparent hover:border-info/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -616,8 +580,6 @@ const UnifiedDashboard = () => {
           </div>
         </motion.div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default UnifiedDashboard;
