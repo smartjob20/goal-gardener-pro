@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Crown } from 'lucide-react';
 import { motion } from 'motion/react';
 
-interface PremiumBannerProps {
-  onUpgradeClick: () => void;
-}
-
-export const PremiumBanner = ({ onUpgradeClick }: PremiumBannerProps) => {
+export const PremiumBanner = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
 
   useEffect(() => {
@@ -54,7 +52,7 @@ export const PremiumBanner = ({ onUpgradeClick }: PremiumBannerProps) => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-4 cursor-pointer"
-      onClick={onUpgradeClick}
+      onClick={() => navigate('/subscription')}
     >
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-l from-amber-400 via-yellow-300 to-amber-500 p-4 shadow-lg hover:shadow-xl transition-shadow">
         <div className="flex items-center justify-between">
