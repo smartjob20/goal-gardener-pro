@@ -11,12 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Search, Filter, CheckCircle2, Circle, Clock, Calendar, Trash2, Edit, PlayCircle, PauseCircle } from 'lucide-react';
+import { Plus, Search, Filter, CheckCircle2, Circle, Clock, Calendar, Trash2, Edit, PlayCircle, PauseCircle, GripVertical } from 'lucide-react';
 import { Task, TaskCategory, Priority, SubTask } from '@/types';
 import { formatDate, daysUntil } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from './ImageUpload';
 import { triggerHaptic } from '@/utils/haptics';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 const categoryConfig = {
   work: {
     label: 'کار',
@@ -64,12 +67,166 @@ const priorityConfig = {
     xp: 10
   }
 };
+
+// Sortable Task Item Component for drag & drop
+function SortableTaskCard({ 
+  task, 
+  categoryInfo, 
+  priorityInfo, 
+  subtaskProgress, 
+  daysLeft, 
+  onComplete, 
+  onEdit, 
+  onDelete, 
+  onToggleSubtask 
+}: { 
+  task: Task; 
+  categoryInfo: any; 
+  priorityInfo: any; 
+  subtaskProgress: number; 
+  daysLeft: number | null;
+  onComplete: (id: string) => void;
+  onEdit: (task: Task) => void;
+  onDelete: (id: string) => void;
+  onToggleSubtask: (taskId: string, subtaskId: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className={`p-4 glass-strong hover-lift transition-all ${isDragging ? 'shadow-2xl scale-105' : ''}`}>
+        <div className="flex items-start gap-4">
+          <button
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-primary/10 rounded transition-colors touch-none min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            <GripVertical className="h-5 w-5 text-muted-foreground" />
+          </button>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onComplete(task.id)}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            {task.completed ? (
+              <CheckCircle2 className="w-6 h-6 text-success" />
+            ) : (
+              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+            )}
+          </motion.button>
+
+          <div className="flex-1 space-y-3 min-w-0">
+            {task.imageUrl && (
+              <div className="w-full h-48 rounded-lg overflow-hidden">
+                <img
+                  src={task.imageUrl}
+                  alt={task.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="flex items-start justify-between gap-2 flex-wrap">
+              <div className="text-right flex-1 min-w-0">
+                <h3 className={`text-lg font-bold ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                  {task.title}
+                </h3>
+                {task.description && (
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{task.description}</p>
+                )}
+              </div>
+
+              <div className="flex gap-2 shrink-0">
+                <Badge className={`${categoryInfo.color} border`}>
+                  <span className="me-1">{categoryInfo.icon}</span>
+                  {categoryInfo.label}
+                </Badge>
+                <Badge className={`${priorityInfo.color} border`}>
+                  <span className="me-1">{priorityInfo.icon}</span>
+                  {priorityInfo.label}
+                </Badge>
+              </div>
+            </div>
+
+            {task.deadline && (
+              <div className={`flex items-center gap-2 text-sm justify-end ${
+                daysLeft !== null && daysLeft < 0 ? 'text-destructive' : 
+                daysLeft !== null && daysLeft <= 3 ? 'text-warning' : 'text-muted-foreground'
+              }`}>
+                <span>
+                  {daysLeft !== null && daysLeft < 0 ? `${Math.abs(daysLeft)} روز گذشته!` :
+                   daysLeft !== null && daysLeft === 0 ? 'امروز!' :
+                   daysLeft !== null ? `${daysLeft} روز مانده` : formatDate(task.deadline)}
+                </span>
+                <Clock className="w-4 h-4" />
+              </div>
+            )}
+
+            {task.subtasks && task.subtasks.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <Progress value={subtaskProgress} className="flex-1 me-2 h-2" />
+                  <span>{Math.round(subtaskProgress)}%</span>
+                </div>
+                <div className="space-y-2">
+                  {task.subtasks.map(st => (
+                    <div key={st.id} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg min-h-[44px]">
+                      <Checkbox
+                        checked={st.completed}
+                        onCheckedChange={() => onToggleSubtask(task.id, st.id)}
+                        className="shrink-0"
+                      />
+                      <span className={`flex-1 text-sm text-right ${st.completed ? 'line-through text-muted-foreground' : ''}`}>
+                        {st.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2 justify-end pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onEdit(task)}
+                className="gap-2 min-h-[44px]"
+              >
+                <Edit className="w-4 h-4" />
+                ویرایش
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDelete(task.id)}
+                className="gap-2 text-destructive hover:bg-destructive/10 min-h-[44px]"
+              >
+                <Trash2 className="w-4 h-4" />
+                حذف
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 export default function TaskManager() {
   const {
     state,
     addTask,
     completeTask,
-    dispatch
+    dispatch,
+    reorderTasks
   } = useApp();
   const {
     tasks
@@ -80,6 +237,18 @@ export default function TaskManager() {
   const [filterCategory, setFilterCategory] = useState<TaskCategory | 'all'>('all');
   const [filterPriority, setFilterPriority] = useState<Priority | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
+
+  // Drag and Drop Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Form state
   const [title, setTitle] = useState('');
@@ -178,6 +347,19 @@ export default function TaskManager() {
     setIsDialogOpen(true);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
+      const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
+
+      const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex);
+      reorderTasks(reorderedTasks);
+      toast.success('ترتیب وظایف ذخیره شد ✨');
+    }
+  };
+
   // Filter tasks
   const filteredTasks = tasks.filter(task => {
     const matchesTab = activeTab === 'pending' ? !task.completed : task.completed;
@@ -186,7 +368,10 @@ export default function TaskManager() {
     const matchesPriority = filterPriority === 'all' || task.priority === filterPriority;
     return matchesTab && matchesSearch && matchesCategory && matchesPriority;
   }).sort((a, b) => {
-    // Sort by priority
+    // Sort by order field first, then by priority
+    if (a.order !== undefined && b.order !== undefined) {
+      return a.order - b.order;
+    }
     const priorityOrder = {
       high: 0,
       medium: 1,
@@ -388,114 +573,55 @@ export default function TaskManager() {
           </TabsList>
 
           <TabsContent value={activeTab} className="space-y-4 mt-4">
-            <AnimatePresence mode="popLayout">
-              {filteredTasks.length === 0 ? <motion.div initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} exit={{
-              opacity: 0,
-              y: -20
-            }} className="text-center py-12 mt-0">
-                  <div className="text-6xl mb-4">📋</div>
-                  <h3 className="text-xl font-semibold mb-2">هیچ وظیفه‌ای وجود ندارد</h3>
-                  <p className="text-muted-foreground">
-                    {activeTab === 'pending' ? 'وظیفه جدید اضافه کنید!' : 'هنوز وظیفه‌ای تکمیل نشده'}
-                  </p>
-                </motion.div> : filteredTasks.map((task, index) => {
-              const categoryInfo = categoryConfig[task.category];
-              const priorityInfo = priorityConfig[task.priority];
-              const subtaskProgress = task.subtasks ? task.subtasks.filter(st => st.completed).length / task.subtasks.length * 100 : 0;
-              const daysLeft = task.deadline ? daysUntil(task.deadline) : null;
-              return <motion.div key={task.id} initial={{
-                opacity: 0,
-                y: 20
-              }} animate={{
-                opacity: 1,
-                y: 0
-              }} exit={{
-                opacity: 0,
-                scale: 0.9
-              }} transition={{
-                delay: index * 0.05
-              }} layout>
-                      <Card className="p-4 glass-strong hover-lift">
-                        <div className="flex items-start gap-4">
-                          <motion.button 
-                            onClick={async () => {
-                              await triggerHaptic('medium');
-                              completeTask(task.id);
-                            }} 
-                            className="mt-1 transition-transform hover:scale-110"
-                            animate={task.completed ? {
-                              scale: [1, 1.2, 1],
-                              transition: { duration: 0.3 }
-                            } : {}}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            {task.completed ? <CheckCircle2 className="w-6 h-6 text-success" /> : <Circle className="w-6 h-6 text-muted-foreground hover:text-primary" />}
-                          </motion.button>
-
-                          <div className="flex-1 space-y-3">
-                            <div>
-                              <h3 className={`text-lg font-semibold ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                                {task.title}
-                              </h3>
-                              {task.description && <p className="text-sm text-muted-foreground mt-1">{task.description}</p>}
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2">
-                              <Badge variant="outline" className={categoryInfo.color}>
-                                <span className="mr-1">{categoryInfo.icon}</span>
-                                {categoryInfo.label}
-                              </Badge>
-                              <Badge variant="outline" className={priorityInfo.color}>
-                                <span className="mr-1">{priorityInfo.icon}</span>
-                                {priorityInfo.label}
-                              </Badge>
-                              {task.deadline && <Badge variant="outline" className={daysLeft !== null && daysLeft < 0 ? 'text-destructive bg-destructive/10' : ''}>
-                                  <Calendar className="w-3 h-3 ml-1" />
-                                  {daysLeft !== null && daysLeft >= 0 ? `${daysLeft} روز` : 'گذشته'}
-                                </Badge>}
-                              <Badge variant="outline" className="bg-primary/10 text-primary">
-                                {task.xpReward} XP
-                              </Badge>
-                            </div>
-
-                            {task.subtasks && task.subtasks.length > 0 && <div className="space-y-2">
-                                <div className="flex items-center justify-between text-sm">
-                                  <span className="text-muted-foreground">
-                                    {task.subtasks.filter(st => st.completed).length} / {task.subtasks.length} زیروظیفه
-                                  </span>
-                                  <span className="text-muted-foreground">{Math.round(subtaskProgress)}%</span>
-                                </div>
-                                <Progress value={subtaskProgress} className="h-2" />
-                                <div className="space-y-1">
-                                  {task.subtasks.map(st => <div key={st.id} className="flex items-center gap-2 text-sm">
-                                      <Checkbox checked={st.completed} onCheckedChange={() => handleToggleSubtask(task.id, st.id)} disabled={task.completed} />
-                                      <span className={st.completed ? 'line-through text-muted-foreground' : ''}>
-                                        {st.title}
-                                      </span>
-                                    </div>)}
-                                </div>
-                              </div>}
-                          </div>
-
-                          <div className="flex gap-2">
-                            {!task.completed && <Button variant="ghost" size="sm" onClick={() => handleEditTask(task)}>
-                                <Edit className="w-4 h-4" />
-                              </Button>}
-                            <Button variant="ghost" size="sm" onClick={() => handleDeleteTask(task.id)}>
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </div>
-                      </Card>
-                    </motion.div>;
-            })}
-            </AnimatePresence>
+            {filteredTasks.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="text-center py-12 mt-0"
+              >
+                <div className="text-6xl mb-4">📋</div>
+                <h3 className="text-xl font-semibold mb-2">هیچ وظیفه‌ای وجود ندارد</h3>
+                <p className="text-muted-foreground">
+                  {activeTab === 'pending' ? 'وظیفه جدید اضافه کنید!' : 'هنوز وظیفه‌ای تکمیل نشده'}
+                </p>
+              </motion.div>
+            ) : (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={filteredTasks.map((task) => task.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-4">
+                    {filteredTasks.map((task) => {
+                      const categoryInfo = categoryConfig[task.category] || { label: task.category, icon: '📌', color: 'text-muted-foreground' };
+                      const priorityInfo = priorityConfig[task.priority];
+                      const subtaskProgress = task.subtasks ? task.subtasks.filter(st => st.completed).length / task.subtasks.length * 100 : 0;
+                      const daysLeft = task.deadline ? daysUntil(task.deadline) : null;
+                      
+                      return (
+                        <SortableTaskCard
+                          key={task.id}
+                          task={task}
+                          categoryInfo={categoryInfo}
+                          priorityInfo={priorityInfo}
+                          subtaskProgress={subtaskProgress}
+                          daysLeft={daysLeft}
+                          onComplete={completeTask}
+                          onEdit={handleEditTask}
+                          onDelete={handleDeleteTask}
+                          onToggleSubtask={handleToggleSubtask}
+                        />
+                      );
+                    })}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            )}
           </TabsContent>
         </Tabs>
       </div>
