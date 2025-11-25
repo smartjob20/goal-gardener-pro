@@ -246,44 +246,46 @@ const Goals = () => {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="shadow-elegant hover-scale">
-                <Plus className="ml-2 h-5 w-5" />
+              <Button className="shadow-elegant hover-scale min-h-[44px]">
+                <Plus className="ms-2 h-5 w-5" />
                 هدف جدید
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 pb-safe" dir="rtl">
               <DialogHeader>
-                <DialogTitle>🎯 ایجاد هدف جدید</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">🎯 ایجاد هدف جدید</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className="space-y-3 sm:space-y-4 py-3 sm:py-4 pb-20">
                 {/* عنوان */}
                 <div className="space-y-2">
-                  <Label htmlFor="title">عنوان هدف *</Label>
+                  <Label htmlFor="title" className="text-sm">عنوان هدف *</Label>
                   <Input
                     id="title"
                     placeholder="مثلاً: کاهش 10 کیلو وزن"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    className="min-h-[44px] text-base"
                   />
                 </div>
 
                 {/* توضیحات */}
                 <div className="space-y-2">
-                  <Label htmlFor="description">توضیحات</Label>
+                  <Label htmlFor="description" className="text-sm">توضیحات</Label>
                   <Textarea
                     id="description"
                     placeholder="جزئیات هدف خود را بنویسید..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
+                    className="text-base"
                   />
                 </div>
 
                 {/* دسته‌بندی */}
                 <div className="space-y-2">
-                  <Label>دسته‌بندی *</Label>
+                  <Label className="text-sm">دسته‌بندی *</Label>
                   <Select value={category} onValueChange={(v) => setCategory(v)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="min-h-[44px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -308,20 +310,21 @@ const Goals = () => {
 
                 {/* تاریخ هدف */}
                 <div className="space-y-2">
-                  <Label>تاریخ هدف</Label>
+                  <Label className="text-sm">تاریخ هدف</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start">
-                        <CalendarIcon className="ml-2 h-4 w-4" />
+                      <Button variant="outline" className="w-full justify-start min-h-[44px]">
+                        <CalendarIcon className="ms-2 h-4 w-4" />
                         {format(targetDate, 'yyyy/MM/dd')}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 max-w-[min(calc(100vw-2rem),320px)]" align="start">
                       {useJalali ? (
                         <PersianCalendar
                           mode="single"
                           selected={targetDate}
                           onSelect={(date) => date && setTargetDate(date)}
+                          className="scale-90 sm:scale-100"
                         />
                       ) : (
                         <div className="p-3">
@@ -329,6 +332,7 @@ const Goals = () => {
                             type="date"
                             value={format(targetDate, 'yyyy-MM-dd')}
                             onChange={(e) => setTargetDate(new Date(e.target.value))}
+                            className="min-h-[44px]"
                           />
                         </div>
                       )}
@@ -344,16 +348,17 @@ const Goals = () => {
                 />
 
                 {/* مایلستون‌ها */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>مراحل (مایلستون‌ها) *</Label>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-sm">مراحل (مایلستون‌ها) *</Label>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={addMilestone}
+                      className="h-8 min-h-[32px]"
                     >
-                      <Plus className="ml-1 h-4 w-4" />
+                      <Plus className="ms-1 h-4 w-4" />
                       افزودن مرحله
                     </Button>
                   </div>
@@ -364,6 +369,7 @@ const Goals = () => {
                           placeholder={`مرحله ${index + 1}`}
                           value={milestone}
                           onChange={(e) => updateMilestone(index, e.target.value)}
+                          className="min-h-[44px] text-base"
                         />
                         {milestones.length > 1 && (
                           <Button
@@ -371,6 +377,7 @@ const Goals = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => removeMilestone(index)}
+                            className="min-h-[44px] min-w-[44px] shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -380,8 +387,8 @@ const Goals = () => {
                   </div>
                 </div>
 
-                <Button onClick={handleAddGoal} className="w-full">
-                  <Target className="ml-2 h-5 w-5" />
+                <Button onClick={handleAddGoal} className="w-full min-h-[44px]">
+                  <Target className="ms-2 h-5 w-5" />
                   ایجاد هدف
                 </Button>
               </div>
@@ -463,13 +470,13 @@ const Goals = () => {
                 <p className="text-muted-foreground mb-6">
                   اولین هدف خود را تعیین کنید
                 </p>
-                <Button onClick={() => setIsAddDialogOpen(true)}>
-                  <Plus className="ml-2 h-5 w-5" />
+                <Button onClick={() => setIsAddDialogOpen(true)} className="min-h-[44px]">
+                  <Plus className="ms-2 h-5 w-5" />
                   ایجاد هدف
                 </Button>
               </motion.div>
             ) : (
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
                 {activeGoals.map((goal, index) => (
                   <motion.div
                     key={goal.id}
@@ -481,43 +488,43 @@ const Goals = () => {
                     <Card className="overflow-hidden glass-strong hover-lift">
                       {/* تصویر */}
                       {goal.imageUrl ? (
-                        <div className="relative h-48 overflow-hidden">
+                        <div className="relative h-40 sm:h-48 overflow-hidden">
                           <img
                             src={goal.imageUrl}
                             alt={goal.title}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <div className="absolute top-4 right-4 flex gap-2">
-                            <Badge className={statusColors[goal.status]}>
+                          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-2">
+                            <Badge className={`${statusColors[goal.status]} text-xs`}>
                               {statusLabels[goal.status]}
                             </Badge>
                           </div>
                         </div>
                       ) : (
-                        <div className="relative h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                          <ImageIcon className="h-16 w-16 text-muted-foreground/30" />
-                          <div className="absolute top-4 right-4 flex gap-2">
-                            <Badge className={statusColors[goal.status]}>
+                        <div className="relative h-40 sm:h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                          <ImageIcon className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/30" />
+                          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-2">
+                            <Badge className={`${statusColors[goal.status]} text-xs`}>
                               {statusLabels[goal.status]}
                             </Badge>
                           </div>
                         </div>
                       )}
 
-                      <div className="p-6 space-y-4">
+                      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                         {/* Header */}
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-2">{goal.title}</h3>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{goal.title}</h3>
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                               <span>
                                 {categoryOptions.find(c => c.value === goal.category)?.icon}{' '}
                                 {categoryOptions.find(c => c.value === goal.category)?.label}
                               </span>
                             </div>
                             {goal.description && (
-                              <p className="text-sm text-muted-foreground mt-2">
+                              <p className="text-xs sm:text-sm text-muted-foreground mt-2 line-clamp-2">
                                 {goal.description}
                               </p>
                             )}
@@ -526,29 +533,30 @@ const Goals = () => {
 
                         {/* Progress */}
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span>پیشرفت: {goal.progress}%</span>
-                            <span>
+                          <div className="flex items-center justify-between text-xs sm:text-sm">
+                            <span className="font-medium">پیشرفت: {goal.progress}%</span>
+                            <span className="text-muted-foreground">
                               {goal.milestones.filter(m => m.completed).length} از {goal.milestones.length} مرحله
                             </span>
                           </div>
-                          <Progress value={goal.progress} className="h-3" />
+                          <Progress value={goal.progress} className="h-2 sm:h-3" />
                         </div>
 
                         {/* مایلستون‌ها */}
                         <div className="space-y-2">
-                          <h4 className="font-semibold text-sm">مراحل:</h4>
+                          <h4 className="font-semibold text-xs sm:text-sm">مراحل:</h4>
                           <div className="space-y-2 max-h-40 overflow-y-auto">
                             {goal.milestones.map((milestone) => (
                               <div
                                 key={milestone.id}
-                                className="flex items-center gap-3 p-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
+                                className="flex items-start gap-3 p-2 sm:p-2.5 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors min-h-[44px]"
                               >
                                 <Checkbox
                                   checked={milestone.completed}
                                   onCheckedChange={() => handleToggleMilestone(goal.id, milestone.id)}
+                                  className="mt-0.5 shrink-0 min-h-[20px] min-w-[20px]"
                                 />
-                                <span className={milestone.completed ? 'line-through text-muted-foreground text-sm' : 'text-sm'}>
+                                <span className={`text-xs sm:text-sm leading-relaxed ${milestone.completed ? 'line-through text-muted-foreground' : ''}`}>
                                   {milestone.title}
                                 </span>
                               </div>
@@ -557,18 +565,19 @@ const Goals = () => {
                         </div>
 
                         {/* Footer */}
-                        <div className="flex items-center justify-between pt-2 border-t">
-                          <div className="flex items-center gap-2 text-sm">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 pt-2 border-t">
+                          <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground shrink-0" />
                             <span className="text-muted-foreground">
                               {calculateDaysRemaining(goal.targetDate)} روز باقی‌مانده
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 w-full sm:w-auto justify-end">
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => openEditDialog(goal)}
+                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
                             >
                               <Edit2 className="h-4 w-4" />
                             </Button>
@@ -576,6 +585,7 @@ const Goals = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleChangeStatus(goal.id, 'paused')}
+                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
                             >
                               <Pause className="h-4 w-4" />
                             </Button>
@@ -583,6 +593,7 @@ const Goals = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeleteGoal(goal.id)}
+                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -705,28 +716,29 @@ const Goals = () => {
                           />
                         </div>
                       )}
-                      <div className="p-6 space-y-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-2">{goal.title}</h3>
-                            <Badge className={statusColors.paused}>متوقف</Badge>
+                      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{goal.title}</h3>
+                            <Badge className={`${statusColors.paused} text-xs`}>متوقف</Badge>
                           </div>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteGoal(goal.id)}
+                            className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10 shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        <Progress value={goal.progress} className="h-3" />
+                        <Progress value={goal.progress} className="h-2 sm:h-3" />
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleChangeStatus(goal.id, 'active')}
-                          className="w-full"
+                          className="w-full min-h-[44px]"
                         >
-                          <Play className="ml-2 h-4 w-4" />
+                          <Play className="ms-2 h-4 w-4" />
                           ادامه هدف
                         </Button>
                       </div>
@@ -741,34 +753,36 @@ const Goals = () => {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 pb-safe" dir="rtl">
           <DialogHeader>
-            <DialogTitle>✏️ ویرایش هدف</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">✏️ ویرایش هدف</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 sm:space-y-4 py-3 sm:py-4 pb-20">
             <div className="space-y-2">
-              <Label htmlFor="edit-title">عنوان هدف</Label>
+              <Label htmlFor="edit-title" className="text-sm">عنوان هدف</Label>
               <Input
                 id="edit-title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                className="min-h-[44px] text-base"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-description">توضیحات</Label>
+              <Label htmlFor="edit-description" className="text-sm">توضیحات</Label>
               <Textarea
                 id="edit-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
+                className="text-base"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>دسته‌بندی</Label>
+              <Label className="text-sm">دسته‌بندی</Label>
               <Select value={category} onValueChange={(v) => setCategory(v as GoalCategory)}>
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -782,20 +796,21 @@ const Goals = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>تاریخ هدف</Label>
+              <Label className="text-sm">تاریخ هدف</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    <CalendarIcon className="ml-2 h-4 w-4" />
+                  <Button variant="outline" className="w-full justify-start min-h-[44px]">
+                    <CalendarIcon className="ms-2 h-4 w-4" />
                     {format(targetDate, 'yyyy/MM/dd')}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 max-w-[min(calc(100vw-2rem),320px)]" align="start">
                   {useJalali ? (
                     <PersianCalendar
                       mode="single"
                       selected={targetDate}
                       onSelect={(date) => date && setTargetDate(date)}
+                      className="scale-90 sm:scale-100"
                     />
                   ) : (
                     <div className="p-3">
@@ -803,6 +818,7 @@ const Goals = () => {
                         type="date"
                         value={format(targetDate, 'yyyy-MM-dd')}
                         onChange={(e) => setTargetDate(new Date(e.target.value))}
+                        className="min-h-[44px]"
                       />
                     </div>
                   )}
@@ -811,13 +827,14 @@ const Goals = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-image">تصویر انگیزشی (URL)</Label>
+              <Label htmlFor="edit-image" className="text-sm">تصویر انگیزشی (URL)</Label>
               <div className="flex gap-2">
                 <Input
                   id="edit-image"
                   placeholder="https://example.com/image.jpg"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
+                  className="min-h-[44px] text-base"
                 />
                 {imageUrl && (
                   <Button
@@ -825,6 +842,7 @@ const Goals = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setImageUrl('')}
+                    className="min-h-[44px] min-w-[44px] shrink-0"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -841,16 +859,17 @@ const Goals = () => {
               )}
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>مراحل (مایلستون‌ها)</Label>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-sm">مراحل (مایلستون‌ها)</Label>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={addMilestone}
+                  className="h-8 min-h-[32px]"
                 >
-                  <Plus className="ml-1 h-4 w-4" />
+                  <Plus className="ms-1 h-4 w-4" />
                   افزودن مرحله
                 </Button>
               </div>
@@ -860,6 +879,7 @@ const Goals = () => {
                     <Input
                       value={milestone}
                       onChange={(e) => updateMilestone(index, e.target.value)}
+                      className="min-h-[44px] text-base"
                     />
                     {milestones.length > 1 && (
                       <Button
@@ -867,6 +887,7 @@ const Goals = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeMilestone(index)}
+                        className="min-h-[44px] min-w-[44px] shrink-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -876,7 +897,7 @@ const Goals = () => {
               </div>
             </div>
 
-            <Button onClick={handleEditGoal} className="w-full">
+            <Button onClick={handleEditGoal} className="w-full min-h-[44px]">
               ذخیره تغییرات
             </Button>
           </div>
