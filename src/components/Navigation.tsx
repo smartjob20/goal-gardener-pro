@@ -50,16 +50,25 @@ export default function Navigation({ activeTab, onTabChange, onAddClick }: Navig
   return (
     <>
       {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/60 backdrop-blur-2xl shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b-2 border-primary/20 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between relative">
+          {/* Decorative gradient line at bottom of header */}
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
           {/* Logo (Right side for RTL) */}
-          <Logo size="sm" />
+          <div className="relative z-10">
+            <Logo size="sm" />
+          </div>
 
           {/* Hamburger Menu (Left side for RTL) */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-primary/10">
-                <Menu className="w-6 h-6" />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative z-10 hover:bg-primary/20 hover:scale-110 transition-all rounded-xl border border-transparent hover:border-primary/30"
+              >
+                <Menu className="w-6 h-6 text-primary" />
               </Button>
             </SheetTrigger>
             <SheetContent 
