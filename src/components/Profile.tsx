@@ -11,63 +11,47 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  User, 
-  Edit, 
-  Award, 
-  TrendingUp, 
-  Target, 
-  Clock, 
-  Zap,
-  Trophy,
-  Star,
-  Calendar,
-  CheckCircle,
-  Flame,
-  Save,
-  X,
-  LogOut
-} from 'lucide-react';
+import { User, Edit, Award, TrendingUp, Target, Clock, Zap, Trophy, Star, Calendar, CheckCircle, Flame, Save, X, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { format, differenceInDays } from 'date-fns';
-
 const Profile = () => {
-  const { state, dispatch } = useApp();
-  const { signOut } = useAuth();
+  const {
+    state,
+    dispatch
+  } = useApp();
+  const {
+    signOut
+  } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(state.user);
-
   const avatarOptions = ['👤', '😊', '🎯', '🚀', '💪', '🧠', '⭐', '🔥', '💎', '🏆', '🎨', '🌟', '✨', '🌈', '🦄', '🐉'];
-
   const handleSave = () => {
     // Validate inputs
     if (!editedUser.name.trim()) {
       toast.error('نام نمی‌تواند خالی باشد');
       return;
     }
-
     if (editedUser.name.length > 50) {
       toast.error('نام باید کمتر از 50 کاراکتر باشد');
       return;
     }
-
     if (editedUser.bio && editedUser.bio.length > 200) {
       toast.error('بیوگرافی باید کمتر از 200 کاراکتر باشد');
       return;
     }
-
-    dispatch({ type: 'UPDATE_USER', payload: editedUser });
+    dispatch({
+      type: 'UPDATE_USER',
+      payload: editedUser
+    });
     setIsEditing(false);
     toast.success('پروفایل با موفقیت بروزرسانی شد! ✨');
   };
-
   const handleCancel = () => {
     setEditedUser(state.user);
     setIsEditing(false);
   };
-
   const handleLogout = async () => {
     await signOut();
     navigate('/auth');
@@ -82,31 +66,26 @@ const Profile = () => {
   const completedGoals = state.goals.filter(g => g.status === 'completed').length;
   const totalFocusTime = state.focusSessions.reduce((acc, s) => acc + s.duration, 0);
   const unlockedAchievements = state.achievements.filter(a => a.unlocked).length;
-  const progressToNextLevel = (state.user.xp % 100);
+  const progressToNextLevel = state.user.xp % 100;
   const currentStreak = Math.max(...state.habits.map(h => h.currentStreak), 0);
   const longestStreak = Math.max(...state.habits.map(h => h.longestStreak), 0);
 
   // Recent activities
-  const recentTasks = state.tasks
-    .filter(t => t.completedAt)
-    .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
-    .slice(0, 5);
-
-  const recentAchievements = state.achievements
-    .filter(a => a.unlocked && a.unlockedAt)
-    .sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime())
-    .slice(0, 5);
-
-  return (
-    <div className="container mx-auto p-4 pb-24 max-w-6xl" dir="rtl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+  const recentTasks = state.tasks.filter(t => t.completedAt).sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime()).slice(0, 5);
+  const recentAchievements = state.achievements.filter(a => a.unlocked && a.unlockedAt).sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime()).slice(0, 5);
+  return <div className="container mx-auto p-4 pb-24 max-w-6xl" dir="rtl">
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }}>
         {/* Header Card */}
         <Card className="mb-6">
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 mt-[70px]">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Avatar Section */}
               <div className="flex flex-col items-center space-y-4">
@@ -119,12 +98,10 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 w-full">
-                  {!isEditing && (
-                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+                  {!isEditing && <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
                       <Edit className="ml-2 h-4 w-4" />
                       ویرایش پروفایل
-                    </Button>
-                  )}
+                    </Button>}
                   <Button onClick={handleLogout} variant="outline" size="sm" className="text-destructive hover:text-destructive">
                     <LogOut className="ml-2 h-4 w-4" />
                     خروج از حساب
@@ -134,27 +111,21 @@ const Profile = () => {
 
               {/* Info Section */}
               <div className="flex-1 space-y-4">
-                {isEditing ? (
-                  <div className="space-y-4">
+                {isEditing ? <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>نام</Label>
-                      <Input
-                        value={editedUser.name}
-                        onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
-                        placeholder="نام خود را وارد کنید"
-                        maxLength={50}
-                      />
+                      <Input value={editedUser.name} onChange={e => setEditedUser({
+                    ...editedUser,
+                    name: e.target.value
+                  })} placeholder="نام خود را وارد کنید" maxLength={50} />
                     </div>
 
                     <div className="space-y-2">
                       <Label>بیوگرافی</Label>
-                      <Textarea
-                        value={editedUser.bio || ''}
-                        onChange={(e) => setEditedUser({ ...editedUser, bio: e.target.value })}
-                        placeholder="درباره خود بنویسید..."
-                        maxLength={200}
-                        rows={3}
-                      />
+                      <Textarea value={editedUser.bio || ''} onChange={e => setEditedUser({
+                    ...editedUser,
+                    bio: e.target.value
+                  })} placeholder="درباره خود بنویسید..." maxLength={200} rows={3} />
                       <p className="text-xs text-muted-foreground">
                         {(editedUser.bio || '').length}/200 کاراکتر
                       </p>
@@ -163,17 +134,12 @@ const Profile = () => {
                     <div className="space-y-2">
                       <Label>آواتار</Label>
                       <div className="grid grid-cols-8 gap-2">
-                        {avatarOptions.map((emoji) => (
-                          <button
-                            key={emoji}
-                            onClick={() => setEditedUser({ ...editedUser, avatar: emoji })}
-                            className={`text-3xl p-2 rounded-lg hover:bg-secondary transition-colors ${
-                              editedUser.avatar === emoji ? 'bg-primary/20 ring-2 ring-primary' : ''
-                            }`}
-                          >
+                        {avatarOptions.map(emoji => <button key={emoji} onClick={() => setEditedUser({
+                      ...editedUser,
+                      avatar: emoji
+                    })} className={`text-3xl p-2 rounded-lg hover:bg-secondary transition-colors ${editedUser.avatar === emoji ? 'bg-primary/20 ring-2 ring-primary' : ''}`}>
                             {emoji}
-                          </button>
-                        ))}
+                          </button>)}
                       </div>
                     </div>
 
@@ -187,14 +153,10 @@ const Profile = () => {
                         انصراف
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <>
+                  </div> : <>
                     <div>
                       <h1 className="text-3xl font-bold mb-2">{state.user.name}</h1>
-                      {state.user.bio && (
-                        <p className="text-muted-foreground">{state.user.bio}</p>
-                      )}
+                      {state.user.bio && <p className="text-muted-foreground">{state.user.bio}</p>}
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -223,8 +185,7 @@ const Profile = () => {
                       </div>
                       <Progress value={progressToNextLevel} />
                     </div>
-                  </>
-                )}
+                  </>}
               </div>
             </div>
           </CardContent>
@@ -259,9 +220,7 @@ const Profile = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">نرخ تکمیل</span>
                     <span className="text-2xl font-bold">
-                      {state.tasks.length > 0 
-                        ? Math.round((completedTasks / state.tasks.length) * 100)
-                        : 0}%
+                      {state.tasks.length > 0 ? Math.round(completedTasks / state.tasks.length * 100) : 0}%
                     </span>
                   </div>
                 </CardContent>
@@ -309,9 +268,7 @@ const Profile = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">نرخ موفقیت</span>
                     <span className="text-2xl font-bold">
-                      {state.goals.length > 0
-                        ? Math.round((completedGoals / state.goals.length) * 100)
-                        : 0}%
+                      {state.goals.length > 0 ? Math.round(completedGoals / state.goals.length * 100) : 0}%
                     </span>
                   </div>
                 </CardContent>
@@ -336,9 +293,7 @@ const Profile = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">میانگین جلسه</span>
                     <span className="text-2xl font-bold">
-                      {state.focusSessions.length > 0
-                        ? Math.round(totalFocusTime / state.focusSessions.filter(s => s.completed).length)
-                        : 0} دقیقه
+                      {state.focusSessions.length > 0 ? Math.round(totalFocusTime / state.focusSessions.filter(s => s.completed).length) : 0} دقیقه
                     </span>
                   </div>
                 </CardContent>
@@ -356,7 +311,7 @@ const Profile = () => {
                       <span className="text-sm">سطح {state.user.level}</span>
                       <span className="text-sm font-bold">{state.user.xp} / {state.user.level * 100} XP</span>
                     </div>
-                    <Progress value={(state.user.xp % 100)} />
+                    <Progress value={state.user.xp % 100} />
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t">
@@ -397,13 +352,15 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {state.achievements.map((achievement) => (
-                    <motion.div
-                      key={achievement.id}
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
+                  {state.achievements.map(achievement => <motion.div key={achievement.id} initial={{
+                  scale: 0.9,
+                  opacity: 0
+                }} animate={{
+                  scale: 1,
+                  opacity: 1
+                }} transition={{
+                  duration: 0.3
+                }}>
                       <Card className={achievement.unlocked ? 'bg-primary/5 border-primary/20' : 'opacity-50'}>
                         <CardContent className="p-4 text-center space-y-2">
                           <div className="text-5xl">{achievement.icon}</div>
@@ -412,31 +369,23 @@ const Profile = () => {
                           <Badge variant={achievement.unlocked ? 'default' : 'secondary'}>
                             {achievement.unlocked ? `+${achievement.xpReward} XP` : 'قفل شده'}
                           </Badge>
-                          {achievement.unlocked && achievement.unlockedAt && (
-                            <p className="text-xs text-muted-foreground">
+                          {achievement.unlocked && achievement.unlockedAt && <p className="text-xs text-muted-foreground">
                               {format(new Date(achievement.unlockedAt), 'yyyy/MM/dd')}
-                            </p>
-                          )}
+                            </p>}
                         </CardContent>
                       </Card>
-                    </motion.div>
-                  ))}
+                    </motion.div>)}
                 </div>
               </CardContent>
             </Card>
 
-            {recentAchievements.length > 0 && (
-              <Card>
+            {recentAchievements.length > 0 && <Card>
                 <CardHeader>
                   <CardTitle>آخرین دستاوردها</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {recentAchievements.map((achievement) => (
-                      <div
-                        key={achievement.id}
-                        className="flex items-center gap-4 p-3 bg-secondary/50 rounded-lg"
-                      >
+                    {recentAchievements.map(achievement => <div key={achievement.id} className="flex items-center gap-4 p-3 bg-secondary/50 rounded-lg">
                         <div className="text-3xl">{achievement.icon}</div>
                         <div className="flex-1">
                           <h4 className="font-medium">{achievement.title}</h4>
@@ -448,18 +397,15 @@ const Profile = () => {
                             {achievement.unlockedAt && format(new Date(achievement.unlockedAt), 'yyyy/MM/dd')}
                           </p>
                         </div>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </TabsContent>
 
           {/* Activity Tab */}
           <TabsContent value="activity" className="space-y-4">
-            {recentTasks.length > 0 && (
-              <Card>
+            {recentTasks.length > 0 && <Card>
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5 text-primary" />
@@ -468,11 +414,7 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {recentTasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
-                      >
+                    {recentTasks.map(task => <div key={task.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
                         <div className="flex-1">
                           <h4 className="font-medium">{task.title}</h4>
                           <p className="text-xs text-muted-foreground">
@@ -480,12 +422,10 @@ const Profile = () => {
                           </p>
                         </div>
                         <Badge variant="outline">+{task.xpReward} XP</Badge>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
 
             <Card>
               <CardHeader>
@@ -532,8 +472,6 @@ const Profile = () => {
           </TabsContent>
         </Tabs>
       </motion.div>
-    </div>
-  );
+    </div>;
 };
-
 export default Profile;
