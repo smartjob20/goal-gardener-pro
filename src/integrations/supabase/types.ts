@@ -276,6 +276,7 @@ export type Database = {
           total_focus_time: number | null
           total_habits_completed: number | null
           total_tasks_completed: number | null
+          trial_start_date: string | null
           updated_at: string | null
           xp: number | null
         }
@@ -295,6 +296,7 @@ export type Database = {
           total_focus_time?: number | null
           total_habits_completed?: number | null
           total_tasks_completed?: number | null
+          trial_start_date?: string | null
           updated_at?: string | null
           xp?: number | null
         }
@@ -314,6 +316,7 @@ export type Database = {
           total_focus_time?: number | null
           total_habits_completed?: number | null
           total_tasks_completed?: number | null
+          trial_start_date?: string | null
           updated_at?: string | null
           xp?: number | null
         }

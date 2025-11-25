@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useSubscription } from '@/context/SubscriptionContext';
 import { Habit, HabitCategory, HabitFrequency, HabitType, HabitDifficulty } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -13,11 +14,12 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap } from 'lucide-react';
+import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock } from 'lucide-react';
 import { getTodayString, calculateStreak, getWeekDays } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from '@/components/ImageUpload';
 import { triggerHaptic } from '@/utils/haptics';
+import Paywall from './Paywall';
 
 // قالب‌های آماده
 const habitTemplates = [
@@ -56,9 +58,11 @@ const difficulties: { value: HabitDifficulty; label: string; xp: number }[] = [
 
 const HabitTracker = () => {
   const { state, dispatch, checkHabit, addHabit } = useApp();
+  const { isPro } = useSubscription();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
   
   // Form states
   const [title, setTitle] = useState('');
@@ -548,11 +552,12 @@ const HabitTracker = () => {
                 </Button>
               </Card>
             ) : (
-              activeHabits.map((habit) => {
+              activeHabits.map((habit, index) => {
                 const streak = getStreakForHabit(habit);
                 const isCompletedToday = habit.completedDates.includes(today);
                 const last7Days = getLast7Days();
                 const categoryInfo = categories.find(c => c.value === habit.category);
+                const isLocked = !isPro && index >= 3;
 
                 return (
                   <motion.div
@@ -563,7 +568,29 @@ const HabitTracker = () => {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Card className="p-5 glass hover:shadow-lg transition-all duration-300 border-r-4" style={{ borderRightColor: habit.color }}>
+                    <Card 
+                      className={`p-5 glass hover:shadow-lg transition-all duration-300 border-r-4 ${isLocked ? 'relative overflow-hidden' : ''}`} 
+                      style={{ borderRightColor: habit.color }}
+                    >
+                      {isLocked && (
+                        <div 
+                          className="absolute inset-0 bg-background/60 backdrop-blur-md z-10 flex items-center justify-center cursor-pointer"
+                          onClick={() => setShowPaywall(true)}
+                        >
+                          <div className="text-center space-y-3">
+                            <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                              <Lock className="w-8 h-8 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-bold text-lg">دوره آزمایشی 30 روزه شما به پایان رسیده</p>
+                              <p className="text-sm text-muted-foreground mt-1">برای مدیریت بیش از 3 عادت، ارتقا دهید</p>
+                            </div>
+                            <Button className="mt-3">
+                              ارتقا به Pro
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                       <div className="space-y-4">
                         {/* Header */}
                         <div className="flex items-start justify-between gap-3">
@@ -759,6 +786,16 @@ const HabitTracker = () => {
           </AnimatePresence>
         </TabsContent>
       </Tabs>
+
+      {/* Paywall Modal */}
+      <AnimatePresence>
+        {showPaywall && (
+          <Paywall
+            onStartTrial={() => setShowPaywall(false)}
+            onContinueLimited={() => setShowPaywall(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

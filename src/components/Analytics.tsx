@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useSubscription } from '@/context/SubscriptionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ const Analytics = () => {
   const {
     state
   } = useApp();
+  const { isPro } = useSubscription();
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -374,7 +376,15 @@ const Analytics = () => {
             </div>
 
             {/* Productivity Chart */}
-            <Card>
+            <Card className={isPro ? '' : 'relative overflow-hidden'}>
+              {!isPro && (
+                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                  <div className="text-center space-y-2 p-6">
+                    <p className="font-bold text-lg">نمودارهای تفصیلی برای کاربران Pro</p>
+                    <p className="text-sm text-muted-foreground">برای مشاهده تحلیل‌های پیشرفته، ارتقا دهید</p>
+                  </div>
+                </div>
+              )}
               <CardHeader>
                 <CardTitle>روند بهره‌وری</CardTitle>
                 <CardDescription>فعالیت‌های روزانه در بازه زمانی انتخابی</CardDescription>

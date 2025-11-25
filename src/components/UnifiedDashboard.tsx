@@ -13,6 +13,8 @@ import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, end
 import { faIR } from 'date-fns/locale';
 import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
 import { toast } from 'sonner';
+import { PremiumBanner } from './PremiumBanner';
+import Paywall from './Paywall';
 type ViewMode = 'day' | 'week' | 'month' | 'year';
 const UnifiedDashboard = () => {
   const {
@@ -24,6 +26,7 @@ const UnifiedDashboard = () => {
   } = useApp();
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showPaywall, setShowPaywall] = useState(false);
   const useJalali = state.settings.calendar === 'jalali';
 
   // Get date range based on view mode
@@ -287,6 +290,9 @@ const UnifiedDashboard = () => {
               </Button>
             </motion.div>
           </div>
+
+          {/* Premium Banner */}
+          <PremiumBanner onUpgradeClick={() => setShowPaywall(true)} />
 
           {/* Date Navigator */}
           <motion.div initial={{
@@ -580,6 +586,16 @@ const UnifiedDashboard = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Paywall Modal */}
+      <AnimatePresence>
+        {showPaywall && (
+          <Paywall
+            onStartTrial={() => setShowPaywall(false)}
+            onContinueLimited={() => setShowPaywall(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>;
 };
 export default UnifiedDashboard;
