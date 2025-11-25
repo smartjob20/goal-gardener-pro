@@ -95,7 +95,7 @@ const Index = () => {
       case 'tasks':
         return <TaskManager />;
       case 'habits':
-        return <HabitTracker className="mt-[70px]" />;
+        return <HabitTracker />;
       case 'planning':
         return <Planning />;
       case 'goals':
