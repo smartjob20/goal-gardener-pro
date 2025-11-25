@@ -2,14 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Safe Area Support for iOS/Android */
+/* Safe Area Support for Notch/Dynamic Island/Gesture Bar */
 .safe-area-container {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  padding-top: max(env(safe-area-inset-top), 0px);
+  padding-inline-end: max(env(safe-area-inset-right), 0px);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  padding-inline-start: max(env(safe-area-inset-left), 0px);
   min-height: 100vh;
   min-height: -webkit-fill-available;
+}
+
+/* Safe area for fixed header */
+.safe-area-top {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
 }
 
 @layer base {
@@ -153,22 +162,35 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     direction: rtl;
-    text-align: right;
+    text-align: start;
+    line-height: 1.6;
+    /* Prevent iOS zoom on input focus */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   html {
     scroll-behavior: smooth;
     direction: rtl;
+    text-align: start;
   }
   
   * {
-    text-align: right;
+    text-align: start;
     direction: rtl;
   }
   
-  input, textarea, select, button, label, p, span, div, h1, h2, h3, h4, h5, h6 {
-    text-align: right;
+  input, textarea, select, button {
+    text-align: start;
     direction: rtl;
+    /* Prevent zoom on iOS when input is focused */
+    font-size: max(16px, 1rem);
+  }
+  
+  /* Ensure minimum touch target size (44x44px) */
+  button, a, [role="button"], [type="button"], [type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
   }
   
   /* Force RTL for all flex containers */

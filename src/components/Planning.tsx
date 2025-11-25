@@ -288,8 +288,8 @@ const Planning = () => {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="shadow-lg hover:shadow-xl transition-all">
-                <Plus className="ml-2 h-5 w-5" />
+              <Button className="shadow-lg hover:shadow-xl transition-all min-h-[44px]">
+                <Plus className="ms-2 h-5 w-5" />
                 برنامه جدید
               </Button>
             </DialogTrigger>
@@ -405,17 +405,18 @@ const Planning = () => {
                     <Label>تاریخ شروع</Label>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start">
-                          <CalendarIcon className="ml-2 h-4 w-4" />
+                        <Button variant="outline" className="w-full justify-start min-h-[44px]">
+                          <CalendarIcon className="ms-2 h-4 w-4" />
                           {format(startDate, 'yyyy/MM/dd')}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 max-w-[min(calc(100vw-2rem),320px)]" align="start">
                       {useJalali ? (
                         <PersianCalendar
                           mode="single"
                           selected={startDate}
                           onSelect={(date) => date && setStartDate(date)}
+                          className="scale-90 sm:scale-100"
                         />
                       ) : (
                         <div className="p-3">
@@ -423,6 +424,7 @@ const Planning = () => {
                             type="date"
                             value={format(startDate, 'yyyy-MM-dd')}
                             onChange={(e) => setStartDate(new Date(e.target.value))}
+                            className="min-h-[44px]"
                           />
                         </div>
                       )}

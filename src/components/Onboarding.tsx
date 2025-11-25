@@ -333,25 +333,25 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   variant="outline"
                   onClick={handleBack}
                   disabled={currentStep === 0}
-                  className="flex-1"
+                  className="flex-1 min-h-[44px]"
                 >
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowLeft className="w-4 h-4 ms-2" />
                   قبلی
                 </Button>
                 <Button
                   onClick={handleNext}
                   disabled={!canProceed()}
-                  className="flex-1 gradient-bg-primary"
+                  className="flex-1 gradient-bg-primary min-h-[44px]"
                 >
                   {currentStep === steps.length - 1 ? (
                     <>
-                      <Sparkles className="w-4 h-4 mr-2" />
+                      <Sparkles className="w-4 h-4 me-2" />
                       شروع کنیم!
                     </>
                   ) : (
                     <>
                       بعدی
-                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      <ArrowRight className="w-4 h-4 me-2" />
                     </>
                   )}
                 </Button>
