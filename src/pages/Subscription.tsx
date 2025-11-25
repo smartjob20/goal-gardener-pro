@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote, Infinity, BarChart3, Brain, Cloud, FileText, Shield, Rocket, Award, Target, LucideIcon } from 'lucide-react';
+import { X, Check, Sparkles, Zap, TrendingUp, Lock, Crown, ChevronDown, Star, Quote, Infinity as InfinityIcon, BarChart3, Brain, Cloud, FileText, Shield, Rocket, Award, Target, LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -116,7 +116,7 @@ export default function Subscription() {
           description: 'تبدیل شوید به بهترین نسخه خودتان',
           discount: '۴۴٪ تخفیف',
           features: [
-            { text: 'عادت‌های نامحدود', icon: Infinity, highlight: true },
+            { text: 'عادت‌های نامحدود', icon: InfinityIcon, highlight: true },
             { text: 'مربی هوش مصنوعی اختصاصی', icon: Brain, highlight: true },
             { text: 'تحلیل‌های پیشرفته و نمودارها', icon: BarChart3 },
             { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
@@ -159,7 +159,7 @@ export default function Subscription() {
           period: 'ماهانه',
           description: 'دسترسی کامل به تمام امکانات',
           features: [
-            { text: 'عادت‌های نامحدود', icon: Infinity, highlight: true },
+            { text: 'عادت‌های نامحدود', icon: InfinityIcon, highlight: true },
             { text: 'مربی هوش مصنوعی اختصاصی', icon: Brain, highlight: true },
             { text: 'تحلیل‌های پیشرفته و نمودارها', icon: BarChart3 },
             { text: 'پشتیبان‌گیری ابری خودکار', icon: Cloud },
