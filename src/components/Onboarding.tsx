@@ -185,6 +185,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     }
   }, [currentStep]);
 
+  // Handle navigation to subscription page
+  useEffect(() => {
+    if (currentStep === 3) {
+      navigate('/subscription');
+    }
+  }, [currentStep, navigate]);
+
   // Show breathing step as full screen
   if (currentStep === 2) {
     return (
@@ -222,11 +229,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   // Show subscription page as full screen overlay
   if (currentStep === 3) {
-    // Navigate to subscription page
-    useEffect(() => {
-      navigate('/subscription');
-    }, [navigate]);
-    
     return null;
   }
 
