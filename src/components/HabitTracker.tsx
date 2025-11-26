@@ -3,7 +3,7 @@ import { useApp } from '@/context/AppContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { Habit, HabitCategory, HabitFrequency, HabitType, HabitDifficulty } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,11 +11,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Flame, Trophy, Calendar, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock, GripVertical } from 'lucide-react';
-import { getTodayString, calculateStreak, getWeekDays } from '@/utils/dateUtils';
+import { Plus, Flame, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock, GripVertical, Sparkles } from 'lucide-react';
+import { getTodayString, calculateStreak } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from '@/components/ImageUpload';
 import { triggerHaptic } from '@/utils/haptics';
@@ -24,20 +23,14 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-// قالب‌های آماده
+// قالب‌های آماده عادت‌ها
 const habitTemplates = [
-  { title: 'ورزش روزانه', category: 'fitness', target: 30, targetUnit: 'دقیقه', difficulty: 'medium', color: '#ef4444' },
-  { title: 'مطالعه کتاب', category: 'learning', target: 30, targetUnit: 'دقیقه', difficulty: 'easy', color: '#3b82f6' },
-  { title: 'مدیتیشن', category: 'mindfulness', target: 10, targetUnit: 'دقیقه', difficulty: 'easy', color: '#8b5cf6' },
-  { title: 'نوشیدن آب', category: 'nutrition', target: 8, targetUnit: 'لیوان', difficulty: 'easy', color: '#06b6d4' },
-  { title: 'خواب منظم', category: 'health', target: 8, targetUnit: 'ساعت', difficulty: 'medium', color: '#6366f1' },
-  { title: 'یادگیری زبان', category: 'learning', target: 20, targetUnit: 'دقیقه', difficulty: 'medium', color: '#10b981' },
-  { title: 'نوشتن خاطرات', category: 'creativity', target: 15, targetUnit: 'دقیقه', difficulty: 'easy', color: '#f59e0b' },
-  { title: 'یوگا صبحگاهی', category: 'fitness', target: 20, targetUnit: 'دقیقه', difficulty: 'medium', color: '#ec4899' },
-  { title: 'تمیز کردن خانه', category: 'productivity', target: 30, targetUnit: 'دقیقه', difficulty: 'medium', color: '#14b8a6' },
-  { title: 'برنامه‌نویسی', category: 'learning', target: 60, targetUnit: 'دقیقه', difficulty: 'hard', color: '#f97316' },
-  { title: 'گفتگو با خانواده', category: 'relationship', target: 30, targetUnit: 'دقیقه', difficulty: 'easy', color: '#d946ef' },
-  { title: 'مدیریت مالی', category: 'finance', target: 1, targetUnit: 'بار', difficulty: 'medium', color: '#84cc16' },
+  { title: 'ورزش روزانه', category: 'fitness', target: 30, targetUnit: 'دقیقه', difficulty: 'medium', color: 'hsl(0, 84%, 60%)' },
+  { title: 'مطالعه کتاب', category: 'learning', target: 30, targetUnit: 'دقیقه', difficulty: 'easy', color: 'hsl(217, 91%, 60%)' },
+  { title: 'مدیتیشن', category: 'mindfulness', target: 10, targetUnit: 'دقیقه', difficulty: 'easy', color: 'hsl(262, 83%, 58%)' },
+  { title: 'نوشیدن آب', category: 'nutrition', target: 8, targetUnit: 'لیوان', difficulty: 'easy', color: 'hsl(189, 94%, 43%)' },
+  { title: 'خواب منظم', category: 'health', target: 8, targetUnit: 'ساعت', difficulty: 'medium', color: 'hsl(239, 84%, 67%)' },
+  { title: 'یادگیری زبان', category: 'learning', target: 20, targetUnit: 'دقیقه', difficulty: 'medium', color: 'hsl(162, 73%, 46%)' },
 ];
 
 const categories: { value: HabitCategory; label: string; icon: string }[] = [
@@ -53,35 +46,42 @@ const categories: { value: HabitCategory; label: string; icon: string }[] = [
   { value: 'relationship', label: 'روابط عاطفی', icon: '💕' },
 ];
 
-const difficulties: { value: HabitDifficulty; label: string; xp: number }[] = [
-  { value: 'easy', label: 'آسان', xp: 10 },
-  { value: 'medium', label: 'متوسط', xp: 20 },
-  { value: 'hard', label: 'سخت', xp: 30 },
+const difficulties: { value: HabitDifficulty; label: string; xp: number; color: string }[] = [
+  { value: 'easy', label: 'آسان', xp: 10, color: 'hsl(142, 76%, 36%)' },
+  { value: 'medium', label: 'متوسط', xp: 20, color: 'hsl(48, 96%, 53%)' },
+  { value: 'hard', label: 'سخت', xp: 30, color: 'hsl(0, 84%, 60%)' },
 ];
 
-// Sortable Habit Card Component for drag & drop
+// کامپوننت کارت عادت با قابلیت Drag & Drop
 function SortableHabitCard({
   habit,
   today,
   streak,
   last7Days,
-  categoryLabel,
+  categoryInfo,
+  difficultyInfo,
   onCheck,
   onEdit,
   onDelete,
   onToggle,
+  isLocked,
 }: {
   habit: Habit;
   today: string;
   streak: number;
   last7Days: string[];
-  categoryLabel: string;
+  categoryInfo: { label: string; icon: string };
+  difficultyInfo: { label: string; xp: number; color: string };
   onCheck: (id: string) => void;
   onEdit: (habit: Habit) => void;
   onDelete: (id: string) => void;
   onToggle: (habit: Habit) => void;
+  isLocked?: boolean;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: habit.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+    id: habit.id,
+    disabled: isLocked,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -92,125 +92,179 @@ function SortableHabitCard({
   const isCompletedToday = habit.completedDates.includes(today);
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <Card
-        className={`p-4 glass-strong hover-lift transition-all ${isDragging ? 'shadow-2xl scale-105' : ''}`}
-        style={{ borderLeft: `4px solid ${habit.color}` }}
-      >
-        <div className="space-y-4">
-          {/* Header با Drag Handle */}
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className={`overflow-hidden transition-all hover:shadow-lg ${isDragging ? 'shadow-2xl scale-105 z-50' : ''} ${isLocked ? 'relative' : ''}`}>
+        {/* خط رنگی بالای کارت */}
+        <div className="h-1 w-full" style={{ backgroundColor: habit.color }} />
+        
+        {/* محتوای کارت */}
+        <CardContent className="p-4 space-y-4">
+          {/* هدر با Drag Handle */}
           <div className="flex items-start gap-3">
-            <button
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-1 hover:bg-primary/10 rounded transition-colors touch-none min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
-            >
-              <GripVertical className="h-5 w-5 text-muted-foreground" />
-            </button>
+            {!isLocked && (
+              <button
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-2 hover:bg-accent rounded-lg transition-colors touch-none min-h-[48px] min-w-[48px] flex items-center justify-center shrink-0"
+                aria-label="بکشید برای مرتب‌سازی"
+              >
+                <GripVertical className="h-5 w-5 text-muted-foreground" />
+              </button>
+            )}
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 text-right">
-                  <h3 className="font-bold text-lg">{habit.title}</h3>
-                  {habit.description && (
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {habit.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex gap-2 items-center shrink-0">
-                  <Badge variant="outline" className="text-xs">
-                    {categoryLabel}
-                  </Badge>
-                  <Badge
-                    variant={habit.difficulty === 'hard' ? 'destructive' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {habit.difficulty === 'hard' ? '🔴 سخت' : habit.difficulty === 'medium' ? '🟡 متوسط' : '🟢 آسان'}
-                  </Badge>
-                </div>
+            <div className="flex-1 min-w-0 space-y-3">
+              {/* عنوان و توضیحات */}
+              <div className="text-right">
+                <h3 className="font-bold text-lg leading-tight text-foreground">
+                  {habit.title}
+                </h3>
+                {habit.description && (
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                    {habit.description}
+                  </p>
+                )}
               </div>
 
+              {/* بج‌های دسته‌بندی و سختی */}
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <Badge variant="secondary" className="gap-1 text-xs px-2 py-1">
+                  <span>{categoryInfo.icon}</span>
+                  <span>{categoryInfo.label}</span>
+                </Badge>
+                <Badge 
+                  variant="outline" 
+                  className="gap-1 text-xs px-2 py-1"
+                  style={{ borderColor: difficultyInfo.color, color: difficultyInfo.color }}
+                >
+                  <span>{difficultyInfo.label}</span>
+                  <Zap className="w-3 h-3" />
+                  <span>{difficultyInfo.xp} XP</span>
+                </Badge>
+              </div>
+
+              {/* تصویر عادت */}
               {habit.imageUrl && (
-                <div className="mt-3 w-full h-32 rounded-lg overflow-hidden">
+                <div className="w-full h-32 rounded-lg overflow-hidden">
                   <img
                     src={habit.imageUrl}
                     alt={habit.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
               )}
 
-              {/* آمار */}
-              <div className="flex items-center gap-4 mt-3 flex-wrap justify-end">
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="font-semibold">{streak}</span>
-                  <Flame className="h-4 w-4 text-orange-500" />
+              {/* آمار استریک و پیشرفت */}
+              <div className="flex items-center justify-between gap-4 p-3 bg-accent/50 rounded-lg">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Flame className="h-5 w-5 text-orange-500" />
+                  <span className="text-foreground">{streak}</span>
+                  <span className="text-muted-foreground">روز پیاپی</span>
                 </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <span>امتیاز: {habit.xpReward} XP</span>
-                  <Zap className="h-4 w-4" />
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>هدف: {habit.target} {habit.targetUnit}</span>
                 </div>
               </div>
 
-              {/* هفته گذشته */}
-              <div className="flex gap-1 mt-3 justify-end">
-                {last7Days.map((date) => (
-                  <div
-                    key={date}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
-                      habit.completedDates.includes(date)
-                        ? 'bg-success text-success-foreground'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    {date === today ? '🔥' : habit.completedDates.includes(date) ? '✓' : ''}
-                  </div>
-                ))}
+              {/* نمای هفته گذشته */}
+              <div className="flex gap-1 justify-end">
+                {last7Days.map((date, index) => {
+                  const isCompleted = habit.completedDates.includes(date);
+                  const isToday = date === today;
+                  return (
+                    <div
+                      key={date}
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-medium transition-all ${
+                        isCompleted
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'bg-muted text-muted-foreground'
+                      } ${isToday ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+                      title={`${index === 6 ? 'امروز' : `${6 - index} روز پیش`}`}
+                    >
+                      {isCompleted ? '✓' : ''}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
 
           {/* دکمه‌های عملیات */}
-          <div className="flex gap-2 justify-end pt-2 border-t">
+          <div className="flex items-center gap-2 pt-3 border-t">
             <Button
               onClick={() => onCheck(habit.id)}
               variant={isCompletedToday ? 'default' : 'outline'}
               size="sm"
-              className="gap-2 min-h-[44px]"
+              className="flex-1 gap-2 min-h-[48px] font-medium"
+              disabled={isLocked}
             >
-              {isCompletedToday ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
-              {isCompletedToday ? 'انجام شد' : 'انجام دادم'}
+              {isCompletedToday ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>انجام شد</span>
+                </>
+              ) : (
+                <>
+                  <Circle className="w-4 h-4" />
+                  <span>انجام دادم</span>
+                </>
+              )}
             </Button>
+            
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onEdit(habit)}
-              className="min-h-[44px]"
+              className="min-h-[48px] min-w-[48px]"
+              aria-label="ویرایش"
+              disabled={isLocked}
             >
               <Edit2 className="w-4 h-4" />
             </Button>
+            
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onToggle(habit)}
-              className="min-h-[44px]"
+              className="min-h-[48px] min-w-[48px]"
+              aria-label={habit.isActive ? 'غیرفعال کردن' : 'فعال کردن'}
+              disabled={isLocked}
             >
-              <Power className={`w-4 h-4 ${habit.isActive ? 'text-success' : 'text-muted-foreground'}`} />
+              <Power className={`w-4 h-4 ${habit.isActive ? 'text-primary' : 'text-muted-foreground'}`} />
             </Button>
+            
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(habit.id)}
-              className="text-destructive hover:bg-destructive/10 min-h-[44px]"
+              className="text-destructive hover:bg-destructive/10 min-h-[48px] min-w-[48px]"
+              aria-label="حذف"
+              disabled={isLocked}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
-        </div>
+        </CardContent>
+
+        {/* Overlay برای عادت‌های قفل‌شده */}
+        {isLocked && (
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+            <div className="text-center space-y-2 p-4">
+              <Lock className="w-8 h-8 text-muted-foreground mx-auto" />
+              <p className="text-sm font-medium text-muted-foreground">عادت قفل شده</p>
+            </div>
+          </div>
+        )}
       </Card>
-    </div>
+    </motion.div>
   );
 }
 
@@ -233,7 +287,7 @@ const HabitTracker = () => {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  
+
   // Form states
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -243,7 +297,7 @@ const HabitTracker = () => {
   const [habitType, setHabitType] = useState<HabitType>('qualitative');
   const [frequency, setFrequency] = useState<HabitFrequency>('daily');
   const [difficulty, setDifficulty] = useState<HabitDifficulty>('easy');
-  const [color, setColor] = useState('#6366f1');
+  const [color, setColor] = useState('hsl(239, 84%, 67%)');
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState('09:00');
   const [imageUrl, setImageUrl] = useState('');
@@ -257,7 +311,7 @@ const HabitTracker = () => {
     setHabitType('qualitative');
     setFrequency('daily');
     setDifficulty('easy');
-    setColor('#6366f1');
+    setColor('hsl(239, 84%, 67%)');
     setReminderEnabled(false);
     setReminderTime('09:00');
     setImageUrl('');
@@ -292,7 +346,8 @@ const HabitTracker = () => {
           imageUrl: imageUrl || undefined,
         },
       });
-      toast.success('عادت با موفقیت ویرایش شد! ✏️');
+      toast.success('✅ عادت با موفقیت ویرایش شد');
+      triggerHaptic('success');
     } else {
       addHabit({
         title: title.trim(),
@@ -310,6 +365,8 @@ const HabitTracker = () => {
         isActive: true,
         imageUrl: imageUrl || undefined,
       });
+      toast.success('🎉 عادت جدید با موفقیت اضافه شد');
+      triggerHaptic('success');
     }
 
     resetForm();
@@ -325,6 +382,7 @@ const HabitTracker = () => {
     setColor(template.color);
     setHabitType('quantitative');
     setShowTemplates(false);
+    toast.success('قالب انتخاب شد');
   };
 
   const handleEdit = (habit: Habit) => {
@@ -348,6 +406,7 @@ const HabitTracker = () => {
     if (confirm('آیا از حذف این عادت مطمئن هستید؟')) {
       dispatch({ type: 'DELETE_HABIT', payload: id });
       toast.success('عادت حذف شد');
+      triggerHaptic('warning');
     }
   };
 
@@ -357,6 +416,12 @@ const HabitTracker = () => {
       payload: { ...habit, isActive: !habit.isActive },
     });
     toast.success(habit.isActive ? 'عادت غیرفعال شد' : 'عادت فعال شد');
+    triggerHaptic('light');
+  };
+
+  const handleCheckHabit = (id: string) => {
+    checkHabit(id, today);
+    triggerHaptic('success');
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -368,7 +433,8 @@ const HabitTracker = () => {
 
       const reorderedHabits = arrayMove(activeHabits, oldIndex, newIndex);
       reorderHabits(reorderedHabits);
-      toast.success('ترتیب عادات ذخیره شد ✨');
+      toast.success('✨ ترتیب عادات ذخیره شد');
+      triggerHaptic('light');
     }
   };
 
@@ -383,14 +449,10 @@ const HabitTracker = () => {
     });
   const inactiveHabits = state.habits.filter(h => !h.isActive);
 
-  // محاسبه آمار کلی
+  // محاسبه آمار
   const totalStreak = activeHabits.reduce((sum, h) => sum + h.currentStreak, 0);
   const todayCompleted = activeHabits.filter(h => h.completedDates.includes(today)).length;
   const completionRate = activeHabits.length > 0 ? Math.round((todayCompleted / activeHabits.length) * 100) : 0;
-
-  const getStreakForHabit = (habit: Habit) => {
-    return calculateStreak(habit.completedDates);
-  };
 
   const getLast7Days = () => {
     const days = [];
@@ -402,343 +464,360 @@ const HabitTracker = () => {
     return days;
   };
 
-  return (
-    <div className="min-h-screen space-y-6 pb-24 p-4 relative" dir="rtl">
-      {/* Animated Background */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
-        <div className="absolute top-0 -right-4 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
-      </div>
+  const last7Days = getLast7Days();
 
-      {/* Header با آمار */}
+  // محدودیت عادت‌ها برای کاربران غیر پرو
+  const freeHabitLimit = 3;
+  const canAccessAllHabits = isPro || activeHabits.length <= freeHabitLimit;
+
+  return (
+    <div className="min-h-screen pb-24 p-4 sm:p-6 space-y-6" dir="rtl">
+      {/* هدر با آمار */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-4"
       >
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">عادت‌های من 🔥</h1>
-            <p className="text-muted-foreground mt-1">ردیابی و تقویت عادت‌های مثبت</p>
-          </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 shadow-elegant hover-scale">
-                <Plus className="w-4 h-4" />
-                عادت جدید
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
-              <DialogHeader>
-                <DialogTitle>{editingHabit ? 'ویرایش عادت' : 'افزودن عادت جدید'}</DialogTitle>
-              </DialogHeader>
-              
-              {/* دکمه قالب‌های آماده */}
-              {!editingHabit && (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowTemplates(!showTemplates)}
-                  className="w-full gap-2"
-                >
-                  <Lightbulb className="w-4 h-4" />
-                  {showTemplates ? 'بستن قالب‌های آماده' : 'استفاده از قالب آماده'}
-                </Button>
-              )}
+        {/* عنوان صفحه */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+            عادت‌های من 🔥
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            ردیابی و تقویت عادت‌های روزانه
+          </p>
+        </div>
 
+        {/* کارت آمار */}
+        <Card className="overflow-hidden">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-3 gap-4">
+              {/* عادت‌های فعال */}
+              <div className="text-center space-y-1">
+                <div className="text-2xl sm:text-3xl font-bold text-primary">
+                  {activeHabits.length}
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  عادت فعال
+                </div>
+              </div>
+
+              {/* تکمیل امروز */}
+              <div className="text-center space-y-1">
+                <div className="text-2xl sm:text-3xl font-bold text-primary">
+                  {todayCompleted}/{activeHabits.length}
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  تکمیل امروز
+                </div>
+              </div>
+
+              {/* مجموع استریک */}
+              <div className="text-center space-y-1">
+                <div className="text-2xl sm:text-3xl font-bold text-orange-500 flex items-center justify-center gap-1">
+                  <Flame className="w-6 h-6" />
+                  <span>{totalStreak}</span>
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  مجموع استریک
+                </div>
+              </div>
+            </div>
+
+            {/* نوار پیشرفت */}
+            {activeHabits.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">پیشرفت امروز</span>
+                  <span className="font-medium text-foreground">{completionRate}%</span>
+                </div>
+                <div className="h-3 bg-secondary rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-l from-primary to-primary/80 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${completionRate}%` }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* دکمه افزودن عادت */}
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) resetForm();
+        }}>
+          <DialogTrigger asChild>
+            <Button className="w-full gap-2 min-h-[56px] text-base font-medium shadow-lg hover:shadow-xl transition-shadow">
+              <Plus className="w-5 h-5" />
+              <span>افزودن عادت جدید</span>
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="text-xl text-right">
+                {editingHabit ? 'ویرایش عادت' : 'افزودن عادت جدید'}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-5 mt-4">
               {/* قالب‌های آماده */}
-              {showTemplates && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 bg-accent rounded-lg"
-                >
-                  {habitTemplates.map((template, idx) => (
-                    <Button
-                      key={idx}
-                      variant="ghost"
-                      onClick={() => handleTemplateSelect(template)}
-                      className="justify-start text-right h-auto py-2"
+              {!editingHabit && (
+                <div className="space-y-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowTemplates(!showTemplates)}
+                    className="w-full gap-2 min-h-[48px]"
+                  >
+                    <Lightbulb className="w-4 h-4" />
+                    <span>{showTemplates ? 'بستن قالب‌ها' : 'انتخاب از قالب‌های آماده'}</span>
+                  </Button>
+
+                  {showTemplates && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2"
                     >
-                      <div className="flex flex-col items-start w-full">
-                        <span className="font-medium">{template.title}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {template.target} {template.targetUnit}
-                        </span>
-                      </div>
-                    </Button>
-                  ))}
-                </motion.div>
+                      {habitTemplates.map((template, index) => (
+                        <Button
+                          key={index}
+                          type="button"
+                          variant="ghost"
+                          onClick={() => handleTemplateSelect(template)}
+                          className="justify-start text-right h-auto py-3 px-4 min-h-[48px]"
+                        >
+                          <div className="text-right">
+                            <div className="font-medium">{template.title}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {template.target} {template.targetUnit} • {difficulties.find(d => d.value === template.difficulty)?.label}
+                            </div>
+                          </div>
+                        </Button>
+                      ))}
+                    </motion.div>
+                  )}
+                </div>
               )}
 
-              <div className="space-y-3 sm:space-y-4">
-                {/* عنوان */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label htmlFor="title">عنوان عادت *</Label>
-                  <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="مثال: ورزش روزانه"
-                  />
-                </div>
+              {/* عنوان */}
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-right block">
+                  عنوان عادت *
+                </Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="مثال: ورزش روزانه"
+                  className="text-right min-h-[48px] text-base"
+                  dir="rtl"
+                />
+              </div>
 
-                {/* توضیحات */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label htmlFor="description">توضیحات</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="یادداشت‌های شما درباره این عادت..."
-                    rows={3}
-                  />
-                </div>
+              {/* توضیحات */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-right block">
+                  توضیحات
+                </Label>
+                <Textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="توضیحات بیشتر درباره این عادت..."
+                  className="text-right min-h-[100px] text-base resize-none"
+                  dir="rtl"
+                />
+              </div>
 
-                {/* دسته‌بندی */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label>دسته‌بندی</Label>
-                  <Select value={category} onValueChange={(v) => setCategory(v)}>
-                    <SelectTrigger>
+              {/* دسته‌بندی و سختی */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category" className="text-right block">
+                    دسته‌بندی
+                  </Label>
+                  <Select value={category} onValueChange={setCategory} dir="rtl">
+                    <SelectTrigger id="category" className="min-h-[48px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map(cat => (
+                      {categories.map((cat) => (
                         <SelectItem key={cat.value} value={cat.value}>
-                          {cat.icon} {cat.label}
+                          <div className="flex items-center gap-2">
+                            <span>{cat.icon}</span>
+                            <span>{cat.label}</span>
+                          </div>
                         </SelectItem>
                       ))}
-                      {state.settings.customHabitCategories && state.settings.customHabitCategories.length > 0 && (
-                        <>
-                          <SelectItem value="_separator_" disabled>───────────</SelectItem>
-                          {state.settings.customHabitCategories.map(cat => (
-                            <SelectItem key={cat} value={cat}>
-                              ⭐ {cat}
-                            </SelectItem>
-                          ))}
-                        </>
-                      )}
                     </SelectContent>
                   </Select>
                 </div>
 
-                {/* نوع عادت */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label>نوع عادت</Label>
-                  <Select value={habitType} onValueChange={(v) => setHabitType(v as HabitType)}>
-                    <SelectTrigger>
+                <div className="space-y-2">
+                  <Label htmlFor="difficulty" className="text-right block">
+                    سطح سختی
+                  </Label>
+                  <Select value={difficulty} onValueChange={(v) => setDifficulty(v as HabitDifficulty)} dir="rtl">
+                    <SelectTrigger id="difficulty" className="min-h-[48px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="qualitative">کیفی (فقط انجام/عدم انجام)</SelectItem>
-                      <SelectItem value="quantitative">کمی (با هدف عددی)</SelectItem>
+                      {difficulties.map((diff) => (
+                        <SelectItem key={diff.value} value={diff.value}>
+                          <div className="flex items-center gap-2">
+                            <span>{diff.label}</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {diff.xp} XP
+                            </Badge>
+                          </div>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
 
-                {/* هدف و واحد */}
-                {habitType === 'quantitative' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="target">هدف</Label>
-                      <Input
-                        id="target"
-                        type="number"
-                        value={target}
-                        onChange={(e) => setTarget(e.target.value)}
-                        min="1"
-                      />
-                    </div>
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="targetUnit">واحد</Label>
-                      <Select value={targetUnit} onValueChange={setTargetUnit}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="بار">بار</SelectItem>
-                          <SelectItem value="دقیقه">دقیقه</SelectItem>
-                          <SelectItem value="ساعت">ساعت</SelectItem>
-                          <SelectItem value="صفحه">صفحه</SelectItem>
-                          <SelectItem value="لیوان">لیوان</SelectItem>
-                          <SelectItem value="قدم">قدم</SelectItem>
-                          <SelectItem value="کیلومتر">کیلومتر</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )}
-
-                {/* فرکانس و سختی */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label>فرکانس</Label>
-                    <Select value={frequency} onValueChange={(v) => setFrequency(v as HabitFrequency)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="daily">روزانه</SelectItem>
-                        <SelectItem value="weekly">هفتگی</SelectItem>
-                        <SelectItem value="custom">سفارشی</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label>سختی</Label>
-                    <Select value={difficulty} onValueChange={(v) => setDifficulty(v as HabitDifficulty)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {difficulties.map(d => (
-                          <SelectItem key={d.value} value={d.value}>
-                            {d.label} ({d.xp} XP)
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              {/* هدف و واحد */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="target" className="text-right block">
+                    هدف روزانه
+                  </Label>
+                  <Input
+                    id="target"
+                    type="number"
+                    value={target}
+                    onChange={(e) => setTarget(e.target.value)}
+                    placeholder="1"
+                    className="text-right min-h-[48px] text-base"
+                    dir="rtl"
+                    min="1"
+                  />
                 </div>
 
-                {/* رنگ */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label htmlFor="color">رنگ شخصی</Label>
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center">
-                    <Input
-                      id="color"
-                      type="color"
-                      value={color}
-                      onChange={(e) => setColor(e.target.value)}
-                      className="w-20 h-10"
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      {['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'].map(c => (
-                        <button
-                          key={c}
-                          onClick={() => setColor(c)}
-                          className="w-9 h-9 sm:w-8 sm:h-8 rounded-full border-2 border-border hover:scale-110 transition-transform active:scale-95"
-                          style={{ backgroundColor: c }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="targetUnit" className="text-right block">
+                    واحد
+                  </Label>
+                  <Input
+                    id="targetUnit"
+                    value={targetUnit}
+                    onChange={(e) => setTargetUnit(e.target.value)}
+                    placeholder="بار، دقیقه، ..."
+                    className="text-right min-h-[48px] text-base"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              {/* یادآوری */}
+              <div className="space-y-3 p-4 bg-accent/50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="reminder" className="text-right text-base">
+                    فعال‌سازی یادآوری
+                  </Label>
+                  <Switch
+                    id="reminder"
+                    checked={reminderEnabled}
+                    onCheckedChange={setReminderEnabled}
+                  />
                 </div>
 
-                {/* یادآوری */}
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>یادآوری</Label>
-                    <Switch
-                      checked={reminderEnabled}
-                      onCheckedChange={setReminderEnabled}
-                    />
-                  </div>
-                  {reminderEnabled && (
+                {reminderEnabled && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-2"
+                  >
+                    <Label htmlFor="reminderTime" className="text-right block text-sm">
+                      زمان یادآوری
+                    </Label>
                     <Input
+                      id="reminderTime"
                       type="time"
                       value={reminderTime}
                       onChange={(e) => setReminderTime(e.target.value)}
+                      className="min-h-[48px]"
                     />
-                  )}
-                </div>
+                  </motion.div>
+                )}
+              </div>
 
-                {/* تصویر انگیزشی */}
+              {/* آپلود تصویر */}
+              <div className="space-y-2">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
                   label="تصویر انگیزشی"
                 />
+              </div>
 
-                {/* دکمه‌ها */}
-                <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 pt-3 sm:pt-4">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
-                    انصراف
-                  </Button>
-                  <Button onClick={handleSubmit} className="flex-1 w-full">
-                    {editingHabit ? 'ذخیره تغییرات' : 'افزودن عادت'}
-                  </Button>
-                </div>
+              {/* دکمه‌های عملیات */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="flex-1 gap-2 min-h-[52px] text-base font-medium"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  <span>{editingHabit ? 'ذخیره تغییرات' : 'افزودن عادت'}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    resetForm();
+                  }}
+                  className="min-h-[52px] px-6"
+                >
+                  انصراف
+                </Button>
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* کارت‌های آماری */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-4 glass border-l-4" style={{ borderLeftColor: 'hsl(var(--primary))' }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">عادت‌های فعال</p>
-                <p className="text-2xl font-bold mt-1">{activeHabits.length}</p>
-              </div>
-              <Zap className="w-8 h-8 text-primary" />
             </div>
-          </Card>
-          
-          <Card className="p-4 glass border-l-4 border-l-orange-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">تکمیل امروز</p>
-                <p className="text-2xl font-bold mt-1">{todayCompleted}/{activeHabits.length}</p>
-                <Progress value={completionRate} className="mt-2 h-2" />
-              </div>
-              <CheckCircle2 className="w-8 h-8 text-orange-500" />
-            </div>
-          </Card>
-          
-          <Card className="p-4 glass border-l-4 border-l-red-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">مجموع Streak</p>
-                <p className="text-2xl font-bold mt-1">{totalStreak} روز</p>
-              </div>
-              <Flame className="w-8 h-8 text-red-500" />
-            </div>
-          </Card>
-        </div>
+          </DialogContent>
+        </Dialog>
       </motion.div>
 
-      {/* نکات عادت‌سازی */}
-      <Card className="p-4 bg-gradient-to-br from-primary/10 to-purple-500/10 border-primary/20">
-        <div className="flex gap-3">
-          <Lightbulb className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-semibold mb-1">💡 نکته روانشناسی:</h3>
-            <p className="text-sm text-muted-foreground">
-              برای موفقیت در عادت‌سازی، با عادت‌های کوچک و ساده شروع کنید. تحقیقات نشان می‌دهد که 21 روز تکرار مداوم می‌تواند یک عادت را در شما ریشه‌دار کند!
-            </p>
-          </div>
-        </div>
-      </Card>
-
-      {/* تب‌های عادت‌ها */}
-      <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="active">
-            فعال ({activeHabits.length})
+      {/* تب‌های فعال و غیرفعال */}
+      <Tabs defaultValue="active" dir="rtl" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 h-12">
+          <TabsTrigger value="active" className="gap-2 text-base">
+            <span>فعال</span>
+            <Badge variant="secondary" className="text-xs">
+              {activeHabits.length}
+            </Badge>
           </TabsTrigger>
-          <TabsTrigger value="inactive">
-            غیرفعال ({inactiveHabits.length})
+          <TabsTrigger value="inactive" className="gap-2 text-base">
+            <span>غیرفعال</span>
+            <Badge variant="secondary" className="text-xs">
+              {inactiveHabits.length}
+            </Badge>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="active" className="space-y-4">
+        {/* عادت‌های فعال */}
+        <TabsContent value="active" className="mt-6 space-y-4">
           {activeHabits.length === 0 ? (
-            <Card className="p-8 text-center">
-              <Flame className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">هنوز عادتی ندارید!</h3>
-              <p className="text-muted-foreground mb-4">
-                اولین عادت مثبت خود را اضافه کنید و سفر تغییر را شروع کنید 🚀
-              </p>
-              <Button onClick={() => setIsDialogOpen(true)}>
-                <Plus className="w-4 h-4 ml-2" />
-                افزودن اولین عادت
-              </Button>
+            <Card className="p-12">
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 rounded-full bg-accent/50 flex items-center justify-center mx-auto">
+                  <Flame className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    هنوز عادتی اضافه نکرده‌اید
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    با افزودن اولین عادت خود، سفر به سوی زندگی بهتر را آغاز کنید
+                  </p>
+                </div>
+              </div>
             </Card>
           ) : (
             <DndContext
@@ -746,51 +825,13 @@ const HabitTracker = () => {
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext
-                items={activeHabits.map((habit) => habit.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-4">
+              <SortableContext items={activeHabits.map(h => h.id)} strategy={verticalListSortingStrategy}>
+                <AnimatePresence mode="popLayout">
                   {activeHabits.map((habit, index) => {
-                    const streak = getStreakForHabit(habit);
-                    const last7Days = getLast7Days();
-                    const categoryInfo = categories.find(c => c.value === habit.category);
-                    const categoryLabel = categoryInfo?.label || habit.category;
-                    const isLocked = !isPro && index >= 3;
-
-                    if (isLocked) {
-                      return (
-                        <motion.div
-                          key={habit.id}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                        >
-                          <Card className="p-5 glass relative overflow-hidden border-r-4" style={{ borderRightColor: habit.color }}>
-                            <div 
-                              className="absolute inset-0 bg-background/60 backdrop-blur-md z-10 flex items-center justify-center cursor-pointer"
-                              onClick={() => setShowPaywall(true)}
-                            >
-                              <div className="text-center space-y-3">
-                                <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                                  <Lock className="w-8 h-8 text-primary" />
-                                </div>
-                                <div>
-                                  <p className="font-bold text-lg">دوره آزمایشی 30 روزه شما به پایان رسیده</p>
-                                  <p className="text-sm text-muted-foreground mt-1">برای مدیریت بیش از 3 عادت، ارتقا دهید</p>
-                                </div>
-                                <Button className="mt-3">
-                                  ارتقا به Pro
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="blur-sm">
-                              <h3 className="text-lg font-bold">{habit.title}</h3>
-                              <p className="text-sm text-muted-foreground mt-2">این عادت قفل است</p>
-                            </div>
-                          </Card>
-                        </motion.div>
-                      );
-                    }
+                    const isLocked = !isPro && index >= freeHabitLimit;
+                    const categoryInfo = categories.find(c => c.value === habit.category) || categories[0];
+                    const difficultyInfo = difficulties.find(d => d.value === habit.difficulty) || difficulties[0];
+                    const streak = calculateStreak(habit.completedDates);
 
                     return (
                       <SortableHabitCard
@@ -799,85 +840,101 @@ const HabitTracker = () => {
                         today={today}
                         streak={streak}
                         last7Days={last7Days}
-                        categoryLabel={categoryLabel}
-                        onCheck={(id) => checkHabit(id, today)}
+                        categoryInfo={categoryInfo}
+                        difficultyInfo={difficultyInfo}
+                        onCheck={handleCheckHabit}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         onToggle={handleToggleActive}
+                        isLocked={isLocked}
                       />
                     );
                   })}
-                </div>
+                </AnimatePresence>
               </SortableContext>
             </DndContext>
           )}
+
+          {/* پیام محدودیت برای کاربران غیر پرو */}
+          {!isPro && activeHabits.length > freeHabitLimit && (
+            <Card className="p-6 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+              <div className="text-center space-y-4">
+                <div className="flex items-center justify-center gap-2">
+                  <Lock className="w-6 h-6 text-primary" />
+                  <h3 className="text-lg font-bold text-foreground">
+                    ارتقا به نسخه Premium
+                  </h3>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  شما فقط به {freeHabitLimit} عادت اول دسترسی دارید. برای دسترسی نامحدود به همه عادت‌ها، به نسخه Premium ارتقا دهید.
+                </p>
+                <Button
+                  onClick={() => setShowPaywall(true)}
+                  className="gap-2 min-h-[48px]"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>ارتقا به Premium</span>
+                </Button>
+              </div>
+            </Card>
+          )}
         </TabsContent>
 
-        <TabsContent value="inactive" className="space-y-4">
-          <AnimatePresence mode="popLayout">
-            {inactiveHabits.length === 0 ? (
-              <Card className="p-8 text-center">
-                <Power className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">عادت غیرفعالی وجود ندارد</p>
-              </Card>
-            ) : (
-              inactiveHabits.map((habit) => {
-                const categoryInfo = categories.find(c => c.value === habit.category);
+        {/* عادت‌های غیرفعال */}
+        <TabsContent value="inactive" className="mt-6 space-y-4">
+          {inactiveHabits.length === 0 ? (
+            <Card className="p-12">
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 rounded-full bg-accent/50 flex items-center justify-center mx-auto">
+                  <Power className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    عادت غیرفعالی وجود ندارد
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    همه عادت‌های شما فعال هستند
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {inactiveHabits.map((habit) => {
+                const categoryInfo = categories.find(c => c.value === habit.category) || categories[0];
+                const difficultyInfo = difficulties.find(d => d.value === habit.difficulty) || difficulties[0];
+                const streak = calculateStreak(habit.completedDates);
+
                 return (
-                  <motion.div
+                  <SortableHabitCard
                     key={habit.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                  >
-                    <Card className="p-5 glass opacity-60 hover:opacity-100 transition-opacity">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold">{habit.title}</h3>
-                            <Badge variant="secondary" className="text-xs">
-                              {categoryInfo?.icon} {categoryInfo?.label}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Streak قبلی: {habit.longestStreak} روز
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleToggleActive(habit)}
-                          >
-                            فعال‌سازی
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDelete(habit.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
+                    habit={habit}
+                    today={today}
+                    streak={streak}
+                    last7Days={last7Days}
+                    categoryInfo={categoryInfo}
+                    difficultyInfo={difficultyInfo}
+                    onCheck={handleCheckHabit}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onToggle={handleToggleActive}
+                  />
                 );
-              })
-            )}
-          </AnimatePresence>
+              })}
+            </AnimatePresence>
+          )}
         </TabsContent>
       </Tabs>
 
       {/* Paywall Modal */}
-      <AnimatePresence>
-        {showPaywall && (
-          <Paywall
-            onStartTrial={() => setShowPaywall(false)}
-            onContinueLimited={() => setShowPaywall(false)}
+      {showPaywall && (
+        <div className="fixed inset-0 z-50">
+          <Paywall 
+            onStartTrial={() => setShowPaywall(false)} 
+            onContinueLimited={() => setShowPaywall(false)} 
           />
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 };
