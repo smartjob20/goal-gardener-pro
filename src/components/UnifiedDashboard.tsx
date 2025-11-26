@@ -11,6 +11,7 @@ import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, end
 import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
 import { toast } from 'sonner';
 import { PremiumBanner } from './PremiumBanner';
+import { CalendarWidget } from './CalendarWidget';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -736,9 +737,24 @@ const UnifiedDashboard = () => {
                         </div>
                         <span className="text-sm text-muted-foreground text-right">{label}</span>
                       </motion.div>
-                    ))}
+                  ))}
                   </CardContent>
                 </Card>
+              </motion.div>
+
+              {/* Calendar Widget */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <CalendarWidget 
+                  tasks={filteredTasks}
+                  habits={filteredHabits}
+                  onDateSelect={(date) => {
+                    console.log('Selected date:', date);
+                  }}
+                />
               </motion.div>
             </div>
           </div>
