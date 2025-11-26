@@ -81,10 +81,11 @@ export default function Paywall({ onStartTrial, onContinueLimited }: PaywallProp
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary-light/40 to-accent-light/40 flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary/10 to-accent/10 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
         className="w-full max-w-2xl"
       >
         {/* Premium Badge */}

@@ -22,23 +22,25 @@ serve(async (req) => {
     let prompt = "";
 
     if (type === "suggest") {
-      systemPrompt = `You are an AI personal coach analyzing user productivity data. Based on the data, provide 3-5 actionable task suggestions that are specific, measurable, and achievable. Consider user's habits, goals, and current workload. Respond ONLY with structured data using the suggest_tasks function.`;
+      systemPrompt = `تو یک مربی شخصی هوشمند هستی که داده‌های بهره‌وری کاربر رو تحلیل می‌کنی. بر اساس داده‌ها، ۳ تا ۵ پیشنهاد عملی برای وظایف بده که مشخص، قابل اندازه‌گیری و قابل دستیابی باشن. عادت‌ها، اهداف و حجم کاری فعلی کاربر رو در نظر بگیر. فقط با استفاده از تابع suggest_tasks جواب بده. پیشنهادات باید کاملاً به فارسی و با لحنی دوستانه و انگیزشی باشن.`;
       
-      prompt = `Analyze this user data and suggest productive tasks:
+      prompt = `این داده‌های کاربر رو تحلیل کن و وظایف مفید پیشنهاد بده:
       
-Tasks: ${userData.tasks?.length || 0} tasks (${userData.completedTasks || 0} completed)
-Habits: ${userData.habits?.length || 0} habits (Current streak: ${userData.currentStreak || 0} days)
-Goals: ${userData.goals?.length || 0} goals
-Focus Time: ${Math.round((userData.totalFocusTime || 0) / 60)} hours total
-Level: ${userData.level || 1}, XP: ${userData.xp || 0}
+وظایف: ${userData.tasks?.length || 0} وظیفه (${userData.completedTasks || 0} تکمیل شده)
+عادت‌ها: ${userData.habits?.length || 0} عادت (رکورد فعلی: ${userData.currentStreak || 0} روز)
+اهداف: ${userData.goals?.length || 0} هدف
+زمان تمرکز: ${Math.round((userData.totalFocusTime || 0) / 60)} ساعت
+سطح: ${userData.level || 1}, امتیاز: ${userData.xp || 0}
 
-Recent Tasks: ${userData.tasks?.slice(0, 5).map((t: any) => `${t.title} (${t.category}, ${t.priority} priority)`).join(', ')}
-Active Habits: ${userData.habits?.filter((h: any) => h.active).slice(0, 3).map((h: any) => h.title).join(', ')}
-Goals: ${userData.goals?.slice(0, 3).map((g: any) => `${g.title} (${g.progress}% complete)`).join(', ')}`;
+وظایف اخیر: ${userData.tasks?.slice(0, 5).map((t: any) => `${t.title} (${t.category}، اولویت ${t.priority})`).join('، ')}
+عادت‌های فعال: ${userData.habits?.filter((h: any) => h.active).slice(0, 3).map((h: any) => h.title).join('، ')}
+اهداف: ${userData.goals?.slice(0, 3).map((g: any) => `${g.title} (${g.progress}٪ تکمیل)`).join('، ')}
+
+پیشنهادات رو به فارسی و با لحنی گرم، دوستانه و انگیزشی بده. مثل یک دوست خوب که می‌خواد به کاربر کمک کنه!`;
     } else if (type === "analyze") {
-      systemPrompt = `You are an AI personal coach. Analyze user productivity data and provide insightful, encouraging feedback in Persian (Farsi). Focus on patterns, achievements, and areas for improvement. Be specific and actionable. Use emojis appropriately.`;
+      systemPrompt = `تو یک مربی شخصی هوشمند و دوستانه هستی. داده‌های بهره‌وری کاربر رو تحلیل کن و بازخوردی با انگیزه، گرم و دلسوزانه به زبان فارسی بده. روی الگوها، دستاوردها و زمینه‌های بهبود تمرکز کن. مشخص و عملی باش. از ایموجی‌های مناسب استفاده کن و مثل یک دوست صمیمی حرف بزن که واقعاً به موفقیت کاربر اهمیت میده.`;
       
-      prompt = `تحلیل این داده‌های کاربر و بازخورد هوشمند ارائه کن:
+      prompt = `این داده‌های کاربر رو با دقت بررسی کن و یک تحلیل دوستانه و انگیزشی بده:
 
 وظایف: ${userData.tasks?.length || 0} وظیفه (${userData.completedTasks || 0} تکمیل شده)
 عادت‌ها: ${userData.habits?.length || 0} عادت (رکورد فعلی: ${userData.currentStreak || 0} روز)
