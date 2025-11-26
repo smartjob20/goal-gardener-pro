@@ -185,9 +185,9 @@ export default function Navigation({
                 <Menu className="w-6 h-6 text-primary" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-gradient-to-b from-background via-background/95 to-primary/5 border-s border-border/60">
-              <SheetHeader className="mb-6">
-                <SheetTitle className="text-start">منو</SheetTitle>
+            <SheetContent side="right" dir="rtl" className="w-80 bg-gradient-to-b from-background via-background/95 to-primary/5 border-s border-border/60">
+              <SheetHeader className="mb-6 text-right">
+                <SheetTitle className="text-right">منو</SheetTitle>
               </SheetHeader>
 
               {/* User Profile Section */}
@@ -198,21 +198,21 @@ export default function Navigation({
               opacity: 1,
               y: 0
             }} className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/20">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-row-reverse">
                   <Avatar className="w-14 h-14 border-2 border-primary/50">
                     <AvatarImage src={user?.user_metadata?.avatar_url} />
                     <AvatarFallback className="bg-primary/20 text-primary text-lg">
                       {state.user.avatar}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
+                  <div className="flex-1 text-right">
                     <h3 className="font-bold text-lg text-foreground">{state.user.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1 justify-end">
                       <span className="text-xs text-muted-foreground">سطح {state.user.level}</span>
                       <Separator orientation="vertical" className="h-3" />
                       <span className="text-xs text-primary font-semibold">{state.user.xp} XP</span>
                     </div>
-                    <div className="mt-2">
+                    <div className="mt-2 flex justify-end">
                       {getStatusBadge()}
                     </div>
                   </div>
@@ -224,7 +224,7 @@ export default function Navigation({
                 {mainNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return <motion.button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-start relative min-h-[44px] ${isActive ? 'bg-primary/10 text-primary shadow-md' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`} whileTap={{
+                return <motion.button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex flex-row-reverse items-center justify-end gap-3 px-4 py-3 rounded-xl transition-all text-right relative min-h-[44px] ${isActive ? 'bg-primary/10 text-primary shadow-md' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`} whileTap={{
                   scale: 0.98
                 }}>
                       {isActive && <motion.div layoutId="activeIndicator" className="absolute end-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-s-full" transition={{
@@ -251,7 +251,7 @@ export default function Navigation({
                 {bottomNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return <button key={item.id} onClick={() => handleNavClick(item.id, item.route)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-start min-h-[44px] ${isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}>
+                return <button key={item.id} onClick={() => handleNavClick(item.id, item.route)} className={`w-full flex flex-row-reverse items-center justify-end gap-3 px-4 py-3 rounded-xl transition-all text-right min-h-[44px] ${isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}>
                       <Icon className="w-5 h-5" />
                       <span className="font-medium text-sm">{item.label}</span>
                     </button>;
@@ -259,7 +259,7 @@ export default function Navigation({
               </nav>
 
               {/* Sign Out Button */}
-              <Button onClick={handleSignOut} variant="outline" className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 min-h-[44px]">
+              <Button onClick={handleSignOut} variant="outline" className="w-full flex flex-row-reverse justify-end gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 min-h-[44px]">
                 <LogOut className="w-5 h-5" />
                 <span>خروج از حساب</span>
               </Button>
