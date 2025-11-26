@@ -307,22 +307,48 @@ const Profile = () => {
 
           {/* Tabs for Stats, Achievements, Activity */}
           <Tabs defaultValue="stats" className="space-y-6">
-            <ScrollArea className="w-full">
-              <TabsList className="inline-flex h-12 w-full sm:w-auto min-w-full sm:min-w-0">
-                <TabsTrigger value="stats" className="flex-1 sm:flex-none sm:px-6 text-base min-h-[48px]">
-                  <BarChart3 className="w-5 h-5 ms-2" />
-                  آمار عملکرد
+            <div className="w-full">
+              <TabsList className="grid h-auto w-full grid-cols-3 gap-2 bg-transparent p-0">
+                <TabsTrigger 
+                  value="stats" 
+                  className="flex-col gap-2 h-auto py-4 px-3 rounded-xl border-2 border-border/40 bg-card/50 backdrop-blur-sm data-[state=active]:border-primary data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/10 data-[state=active]:to-primary/5 data-[state=active]:shadow-lg transition-all hover:border-primary/50"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
+                  </motion.div>
+                  <span className="text-xs sm:text-sm font-semibold">آمار</span>
                 </TabsTrigger>
-                <TabsTrigger value="achievements" className="flex-1 sm:flex-none sm:px-6 text-base min-h-[48px]">
-                  <Trophy className="w-5 h-5 ms-2" />
-                  دستاوردها
+                
+                <TabsTrigger 
+                  value="achievements" 
+                  className="flex-col gap-2 h-auto py-4 px-3 rounded-xl border-2 border-border/40 bg-card/50 backdrop-blur-sm data-[state=active]:border-yellow-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-500/10 data-[state=active]:to-orange-500/5 data-[state=active]:shadow-lg transition-all hover:border-yellow-500/50"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Trophy className="w-6 h-6 sm:w-7 sm:h-7 text-yellow-600" />
+                  </motion.div>
+                  <span className="text-xs sm:text-sm font-semibold">دستاوردها</span>
                 </TabsTrigger>
-                <TabsTrigger value="activity" className="flex-1 sm:flex-none sm:px-6 text-base min-h-[48px]">
-                  <Activity className="w-5 h-5 ms-2" />
-                  فعالیت‌ها
+                
+                <TabsTrigger 
+                  value="activity" 
+                  className="flex-col gap-2 h-auto py-4 px-3 rounded-xl border-2 border-border/40 bg-card/50 backdrop-blur-sm data-[state=active]:border-green-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-green-500/10 data-[state=active]:to-emerald-500/5 data-[state=active]:shadow-lg transition-all hover:border-green-500/50"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-green-600" />
+                  </motion.div>
+                  <span className="text-xs sm:text-sm font-semibold">فعالیت‌ها</span>
                 </TabsTrigger>
               </TabsList>
-            </ScrollArea>
+            </div>
 
             {/* Stats Tab */}
             <TabsContent value="stats" className="space-y-6 mt-6">
