@@ -12,6 +12,7 @@ import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
 import { toast } from 'sonner';
 import { PremiumBanner } from './PremiumBanner';
 import { CalendarWidget } from './CalendarWidget';
+import { NotificationPanel } from './NotificationPanel';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -759,6 +760,15 @@ const UnifiedDashboard = () => {
                   onDeleteTask={deleteTask}
                   onCheckHabit={handleHabitCheck}
                 />
+              </motion.div>
+
+              {/* Notification Panel */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+              >
+                <NotificationPanel />
               </motion.div>
             </div>
           </div>

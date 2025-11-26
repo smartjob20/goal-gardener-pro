@@ -31,6 +31,7 @@ export interface Task {
   timeSpent?: number;
   imageUrl?: string;
   order?: number;
+  reminderTime?: string;
 }
 
 export interface Habit {

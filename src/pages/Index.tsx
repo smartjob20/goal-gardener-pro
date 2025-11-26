@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2, CheckSquare, Calendar } from 'lucide-react';
 import { storage, STORAGE_KEYS } from '@/utils/storage';
+import { notificationService } from '@/services/NotificationService';
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showWelcome, setShowWelcome] = useState(false);
@@ -38,9 +39,21 @@ const Index = () => {
     loading
   } = useAuth();
   const {
-    addTask
+    addTask,
+    state
   } = useApp();
   const navigate = useNavigate();
+
+  // Start notification service
+  useEffect(() => {
+    if (user && state) {
+      notificationService.start(state.tasks, state.habits);
+      
+      return () => {
+        notificationService.stop();
+      };
+    }
+  }, [user, state?.tasks, state?.habits]);
 
   // Check authentication
   useEffect(() => {
