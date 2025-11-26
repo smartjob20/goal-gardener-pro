@@ -43,20 +43,18 @@ export default function OnboardingTrial({ onComplete }: OnboardingTrialProps) {
     await triggerHaptic('medium');
 
     try {
-      // Activate trial by setting trial_start_date to now
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          trial_start_date: new Date().toISOString(),
-          is_pro: true,
-          subscription_status: 'trialing',
-          subscription_tier: 'free'
-        })
-        .eq('id', user.id);
+      // Call edge function to activate trial with service role permissions
+      const { data, error } = await supabase.functions.invoke('activate-trial', {
+        body: {},
+      });
 
       if (error) throw error;
 
-      // Save onboarding completion to both storage systems
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to activate trial');
+      }
+
+      // Save onboarding completion to localStorage
       localStorage.setItem('deepbreath_onboarding_completed', 'true');
       
       await triggerHaptic('success');
