@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Logo from '@/components/Logo';
+import OnboardingTrial from '@/components/OnboardingTrial';
 import { storage, STORAGE_KEYS } from '@/utils/storage';
 import { triggerHaptic } from '@/utils/haptics';
 import {
@@ -44,16 +44,16 @@ const steps = [
     icon: Sparkles
   },
   {
-    id: 'paywall',
-    title: 'نسخه پریمیوم',
-    description: 'قفل پتانسیل کامل خود را باز کنید',
-    icon: Crown
-  },
-  {
     id: 'theme',
     title: 'ظاهر دلخواه',
     description: 'تم مورد علاقه خود را انتخاب کنید',
     icon: Palette
+  },
+  {
+    id: 'trial',
+    title: 'هدیه خوش‌آمدگویی',
+    description: 'دریافت ۳۰ روز دسترسی رایگان',
+    icon: Crown
   }
 ];
 
@@ -65,12 +65,10 @@ const goalOptions = [
 ];
 
 export default function Onboarding({ onComplete }: OnboardingProps) {
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [userName, setUserName] = useState('');
   const [userGoal, setUserGoal] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('system');
-  const [isPremium, setIsPremium] = useState(false);
   const [breathingText, setBreathingText] = useState('ابتدا، یک نفس عمیق بکشیم...');
 
   // Load saved data on mount (migration-safe fallback to localStorage)
@@ -145,23 +143,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     await triggerHaptic('light');
   };
 
-  const handleStartTrial = async () => {
-    setIsPremium(true);
-    await triggerHaptic('success');
-    handleNext();
-  };
-
-  const handleContinueLimited = async () => {
-    setIsPremium(false);
-    await triggerHaptic('medium');
-    handleNext();
-  };
-
   const canProceed = () => {
     if (currentStep === 0) return userName.trim().length > 0;
     if (currentStep === 1) return userGoal.length > 0;
     if (currentStep === 2) return false; // Breathing step (auto-advances)
-    if (currentStep === 3) return true; // Paywall step (always can proceed)
+    if (currentStep === 3) return selectedTheme.length > 0; // Theme step
+    if (currentStep === 4) return false; // Trial step (has its own button)
     return true;
   };
 
@@ -184,13 +171,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       };
     }
   }, [currentStep]);
-
-  // Handle navigation to subscription page
-  useEffect(() => {
-    if (currentStep === 3) {
-      navigate('/subscription');
-    }
-  }, [currentStep, navigate]);
 
   // Show breathing step as full screen
   if (currentStep === 2) {
@@ -227,9 +207,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     );
   }
 
-  // Show subscription page as full screen overlay
-  if (currentStep === 3) {
-    return null;
+  // Show trial claim page as full screen
+  if (currentStep === 4) {
+    return <OnboardingTrial onComplete={handleComplete} />;
   }
 
   return (
@@ -368,7 +348,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   </motion.div>
                 )}
 
-                {currentStep === 4 && (
+                {currentStep === 3 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
