@@ -105,6 +105,7 @@ const UnifiedDashboard = () => {
   const {
     state,
     completeTask,
+    deleteTask,
     dispatch,
     addXP,
     reorderTasks
@@ -754,6 +755,9 @@ const UnifiedDashboard = () => {
                   onDateSelect={(date) => {
                     console.log('Selected date:', date);
                   }}
+                  onCompleteTask={completeTask}
+                  onDeleteTask={deleteTask}
+                  onCheckHabit={handleHabitCheck}
                 />
               </motion.div>
             </div>
