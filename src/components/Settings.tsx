@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import { cloudSyncService, SyncData } from '@/services/CloudSyncService';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,7 @@ import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Palette, Globe, Bell, Volume2, Shield, Database, Download, Upload, Trash2, Calendar, Moon, Sun, Monitor, Save, RotateCcw, Tags, Plus, X, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { Palette, Globe, Bell, Volume2, Shield, Database, Download, Upload, Trash2, Calendar, Moon, Sun, Monitor, Save, RotateCcw, Tags, Plus, X, Sparkles, TrendingUp, CheckCircle2, Cloud, CloudOff, RefreshCw, CloudUpload } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
@@ -28,6 +29,18 @@ const Settings = () => {
   const [newTaskCategory, setNewTaskCategory] = useState('');
   const [newHabitCategory, setNewHabitCategory] = useState('');
   const [newGoalCategory, setNewGoalCategory] = useState('');
+
+  // Cloud Sync State
+  const [isCloudConnected, setIsCloudConnected] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check initial cloud sync status
+    const syncStatus = cloudSyncService.getSyncStatus();
+    setIsCloudConnected(syncStatus.isEnabled);
+    setLastSyncTime(syncStatus.lastSyncTime);
+  }, []);
 
   const handleSettingChange = (key: keyof typeof settings, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -109,6 +122,86 @@ const Settings = () => {
     const bytes = new Blob([data]).size;
     const kb = (bytes / 1024).toFixed(2);
     return kb;
+  };
+
+  // Cloud Sync Functions
+  const handleCloudConnect = async () => {
+    setIsSyncing(true);
+    const success = await cloudSyncService.authenticate();
+    if (success) {
+      setIsCloudConnected(true);
+      // Start auto sync after connection
+      const syncData: SyncData = {
+        tasks: state.tasks,
+        habits: state.habits,
+        goals: state.goals,
+        plans: state.plans,
+        rewards: state.rewards,
+        achievements: state.achievements,
+        focusSessions: state.focusSessions,
+        user: state.user,
+        settings: state.settings,
+        lastModified: new Date().toISOString()
+      };
+      cloudSyncService.startAutoSync(() => syncData);
+    }
+    setIsSyncing(false);
+  };
+
+  const handleCloudDisconnect = () => {
+    cloudSyncService.disconnect();
+    setIsCloudConnected(false);
+    setLastSyncTime(null);
+  };
+
+  const handleManualSync = async () => {
+    if (!isCloudConnected) {
+      toast.error('ابتدا باید به Google Drive متصل شوید');
+      return;
+    }
+
+    setIsSyncing(true);
+    const syncData: SyncData = {
+      tasks: state.tasks,
+      habits: state.habits,
+      goals: state.goals,
+      plans: state.plans,
+      rewards: state.rewards,
+      achievements: state.achievements,
+      focusSessions: state.focusSessions,
+      user: state.user,
+      settings: state.settings,
+      lastModified: new Date().toISOString()
+    };
+
+    const success = await cloudSyncService.manualSync(syncData);
+    if (success) {
+      const now = new Date().toISOString();
+      setLastSyncTime(now);
+    }
+    setIsSyncing(false);
+  };
+
+  const handleCloudRestore = async () => {
+    if (!isCloudConnected) {
+      toast.error('ابتدا باید به Google Drive متصل شوید');
+      return;
+    }
+
+    setIsSyncing(true);
+    const data = await cloudSyncService.restore();
+    if (data) {
+      // Merge with current state to preserve fields not in SyncData
+      const mergedState = {
+        ...state,
+        ...data,
+        dailyStats: state.dailyStats, // Preserve current stats
+        aiSuggestions: state.aiSuggestions // Preserve current AI suggestions
+      };
+      dispatch({ type: 'LOAD_STATE', payload: mergedState });
+      toast.success('داده‌ها از فضای ابری بازیابی شدند! ✨');
+    }
+    setIsSyncing(false);
   };
 
   return (
@@ -803,6 +896,165 @@ const Settings = () => {
                         </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Cloud Sync Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                <Card className={`overflow-hidden backdrop-blur-sm shadow-lg transition-all ${
+                  isCloudConnected 
+                    ? 'border-green-500/40 bg-gradient-to-br from-green-500/10 to-blue-500/5' 
+                    : 'border-border/40 bg-card/50'
+                }`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <motion.div
+                          animate={isCloudConnected ? { scale: [1, 1.1, 1] } : {}}
+                          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                          className={`p-2 rounded-lg ${
+                            isCloudConnected ? 'bg-green-500/20' : 'bg-blue-500/10'
+                          }`}
+                        >
+                          {isCloudConnected ? (
+                            <Cloud className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <CloudOff className="h-5 w-5 text-blue-500" />
+                          )}
+                        </motion.div>
+                        <div>
+                          <CardTitle className="text-lg">همگام‌سازی ابری</CardTitle>
+                          <CardDescription>
+                            {isCloudConnected 
+                              ? 'متصل به Google Drive - همگام‌سازی خودکار فعال' 
+                              : 'اتصال به Google Drive برای backup خودکار'}
+                          </CardDescription>
+                        </div>
+                      </div>
+                      {isCloudConnected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="px-3 py-1.5 bg-green-500/20 text-green-700 rounded-full text-xs font-semibold border border-green-500/30"
+                        >
+                          متصل ✓
+                        </motion.div>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4 p-4 sm:p-6">
+                    {!isCloudConnected ? (
+                      <Button 
+                        onClick={handleCloudConnect}
+                        disabled={isSyncing}
+                        className="w-full justify-start gap-3 h-auto py-4 bg-gradient-to-l from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+                      >
+                        {isSyncing ? (
+                          <>
+                            <RefreshCw className="h-5 w-5 animate-spin shrink-0" />
+                            <div className="text-start flex-1">
+                              <div className="font-semibold">در حال اتصال...</div>
+                              <div className="text-xs opacity-90">لطفاً صبر کنید</div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <Cloud className="h-5 w-5 shrink-0" />
+                            <div className="text-start flex-1">
+                              <div className="font-semibold">اتصال به Google Drive</div>
+                              <div className="text-xs opacity-90">backup خودکار و دسترسی از همه‌جا</div>
+                            </div>
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <>
+                        {/* Connected Status and Actions */}
+                        <div className="space-y-3">
+                          {lastSyncTime && (
+                            <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">آخرین همگام‌سازی:</span>
+                                <span className="text-sm font-semibold">
+                                  {format(new Date(lastSyncTime), 'yyyy/MM/dd - HH:mm')}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Button 
+                              onClick={handleManualSync}
+                              disabled={isSyncing}
+                              variant="outline"
+                              className="w-full justify-start gap-3 h-auto py-4 hover:bg-green-500/10 hover:border-green-500/30"
+                            >
+                              {isSyncing ? (
+                                <>
+                                  <RefreshCw className="h-5 w-5 animate-spin text-green-600 shrink-0" />
+                                  <div className="text-start flex-1">
+                                    <div className="font-semibold text-sm">در حال همگام‌سازی...</div>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <RefreshCw className="h-5 w-5 text-green-600 shrink-0" />
+                                  <div className="text-start flex-1">
+                                    <div className="font-semibold text-sm">همگام‌سازی دستی</div>
+                                    <div className="text-xs text-muted-foreground">آپلود به فضای ابری</div>
+                                  </div>
+                                </>
+                              )}
+                            </Button>
+
+                            <Button 
+                              onClick={handleCloudRestore}
+                              disabled={isSyncing}
+                              variant="outline"
+                              className="w-full justify-start gap-3 h-auto py-4 hover:bg-blue-500/10 hover:border-blue-500/30"
+                            >
+                              {isSyncing ? (
+                                <>
+                                  <RefreshCw className="h-5 w-5 animate-spin text-blue-600 shrink-0" />
+                                  <div className="text-start flex-1">
+                                    <div className="font-semibold text-sm">در حال بازیابی...</div>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <CloudUpload className="h-5 w-5 text-blue-600 shrink-0" />
+                                  <div className="text-start flex-1">
+                                    <div className="font-semibold text-sm">بازیابی از ابر</div>
+                                    <div className="text-xs text-muted-foreground">دانلود از فضای ابری</div>
+                                  </div>
+                                </>
+                              )}
+                            </Button>
+                          </div>
+
+                          <Button 
+                            onClick={handleCloudDisconnect}
+                            variant="outline"
+                            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <CloudOff className="h-4 w-4 ms-2" />
+                            قطع اتصال از Google Drive
+                          </Button>
+                        </div>
+
+                        <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/20">
+                          <p className="text-sm text-muted-foreground">
+                            💡 <strong>همگام‌سازی خودکار:</strong> داده‌های شما به صورت خودکار هر 5 دقیقه یک‌بار 
+                            با Google Drive همگام‌سازی می‌شوند. در صورت تضاد، آخرین تغییرات اعمال می‌شود.
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
