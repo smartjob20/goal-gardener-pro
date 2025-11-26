@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Goal, GoalCategory, Priority } from '@/types';
+import { Goal, GoalCategory } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,10 +16,253 @@ import { PersianCalendar } from '@/components/ui/persian-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useApp as useAppContext } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Calendar as CalendarIcon, Trash2, Edit2, Target, Trophy, Play, Pause, CheckCircle2, Clock, X, Image as ImageIcon } from 'lucide-react';
+import { 
+  Plus, 
+  Calendar as CalendarIcon, 
+  Trash2, 
+  Edit2, 
+  Target, 
+  Trophy, 
+  CheckCircle2, 
+  Clock, 
+  Sparkles,
+  TrendingUp,
+  Zap,
+  Star,
+  Rocket,
+  Heart,
+  Flag
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { format, differenceInDays } from 'date-fns';
 import { ImageUpload } from '@/components/ImageUpload';
+import { triggerHaptic } from '@/utils/haptics';
+
+// دسته‌بندی‌های اهداف
+const categoryOptions: { value: GoalCategory; label: string; icon: string; color: string }[] = [
+  { value: 'health', label: 'سلامت و تندرستی', icon: '🏃', color: 'hsl(142, 76%, 36%)' },
+  { value: 'learning', label: 'آموزش و مطالعه', icon: '📚', color: 'hsl(217, 91%, 60%)' },
+  { value: 'career', label: 'شغل و کسب‌وکار', icon: '💼', color: 'hsl(262, 83%, 58%)' },
+  { value: 'finance', label: 'مالی و سرمایه‌گذاری', icon: '💰', color: 'hsl(48, 96%, 53%)' },
+  { value: 'personal', label: 'شخصی و روحی', icon: '🧘', color: 'hsl(189, 94%, 43%)' },
+  { value: 'family', label: 'خانواده و روابط', icon: '👨‍👩‍👧', color: 'hsl(338, 78%, 59%)' },
+  { value: 'hobby', label: 'سرگرمی و هنر', icon: '🎨', color: 'hsl(24, 95%, 53%)' },
+  { value: 'travel', label: 'سفر و ماجراجویی', icon: '✈️', color: 'hsl(204, 94%, 44%)' }
+];
+
+// کامپوننت کارت هدف
+function GoalCard({ 
+  goal, 
+  onEdit, 
+  onDelete, 
+  onToggleMilestone,
+  onChangeStatus 
+}: { 
+  goal: Goal;
+  onEdit: (goal: Goal) => void;
+  onDelete: (id: string) => void;
+  onToggleMilestone: (goalId: string, milestoneId: string) => void;
+  onChangeStatus: (goalId: string, status: 'active' | 'completed' | 'paused') => void;
+}) {
+  const categoryInfo = categoryOptions.find(c => c.value === goal.category) || categoryOptions[0];
+  const daysRemaining = differenceInDays(new Date(goal.targetDate), new Date());
+  const isOverdue = daysRemaining < 0 && goal.status !== 'completed';
+  const completedMilestones = goal.milestones.filter(m => m.completed).length;
+  const totalMilestones = goal.milestones.length;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className={`overflow-hidden transition-all hover:shadow-xl ${goal.status === 'completed' ? 'opacity-90' : ''}`}>
+        {/* خط رنگی بالای کارت */}
+        <div className="h-1 w-full" style={{ backgroundColor: categoryInfo.color }} />
+        
+        <CardHeader className="p-4 sm:p-6 pb-3 space-y-3">
+          {/* هدر با آیکون و بج */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0 space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="secondary" className="gap-1 text-xs px-2 py-1">
+                  <span>{categoryInfo.icon}</span>
+                  <span>{categoryInfo.label}</span>
+                </Badge>
+                {goal.status === 'completed' && (
+                  <Badge className="gap-1 bg-primary text-primary-foreground">
+                    <Trophy className="w-3 h-3" />
+                    <span>تکمیل شده</span>
+                  </Badge>
+                )}
+                {goal.status === 'paused' && (
+                  <Badge variant="outline" className="gap-1">
+                    متوقف شده
+                  </Badge>
+                )}
+              </div>
+              
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground leading-tight text-right">
+                {goal.title}
+              </h3>
+              
+              {goal.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed text-right">
+                  {goal.description}
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-1 shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(goal)}
+                className="min-h-[40px] min-w-[40px]"
+                aria-label="ویرایش"
+              >
+                <Edit2 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(goal.id)}
+                className="text-destructive hover:bg-destructive/10 min-h-[40px] min-w-[40px]"
+                aria-label="حذف"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* تصویر انگیزشی */}
+          {goal.imageUrl && (
+            <div className="w-full h-40 sm:h-48 rounded-lg overflow-hidden">
+              <img
+                src={goal.imageUrl}
+                alt={goal.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
+        </CardHeader>
+
+        <CardContent className="p-4 sm:p-6 pt-0 space-y-4">
+          {/* پیشرفت کلی */}
+          <div className="space-y-2 p-4 bg-accent/50 rounded-lg">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-foreground">پیشرفت کلی</span>
+              <span className="font-bold text-primary">{goal.progress}%</span>
+            </div>
+            <div className="h-3 bg-background rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-l from-primary to-primary/80 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${goal.progress}%` }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{completedMilestones} از {totalMilestones} مرحله</span>
+              {goal.status !== 'completed' && (
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span className={isOverdue ? 'text-destructive font-medium' : ''}>
+                    {isOverdue ? 'سررسید گذشته' : `${daysRemaining} روز مانده`}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* لیست مایلستون‌ها */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Flag className="w-4 h-4" />
+              <span>مراحل هدف:</span>
+            </div>
+            <div className="space-y-2">
+              {goal.milestones.map((milestone) => (
+                <div
+                  key={milestone.id}
+                  className={`flex items-start gap-3 p-3 rounded-lg transition-all ${
+                    milestone.completed 
+                      ? 'bg-primary/10 border border-primary/20' 
+                      : 'bg-accent/50 hover:bg-accent'
+                  }`}
+                >
+                  <Checkbox
+                    id={milestone.id}
+                    checked={milestone.completed}
+                    onCheckedChange={() => onToggleMilestone(goal.id, milestone.id)}
+                    className="mt-0.5 shrink-0"
+                  />
+                  <label
+                    htmlFor={milestone.id}
+                    className={`flex-1 text-sm leading-relaxed cursor-pointer text-right ${
+                      milestone.completed 
+                        ? 'line-through text-muted-foreground' 
+                        : 'text-foreground'
+                    }`}
+                  >
+                    {milestone.title}
+                  </label>
+                  {milestone.completed && (
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* دکمه‌های وضعیت */}
+          {goal.status !== 'completed' && (
+            <div className="flex gap-2 pt-2 border-t">
+              {goal.status === 'active' ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onChangeStatus(goal.id, 'paused')}
+                  className="flex-1 min-h-[44px]"
+                >
+                  متوقف کردن
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onChangeStatus(goal.id, 'active')}
+                  className="flex-1 min-h-[44px]"
+                >
+                  ادامه دادن
+                </Button>
+              )}
+              {goal.progress === 100 && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => onChangeStatus(goal.id, 'completed')}
+                  className="flex-1 gap-2 min-h-[44px]"
+                >
+                  <Trophy className="w-4 h-4" />
+                  <span>تکمیل هدف</span>
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* پاداش XP */}
+          <div className="flex items-center justify-center gap-2 p-2 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg">
+            <Zap className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">پاداش: {goal.xpReward} XP</span>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
 
 const Goals = () => {
   const { state, addGoal, dispatch } = useApp();
@@ -40,29 +283,6 @@ const Goals = () => {
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const categoryOptions: { value: GoalCategory; label: string; icon: string }[] = [
-    { value: 'health', label: 'سلامت و تندرستی', icon: '🏃' },
-    { value: 'learning', label: 'آموزش و مطالعه', icon: '📚' },
-    { value: 'career', label: 'شغل و کسب‌وکار', icon: '💼' },
-    { value: 'finance', label: 'مالی و سرمایه‌گذاری', icon: '💰' },
-    { value: 'personal', label: 'شخصی و روحی', icon: '🧘' },
-    { value: 'family', label: 'خانواده و روابط', icon: '👨‍👩‍👧' },
-    { value: 'hobby', label: 'سرگرمی و هنر', icon: '🎨' },
-    { value: 'travel', label: 'سفر و ماجراجویی', icon: '✈️' }
-  ];
-
-  const statusColors = {
-    active: 'bg-green-500/20 text-green-700 dark:text-green-300',
-    completed: 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
-    paused: 'bg-gray-500/20 text-gray-700 dark:text-gray-300'
-  };
-
-  const statusLabels = {
-    active: 'فعال',
-    completed: 'تکمیل شده',
-    paused: 'متوقف'
-  };
-
   const handleAddGoal = () => {
     if (!title.trim()) {
       toast.error('لطفاً عنوان هدف را وارد کنید');
@@ -71,7 +291,7 @@ const Goals = () => {
 
     const validMilestones = milestones.filter(m => m.trim());
     if (validMilestones.length === 0) {
-      toast.error('لطفاً حداقل یک مایلستون اضافه کنید');
+      toast.error('لطفاً حداقل یک مرحله اضافه کنید');
       return;
     }
 
@@ -91,7 +311,8 @@ const Goals = () => {
       imageUrl: imageUrl || undefined
     });
 
-    toast.success('🎯 هدف جدید ایجاد شد!');
+    toast.success('🎯 هدف جدید با موفقیت ایجاد شد!');
+    triggerHaptic('success');
     resetForm();
     setIsAddDialogOpen(false);
   };
@@ -130,15 +351,19 @@ const Goals = () => {
     };
 
     dispatch({ type: 'UPDATE_GOAL', payload: updatedGoal });
-    toast.success('✏️ هدف با موفقیت ویرایش شد');
+    toast.success('✅ هدف با موفقیت ویرایش شد');
+    triggerHaptic('success');
     setIsEditDialogOpen(false);
     setEditingGoal(null);
     resetForm();
   };
 
   const handleDeleteGoal = (id: string) => {
-    dispatch({ type: 'DELETE_GOAL', payload: id });
-    toast.success('🗑️ هدف حذف شد');
+    if (confirm('آیا از حذف این هدف مطمئن هستید؟')) {
+      dispatch({ type: 'DELETE_GOAL', payload: id });
+      toast.success('هدف حذف شد');
+      triggerHaptic('warning');
+    }
   };
 
   const handleToggleMilestone = (goalId: string, milestoneId: string) => {
@@ -162,10 +387,12 @@ const Goals = () => {
     };
 
     dispatch({ type: 'UPDATE_GOAL', payload: updatedGoal });
+    triggerHaptic('light');
 
     if (progress === 100) {
       dispatch({ type: 'ADD_XP', payload: goal.xpReward });
       toast.success('🎉 تبریک! هدف شما تکمیل شد!');
+      triggerHaptic('success');
     }
   };
 
@@ -174,7 +401,14 @@ const Goals = () => {
     if (!goal) return;
 
     dispatch({ type: 'UPDATE_GOAL', payload: { ...goal, status: newStatus } });
-    toast.success(`وضعیت به "${statusLabels[newStatus]}" تغییر کرد`);
+    
+    if (newStatus === 'completed') {
+      toast.success('🏆 هدف با موفقیت تکمیل شد!');
+      triggerHaptic('success');
+    } else {
+      toast.success(`وضعیت تغییر کرد`);
+      triggerHaptic('light');
+    }
   };
 
   const openEditDialog = (goal: Goal) => {
@@ -202,7 +436,9 @@ const Goals = () => {
   };
 
   const removeMilestone = (index: number) => {
-    setMilestones(milestones.filter((_, i) => i !== index));
+    if (milestones.length > 1) {
+      setMilestones(milestones.filter((_, i) => i !== index));
+    }
   };
 
   const updateMilestone = (index: number, value: string) => {
@@ -211,698 +447,646 @@ const Goals = () => {
     setMilestones(newMilestones);
   };
 
-  const calculateDaysRemaining = (targetDate: string) => {
-    const days = differenceInDays(new Date(targetDate), new Date());
-    return days > 0 ? days : 0;
-  };
-
   const activeGoals = state.goals.filter(g => g.status === 'active');
   const completedGoals = state.goals.filter(g => g.status === 'completed');
   const pausedGoals = state.goals.filter(g => g.status === 'paused');
 
-  return (
-    <div className="min-h-screen pb-24 px-4 pt-6 relative" dir="rtl">
-      {/* Animated Background */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
-        <div className="absolute top-0 -right-4 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
-      </div>
+  const totalProgress = state.goals.length > 0 
+    ? Math.round(state.goals.reduce((sum, g) => sum + g.progress, 0) / state.goals.length)
+    : 0;
 
-      {/* Header */}
+  return (
+    <div className="min-h-screen pb-24 p-4 sm:p-6 space-y-6" dir="rtl">
+      {/* هدر الهام‌بخش */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
+        className="space-y-4"
       >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">
-              🎯 هدف‌گذاری
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              اهداف خود را تعیین و به موفقیت برسید
-            </p>
-          </div>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="shadow-elegant hover-scale min-h-[44px]">
-                <Plus className="ms-2 h-5 w-5" />
-                هدف جدید
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 pb-safe" dir="rtl">
-              <DialogHeader>
-                <DialogTitle className="text-lg sm:text-xl">🎯 ایجاد هدف جدید</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3 sm:space-y-4 py-3 sm:py-4 pb-20">
-                {/* عنوان */}
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-sm">عنوان هدف *</Label>
-                  <Input
-                    id="title"
-                    placeholder="مثلاً: کاهش 10 کیلو وزن"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="min-h-[44px] text-base"
+        {/* عنوان اصلی */}
+        <div className="text-center space-y-3 mb-6">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full"
+          >
+            <Rocket className="w-5 h-5 text-primary" />
+            <span className="text-sm font-medium text-primary">رویاهای شما، واقعیت ما</span>
+          </motion.div>
+          
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+            اهداف زندگی من 🎯
+          </h1>
+          
+          <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+            رویاهای بزرگ خود را به اهداف قابل دستیابی تبدیل کنید
+          </p>
+        </div>
+
+        {/* کارت آمار */}
+        <Card className="overflow-hidden">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {/* اهداف فعال */}
+              <div className="text-center space-y-1">
+                <div className="text-2xl sm:text-3xl font-bold text-primary flex items-center justify-center gap-1">
+                  <Target className="w-6 h-6" />
+                  <span>{activeGoals.length}</span>
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  فعال
+                </div>
+              </div>
+
+              {/* تکمیل شده */}
+              <div className="text-center space-y-1">
+                <div className="text-2xl sm:text-3xl font-bold text-primary flex items-center justify-center gap-1">
+                  <Trophy className="w-6 h-6" />
+                  <span>{completedGoals.length}</span>
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  تکمیل شده
+                </div>
+              </div>
+
+              {/* پیشرفت کلی */}
+              <div className="text-center space-y-1">
+                <div className="text-2xl sm:text-3xl font-bold text-primary flex items-center justify-center gap-1">
+                  <TrendingUp className="w-6 h-6" />
+                  <span>{totalProgress}%</span>
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  پیشرفت
+                </div>
+              </div>
+            </div>
+
+            {/* نوار پیشرفت کلی */}
+            {state.goals.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">پیشرفت کلی اهداف</span>
+                  <span className="font-medium text-foreground">{totalProgress}%</span>
+                </div>
+                <div className="h-3 bg-secondary rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-l from-primary via-primary/90 to-primary/80 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${totalProgress}%` }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
                   />
                 </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                {/* توضیحات */}
-                <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm">توضیحات</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="جزئیات هدف خود را بنویسید..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
-                    className="text-base"
-                  />
+        {/* دکمه افزودن هدف */}
+        <Dialog 
+          open={isAddDialogOpen} 
+          onOpenChange={(open) => {
+            setIsAddDialogOpen(open);
+            if (!open) resetForm();
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button className="w-full gap-2 min-h-[56px] text-base font-medium shadow-lg hover:shadow-xl transition-shadow">
+              <Plus className="w-5 h-5" />
+              <span>ایجاد هدف جدید</span>
+              <Sparkles className="w-5 h-5" />
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="text-xl text-right flex items-center gap-2">
+                <Rocket className="w-6 h-6 text-primary" />
+                <span>{editingGoal ? 'ویرایش هدف' : 'ایجاد هدف جدید'}</span>
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-5 mt-4">
+              {/* پیام انگیزشی */}
+              <div className="p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
+                <div className="flex items-start gap-3">
+                  <Star className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <p className="text-sm text-muted-foreground leading-relaxed text-right">
+                    هر هدف بزرگی با یک قدم کوچک شروع می‌شود. رویاهای خود را تعریف کنید و مراحل رسیدن به آن را مشخص کنید.
+                  </p>
                 </div>
+              </div>
 
-                {/* دسته‌بندی */}
-                <div className="space-y-2">
-                  <Label className="text-sm">دسته‌بندی *</Label>
-                  <Select value={category} onValueChange={(v) => setCategory(v)}>
-                    <SelectTrigger className="min-h-[44px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categoryOptions.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.icon} {cat.label}
-                        </SelectItem>
-                      ))}
-                      {state.settings.customGoalCategories && state.settings.customGoalCategories.length > 0 && (
-                        <>
-                          <SelectItem value="_separator_" disabled>───────────</SelectItem>
-                          {state.settings.customGoalCategories.map(cat => (
-                            <SelectItem key={cat} value={cat}>
-                              ⭐ {cat}
-                            </SelectItem>
-                          ))}
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* عنوان */}
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-right block text-base">
+                  عنوان هدف *
+                </Label>
+                <Input
+                  id="title"
+                  placeholder="مثال: رسیدن به وزن ایده‌آل"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="text-right min-h-[48px] text-base"
+                  dir="rtl"
+                />
+              </div>
 
-                {/* تاریخ هدف */}
-                <div className="space-y-2">
-                  <Label className="text-sm">تاریخ هدف</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start min-h-[44px]">
-                        <CalendarIcon className="ms-2 h-4 w-4" />
-                        {format(targetDate, 'yyyy/MM/dd')}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 max-w-[min(calc(100vw-2rem),320px)]" align="start">
-                      {useJalali ? (
-                        <PersianCalendar
-                          mode="single"
-                          selected={targetDate}
-                          onSelect={(date) => date && setTargetDate(date)}
-                          className="scale-90 sm:scale-100"
-                        />
-                      ) : (
-                        <div className="p-3">
-                          <Input
-                            type="date"
-                            value={format(targetDate, 'yyyy-MM-dd')}
-                            onChange={(e) => setTargetDate(new Date(e.target.value))}
-                            className="min-h-[44px]"
-                          />
+              {/* توضیحات */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-right block text-base">
+                  توضیحات و دلایل انگیزشی
+                </Label>
+                <Textarea
+                  id="description"
+                  placeholder="چرا این هدف برای شما مهم است؟ چه احساسی پس از رسیدن به آن خواهید داشت؟"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  className="text-right min-h-[120px] text-base resize-none"
+                  dir="rtl"
+                />
+              </div>
+
+              {/* دسته‌بندی */}
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-right block text-base">
+                  دسته‌بندی هدف *
+                </Label>
+                <Select value={category} onValueChange={(v) => setCategory(v)} dir="rtl">
+                  <SelectTrigger id="category" className="min-h-[48px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryOptions.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        <div className="flex items-center gap-2">
+                          <span>{cat.icon}</span>
+                          <span>{cat.label}</span>
                         </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                      </SelectItem>
+                    ))}
+                    {state.settings.customGoalCategories && state.settings.customGoalCategories.length > 0 && (
+                      <>
+                        <SelectItem value="_separator_" disabled>───────────</SelectItem>
+                        {state.settings.customGoalCategories.map(cat => (
+                          <SelectItem key={cat} value={cat}>
+                            ⭐ {cat}
+                          </SelectItem>
+                        ))}
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* تصویر انگیزشی */}
+              {/* تاریخ هدف */}
+              <div className="space-y-2">
+                <Label className="text-right block text-base">
+                  تاریخ هدف
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start min-h-[48px] text-base"
+                    >
+                      <CalendarIcon className="ms-2 h-5 w-5" />
+                      <span>{format(targetDate, 'yyyy/MM/dd')}</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    {useJalali ? (
+                      <PersianCalendar
+                        mode="single"
+                        selected={targetDate}
+                        onSelect={(date) => date && setTargetDate(date)}
+                      />
+                    ) : (
+                      <div className="p-3">
+                        <Input
+                          type="date"
+                          value={format(targetDate, 'yyyy-MM-dd')}
+                          onChange={(e) => setTargetDate(new Date(e.target.value))}
+                          className="min-h-[48px]"
+                        />
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* تصویر انگیزشی */}
+              <div className="space-y-2">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
-                  label="تصویر انگیزشی"
+                  label="تصویر الهام‌بخش هدف"
                 />
-
-                {/* مایلستون‌ها */}
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm">مراحل (مایلستون‌ها) *</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={addMilestone}
-                      className="h-8 min-h-[32px]"
-                    >
-                      <Plus className="ms-1 h-4 w-4" />
-                      افزودن مرحله
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {milestones.map((milestone, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          placeholder={`مرحله ${index + 1}`}
-                          value={milestone}
-                          onChange={(e) => updateMilestone(index, e.target.value)}
-                          className="min-h-[44px] text-base"
-                        />
-                        {milestones.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeMilestone(index)}
-                            className="min-h-[44px] min-w-[44px] shrink-0"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Button onClick={handleAddGoal} className="w-full min-h-[44px]">
-                  <Target className="ms-2 h-5 w-5" />
-                  ایجاد هدف
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* Stats Cards - Mobile Friendly */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-        >
-          <Card className="p-4 glass-strong hover-lift">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-500/20 rounded-xl">
-                <Target className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{activeGoals.length}</p>
-                <p className="text-sm text-muted-foreground">هدف فعال</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 glass-strong hover-lift">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-500/20 rounded-xl">
-                <Trophy className="h-6 w-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{completedGoals.length}</p>
-                <p className="text-sm text-muted-foreground">تکمیل شده</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 glass-strong hover-lift">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-500/20 rounded-xl">
-                <CheckCircle2 className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {state.goals.reduce((sum, g) => sum + g.progress, 0) / (state.goals.length || 1)}%
+                <p className="text-xs text-muted-foreground text-right">
+                  یک تصویر انگیزشی که هر بار با دیدن آن، انگیزه شما را برای رسیدن به هدف افزایش دهد
                 </p>
-                <p className="text-sm text-muted-foreground">میانگین پیشرفت</p>
               </div>
-            </div>
-          </Card>
-        </motion.div>
-      </motion.div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="active">
-            فعال ({activeGoals.length})
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            تکمیل شده ({completedGoals.length})
-          </TabsTrigger>
-          <TabsTrigger value="paused">
-            متوقف ({pausedGoals.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <AnimatePresence mode="wait">
-          <TabsContent value="active" className="space-y-4">
-            {activeGoals.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16"
-              >
-                <div className="text-6xl mb-4">🎯</div>
-                <h3 className="text-xl font-semibold mb-2">هیچ هدف فعالی وجود ندارد</h3>
-                <p className="text-muted-foreground mb-6">
-                  اولین هدف خود را تعیین کنید
-                </p>
-                <Button onClick={() => setIsAddDialogOpen(true)} className="min-h-[44px]">
-                  <Plus className="ms-2 h-5 w-5" />
-                  ایجاد هدف
-                </Button>
-              </motion.div>
-            ) : (
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
-                {activeGoals.map((goal, index) => (
-                  <motion.div
-                    key={goal.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Card className="overflow-hidden glass-strong hover-lift">
-                      {/* تصویر */}
-                      {goal.imageUrl ? (
-                        <div className="relative h-40 sm:h-48 overflow-hidden">
-                          <img
-                            src={goal.imageUrl}
-                            alt={goal.title}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-2">
-                            <Badge className={`${statusColors[goal.status]} text-xs`}>
-                              {statusLabels[goal.status]}
-                            </Badge>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="relative h-40 sm:h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                          <ImageIcon className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/30" />
-                          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-2">
-                            <Badge className={`${statusColors[goal.status]} text-xs`}>
-                              {statusLabels[goal.status]}
-                            </Badge>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                        {/* Header */}
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{goal.title}</h3>
-                            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                              <span>
-                                {categoryOptions.find(c => c.value === goal.category)?.icon}{' '}
-                                {categoryOptions.find(c => c.value === goal.category)?.label}
-                              </span>
-                            </div>
-                            {goal.description && (
-                              <p className="text-xs sm:text-sm text-muted-foreground mt-2 line-clamp-2">
-                                {goal.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Progress */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-xs sm:text-sm">
-                            <span className="font-medium">پیشرفت: {goal.progress}%</span>
-                            <span className="text-muted-foreground">
-                              {goal.milestones.filter(m => m.completed).length} از {goal.milestones.length} مرحله
-                            </span>
-                          </div>
-                          <Progress value={goal.progress} className="h-2 sm:h-3" />
-                        </div>
-
-                        {/* مایلستون‌ها */}
-                        <div className="space-y-2">
-                          <h4 className="font-semibold text-xs sm:text-sm">مراحل:</h4>
-                          <div className="space-y-2 max-h-40 overflow-y-auto">
-                            {goal.milestones.map((milestone) => (
-                              <div
-                                key={milestone.id}
-                                className="flex items-start gap-3 p-2 sm:p-2.5 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors min-h-[44px]"
-                              >
-                                <Checkbox
-                                  checked={milestone.completed}
-                                  onCheckedChange={() => handleToggleMilestone(goal.id, milestone.id)}
-                                  className="mt-0.5 shrink-0 min-h-[20px] min-w-[20px]"
-                                />
-                                <span className={`text-xs sm:text-sm leading-relaxed ${milestone.completed ? 'line-through text-muted-foreground' : ''}`}>
-                                  {milestone.title}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 pt-2 border-t">
-                          <div className="flex items-center gap-2 text-xs sm:text-sm">
-                            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground shrink-0" />
-                            <span className="text-muted-foreground">
-                              {calculateDaysRemaining(goal.targetDate)} روز باقی‌مانده
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1 w-full sm:w-auto justify-end">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openEditDialog(goal)}
-                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleChangeStatus(goal.id, 'paused')}
-                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
-                            >
-                              <Pause className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteGoal(goal.id)}
-                              className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="completed" className="space-y-4">
-            {completedGoals.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16"
-              >
-                <div className="text-6xl mb-4">🏆</div>
-                <h3 className="text-xl font-semibold mb-2">هنوز هدفی تکمیل نشده</h3>
-                <p className="text-muted-foreground">
-                  اهداف خود را دنبال کنید و به موفقیت برسید
-                </p>
-              </motion.div>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2">
-                {completedGoals.map((goal, index) => (
-                  <motion.div
-                    key={goal.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Card className="overflow-hidden glass-card border-green-500/20">
-                      {goal.imageUrl ? (
-                        <div className="relative h-48 overflow-hidden">
-                          <img
-                            src={goal.imageUrl}
-                            alt={goal.title}
-                            className="w-full h-full object-cover opacity-75"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-green-500/20 text-green-700">
-                              تکمیل شده
-                            </Badge>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="relative h-48 bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
-                          <Trophy className="h-16 w-16 text-green-600/50" />
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-green-500/20 text-green-700">
-                              تکمیل شده
-                            </Badge>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="p-6 space-y-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                              <h3 className="text-xl font-bold">{goal.title}</h3>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {categoryOptions.find(c => c.value === goal.category)?.icon}{' '}
-                              {categoryOptions.find(c => c.value === goal.category)?.label}
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteGoal(goal.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Progress value={100} className="h-3" />
-                        <div className="text-sm text-muted-foreground">
-                          🎉 تبریک! این هدف با موفقیت تکمیل شد
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="paused" className="space-y-4">
-            {pausedGoals.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16"
-              >
-                <div className="text-6xl mb-4">⏸️</div>
-                <h3 className="text-xl font-semibold mb-2">هیچ هدف متوقفی وجود ندارد</h3>
-              </motion.div>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2">
-                {pausedGoals.map((goal, index) => (
-                  <motion.div
-                    key={goal.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Card className="overflow-hidden glass-card opacity-75">
-                      {goal.imageUrl && (
-                        <div className="relative h-48 overflow-hidden">
-                          <img
-                            src={goal.imageUrl}
-                            alt={goal.title}
-                            className="w-full h-full object-cover grayscale"
-                          />
-                        </div>
-                      )}
-                      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{goal.title}</h3>
-                            <Badge className={`${statusColors.paused} text-xs`}>متوقف</Badge>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteGoal(goal.id)}
-                            className="min-h-[44px] min-w-[44px] h-9 w-9 sm:h-10 sm:w-10 shrink-0"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Progress value={goal.progress} className="h-2 sm:h-3" />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleChangeStatus(goal.id, 'active')}
-                          className="w-full min-h-[44px]"
-                        >
-                          <Play className="ms-2 h-4 w-4" />
-                          ادامه هدف
-                        </Button>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </AnimatePresence>
-      </Tabs>
-
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 pb-safe" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">✏️ ویرایش هدف</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 sm:space-y-4 py-3 sm:py-4 pb-20">
-            <div className="space-y-2">
-              <Label htmlFor="edit-title" className="text-sm">عنوان هدف</Label>
-              <Input
-                id="edit-title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="min-h-[44px] text-base"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="edit-description" className="text-sm">توضیحات</Label>
-              <Textarea
-                id="edit-description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="text-base"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm">دسته‌بندی</Label>
-              <Select value={category} onValueChange={(v) => setCategory(v as GoalCategory)}>
-                <SelectTrigger className="min-h-[44px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.icon} {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm">تاریخ هدف</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start min-h-[44px]">
-                    <CalendarIcon className="ms-2 h-4 w-4" />
-                    {format(targetDate, 'yyyy/MM/dd')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 max-w-[min(calc(100vw-2rem),320px)]" align="start">
-                  {useJalali ? (
-                    <PersianCalendar
-                      mode="single"
-                      selected={targetDate}
-                      onSelect={(date) => date && setTargetDate(date)}
-                      className="scale-90 sm:scale-100"
-                    />
-                  ) : (
-                    <div className="p-3">
-                      <Input
-                        type="date"
-                        value={format(targetDate, 'yyyy-MM-dd')}
-                        onChange={(e) => setTargetDate(new Date(e.target.value))}
-                        className="min-h-[44px]"
-                      />
-                    </div>
-                  )}
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="edit-image" className="text-sm">تصویر انگیزشی (URL)</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="edit-image"
-                  placeholder="https://example.com/image.jpg"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="min-h-[44px] text-base"
-                />
-                {imageUrl && (
+              {/* مراحل (مایلستون‌ها) */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-right text-base flex items-center gap-2">
+                    <Flag className="w-4 h-4" />
+                    <span>مراحل رسیدن به هدف *</span>
+                  </Label>
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
-                    onClick={() => setImageUrl('')}
-                    className="min-h-[44px] min-w-[44px] shrink-0"
+                    size="sm"
+                    onClick={addMilestone}
+                    className="gap-1 min-h-[40px]"
                   >
-                    <X className="h-4 w-4" />
+                    <Plus className="w-4 h-4" />
+                    <span>افزودن مرحله</span>
                   </Button>
-                )}
-              </div>
-              {imageUrl && (
-                <div className="relative w-full h-48 rounded-lg overflow-hidden border">
-                  <img
-                    src={imageUrl}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
                 </div>
-              )}
-            </div>
 
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex items-center justify-between mb-2">
-                <Label className="text-sm">مراحل (مایلستون‌ها)</Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={addMilestone}
-                  className="h-8 min-h-[32px]"
-                >
-                  <Plus className="ms-1 h-4 w-4" />
-                  افزودن مرحله
-                </Button>
-              </div>
-              <div className="space-y-2">
-                {milestones.map((milestone, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={milestone}
-                      onChange={(e) => updateMilestone(index, e.target.value)}
-                      className="min-h-[44px] text-base"
-                    />
-                    {milestones.length > 1 && (
+                <div className="space-y-2">
+                  {milestones.map((milestone, index) => (
+                    <div key={index} className="flex gap-2">
+                      <div className="flex items-center justify-center w-8 h-12 text-sm font-medium text-muted-foreground shrink-0">
+                        {index + 1}
+                      </div>
+                      <Input
+                        placeholder={`مرحله ${index + 1}`}
+                        value={milestone}
+                        onChange={(e) => updateMilestone(index, e.target.value)}
+                        className="min-h-[48px] text-base text-right"
+                        dir="rtl"
+                      />
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
                         onClick={() => removeMilestone(index)}
-                        className="min-h-[44px] min-w-[44px] shrink-0"
+                        className="min-h-[48px] min-w-[48px] shrink-0"
+                        disabled={milestones.length === 1}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-xs text-muted-foreground text-right">
+                  هدف بزرگ خود را به مراحل کوچک‌تر و قابل اندازه‌گیری تقسیم کنید
+                </p>
+              </div>
+
+              {/* دکمه‌های عملیات */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  onClick={editingGoal ? handleEditGoal : handleAddGoal}
+                  className="flex-1 gap-2 min-h-[52px] text-base font-medium"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  <span>{editingGoal ? 'ذخیره تغییرات' : 'ایجاد هدف'}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsAddDialogOpen(false);
+                    setIsEditDialogOpen(false);
+                    resetForm();
+                  }}
+                  className="min-h-[52px] px-6"
+                >
+                  انصراف
+                </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
 
-            <Button onClick={handleEditGoal} className="w-full min-h-[44px]">
-              ذخیره تغییرات
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        {/* دیالوگ ویرایش */}
+        <Dialog 
+          open={isEditDialogOpen} 
+          onOpenChange={(open) => {
+            setIsEditDialogOpen(open);
+            if (!open) {
+              setEditingGoal(null);
+              resetForm();
+            }
+          }}
+        >
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="text-xl text-right flex items-center gap-2">
+                <Edit2 className="w-6 h-6 text-primary" />
+                <span>ویرایش هدف</span>
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-5 mt-4">
+              {/* عنوان */}
+              <div className="space-y-2">
+                <Label htmlFor="edit-title" className="text-right block text-base">
+                  عنوان هدف *
+                </Label>
+                <Input
+                  id="edit-title"
+                  placeholder="مثال: رسیدن به وزن ایده‌آل"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="text-right min-h-[48px] text-base"
+                  dir="rtl"
+                />
+              </div>
+
+              {/* توضیحات */}
+              <div className="space-y-2">
+                <Label htmlFor="edit-description" className="text-right block text-base">
+                  توضیحات و دلایل انگیزشی
+                </Label>
+                <Textarea
+                  id="edit-description"
+                  placeholder="چرا این هدف برای شما مهم است؟"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  className="text-right min-h-[120px] text-base resize-none"
+                  dir="rtl"
+                />
+              </div>
+
+              {/* دسته‌بندی */}
+              <div className="space-y-2">
+                <Label htmlFor="edit-category" className="text-right block text-base">
+                  دسته‌بندی هدف *
+                </Label>
+                <Select value={category} onValueChange={(v) => setCategory(v)} dir="rtl">
+                  <SelectTrigger id="edit-category" className="min-h-[48px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryOptions.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        <div className="flex items-center gap-2">
+                          <span>{cat.icon}</span>
+                          <span>{cat.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* تاریخ هدف */}
+              <div className="space-y-2">
+                <Label className="text-right block text-base">
+                  تاریخ هدف
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start min-h-[48px] text-base"
+                    >
+                      <CalendarIcon className="ms-2 h-5 w-5" />
+                      <span>{format(targetDate, 'yyyy/MM/dd')}</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    {useJalali ? (
+                      <PersianCalendar
+                        mode="single"
+                        selected={targetDate}
+                        onSelect={(date) => date && setTargetDate(date)}
+                      />
+                    ) : (
+                      <div className="p-3">
+                        <Input
+                          type="date"
+                          value={format(targetDate, 'yyyy-MM-dd')}
+                          onChange={(e) => setTargetDate(new Date(e.target.value))}
+                          className="min-h-[48px]"
+                        />
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* تصویر انگیزشی */}
+              <div className="space-y-2">
+                <ImageUpload
+                  imageUrl={imageUrl}
+                  onImageChange={setImageUrl}
+                  label="تصویر الهام‌بخش هدف"
+                />
+              </div>
+
+              {/* مراحل */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-right text-base flex items-center gap-2">
+                    <Flag className="w-4 h-4" />
+                    <span>مراحل رسیدن به هدف *</span>
+                  </Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={addMilestone}
+                    className="gap-1 min-h-[40px]"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>افزودن مرحله</span>
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  {milestones.map((milestone, index) => (
+                    <div key={index} className="flex gap-2">
+                      <div className="flex items-center justify-center w-8 h-12 text-sm font-medium text-muted-foreground shrink-0">
+                        {index + 1}
+                      </div>
+                      <Input
+                        placeholder={`مرحله ${index + 1}`}
+                        value={milestone}
+                        onChange={(e) => updateMilestone(index, e.target.value)}
+                        className="min-h-[48px] text-base text-right"
+                        dir="rtl"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeMilestone(index)}
+                        className="min-h-[48px] min-w-[48px] shrink-0"
+                        disabled={milestones.length === 1}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* دکمه‌های عملیات */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  onClick={handleEditGoal}
+                  className="flex-1 gap-2 min-h-[52px] text-base font-medium"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  <span>ذخیره تغییرات</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setEditingGoal(null);
+                    resetForm();
+                  }}
+                  className="min-h-[52px] px-6"
+                >
+                  انصراف
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </motion.div>
+
+      {/* تب‌های اهداف */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 h-12">
+          <TabsTrigger value="active" className="gap-2 text-base">
+            <Target className="w-4 h-4" />
+            <span>فعال</span>
+            <Badge variant="secondary" className="text-xs">
+              {activeGoals.length}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="completed" className="gap-2 text-base">
+            <Trophy className="w-4 h-4" />
+            <span>تکمیل شده</span>
+            <Badge variant="secondary" className="text-xs">
+              {completedGoals.length}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="paused" className="gap-2 text-base">
+            <Clock className="w-4 h-4" />
+            <span>متوقف</span>
+            <Badge variant="secondary" className="text-xs">
+              {pausedGoals.length}
+            </Badge>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* اهداف فعال */}
+        <TabsContent value="active" className="mt-6 space-y-4">
+          {activeGoals.length === 0 ? (
+            <Card className="p-12">
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto">
+                  <Rocket className="w-10 h-10 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    سفر شما از اینجا شروع می‌شود
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    اولین هدف خود را تعریف کنید و اولین قدم را به سوی زندگی رویایی خود بردارید
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {activeGoals.map((goal) => (
+                <GoalCard
+                  key={goal.id}
+                  goal={goal}
+                  onEdit={openEditDialog}
+                  onDelete={handleDeleteGoal}
+                  onToggleMilestone={handleToggleMilestone}
+                  onChangeStatus={handleChangeStatus}
+                />
+              ))}
+            </AnimatePresence>
+          )}
+        </TabsContent>
+
+        {/* اهداف تکمیل شده */}
+        <TabsContent value="completed" className="mt-6 space-y-4">
+          {completedGoals.length === 0 ? (
+            <Card className="p-12">
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto">
+                  <Trophy className="w-10 h-10 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    هنوز هدفی تکمیل نشده
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    با تکمیل مراحل اهداف خود، موفقیت‌هایتان را جشن بگیرید
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {completedGoals.map((goal) => (
+                <GoalCard
+                  key={goal.id}
+                  goal={goal}
+                  onEdit={openEditDialog}
+                  onDelete={handleDeleteGoal}
+                  onToggleMilestone={handleToggleMilestone}
+                  onChangeStatus={handleChangeStatus}
+                />
+              ))}
+            </AnimatePresence>
+          )}
+        </TabsContent>
+
+        {/* اهداف متوقف شده */}
+        <TabsContent value="paused" className="mt-6 space-y-4">
+          {pausedGoals.length === 0 ? (
+            <Card className="p-12">
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto">
+                  <Clock className="w-10 h-10 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    هیچ هدف متوقفی وجود ندارد
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    همه اهداف شما در حال پیشرفت هستند
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {pausedGoals.map((goal) => (
+                <GoalCard
+                  key={goal.id}
+                  goal={goal}
+                  onEdit={openEditDialog}
+                  onDelete={handleDeleteGoal}
+                  onToggleMilestone={handleToggleMilestone}
+                  onChangeStatus={handleChangeStatus}
+                />
+              ))}
+            </AnimatePresence>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
