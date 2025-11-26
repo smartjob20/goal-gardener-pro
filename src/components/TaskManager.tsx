@@ -19,7 +19,6 @@ import { ImageUpload } from './ImageUpload';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
 const categoryConfig = {
   work: {
     label: 'کار',
@@ -47,7 +46,6 @@ const categoryConfig = {
     color: 'text-warning bg-warning/10 border-warning/20'
   }
 };
-
 const priorityConfig = {
   high: {
     label: 'بالا',
@@ -70,108 +68,91 @@ const priorityConfig = {
 };
 
 // کارت وظیفه با طراحی شیک و حرفه‌ای
-function SortableTaskCard({ 
-  task, 
-  categoryInfo, 
-  priorityInfo, 
-  subtaskProgress, 
-  daysLeft, 
-  onComplete, 
-  onEdit, 
-  onDelete, 
-  onToggleSubtask 
-}: { 
-  task: Task; 
-  categoryInfo: any; 
-  priorityInfo: any; 
-  subtaskProgress: number; 
+function SortableTaskCard({
+  task,
+  categoryInfo,
+  priorityInfo,
+  subtaskProgress,
+  daysLeft,
+  onComplete,
+  onEdit,
+  onDelete,
+  onToggleSubtask
+}: {
+  task: Task;
+  categoryInfo: any;
+  priorityInfo: any;
+  subtaskProgress: number;
   daysLeft: number | null;
   onComplete: (id: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
-
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({
+    id: task.id
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.5 : 1
   };
-
-  return (
-    <motion.div 
-      ref={setNodeRef} 
-      style={style}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      className="w-full"
-    >
-      <Card className={`group relative overflow-hidden bg-card/50 backdrop-blur-sm border transition-all duration-200 ${
-        isDragging 
-          ? 'shadow-xl scale-[1.02] border-primary/50' 
-          : 'hover:shadow-lg hover:border-primary/30'
-      }`}>
+  return <motion.div ref={setNodeRef} style={style} initial={{
+    opacity: 0,
+    y: 10
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} exit={{
+    opacity: 0,
+    scale: 0.98
+  }} className="w-full">
+      <Card className={`group relative overflow-hidden bg-card/50 backdrop-blur-sm border transition-all duration-200 ${isDragging ? 'shadow-xl scale-[1.02] border-primary/50' : 'hover:shadow-lg hover:border-primary/30'}`}>
         {/* تصویر انگیزشی */}
-        {task.imageUrl && (
-          <div className="relative w-full h-32 overflow-hidden">
-            <img
-              src={task.imageUrl}
-              alt={task.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+        {task.imageUrl && <div className="relative w-full h-32 overflow-hidden">
+            <img src={task.imageUrl} alt={task.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-          </div>
-        )}
+          </div>}
 
         {/* محتوای اصلی */}
         <div className="p-3 space-y-2.5">
           {/* هدر: Drag + Title + Actions */}
           <div className="flex items-start gap-2">
             {/* دستگیره جابجایی */}
-            <button
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted/50 rounded-md transition-colors touch-none shrink-0"
-              aria-label="جابجایی وظیفه"
-            >
+            <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted/50 rounded-md transition-colors touch-none shrink-0" aria-label="جابجایی وظیفه">
               <GripVertical className="h-4 w-4 text-muted-foreground" />
             </button>
 
             {/* عنوان و توضیحات */}
             <div className="flex-1 min-w-0 text-right space-y-1">
               <div className="flex items-start gap-2">
-                <h3 className={`text-base font-semibold leading-snug flex-1 ${
-                  task.completed ? 'line-through text-muted-foreground' : 'text-foreground'
-                }`}>
+                <h3 className={`text-base font-semibold leading-snug flex-1 ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                   {task.title}
                 </h3>
                 {/* چک‌باکس */}
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => onComplete(task.id)}
-                  className="shrink-0 p-1 rounded-md hover:bg-success/10 transition-colors"
-                  aria-label={task.completed ? "لغو تکمیل" : "تکمیل وظیفه"}
-                >
-                  {task.completed ? (
-                    <CheckCircle2 className="w-5 h-5 text-success" />
-                  ) : (
-                    <Circle className="w-5 h-5 text-muted-foreground" />
-                  )}
+                <motion.button whileHover={{
+                scale: 1.1
+              }} whileTap={{
+                scale: 0.95
+              }} onClick={() => onComplete(task.id)} className="shrink-0 p-1 rounded-md hover:bg-success/10 transition-colors" aria-label={task.completed ? "لغو تکمیل" : "تکمیل وظیفه"}>
+                  {task.completed ? <CheckCircle2 className="w-5 h-5 text-success" /> : <Circle className="w-5 h-5 text-muted-foreground" />}
                 </motion.button>
               </div>
-              {task.description && (
-                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-1">
+              {task.description && <p className="text-xs text-muted-foreground leading-relaxed line-clamp-1">
                   {task.description}
-                </p>
-              )}
+                </p>}
             </div>
           </div>
 
           {/* متا اطلاعات: دسته‌بندی، اولویت، XP */}
-          <div className="flex items-center gap-1.5 flex-wrap text-xs">
+          <div className="gap-1.5 flex-wrap text-xs flex items-center justify-end">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${categoryInfo.color}`}>
               <span className="text-sm">{categoryInfo.icon}</span>
               <span className="font-medium">{categoryInfo.label}</span>
@@ -180,35 +161,22 @@ function SortableTaskCard({
               <span className="text-sm">{priorityInfo.icon}</span>
               <span className="font-medium">{priorityInfo.label}</span>
             </span>
-            {task.xpReward && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/30">
+            {task.xpReward && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/30">
                 <span>⚡</span>
                 <span>{task.xpReward}</span>
-              </span>
-            )}
+              </span>}
           </div>
 
           {/* ضرب‌الاجل */}
-          {task.deadline && (
-            <div className={`flex items-center justify-end gap-2 text-xs font-medium px-2 py-1.5 rounded-md ${
-              daysLeft !== null && daysLeft < 0 
-                ? 'bg-destructive/10 text-destructive' 
-                : daysLeft !== null && daysLeft <= 3 
-                ? 'bg-warning/10 text-warning' 
-                : 'bg-muted/50 text-muted-foreground'
-            }`}>
+          {task.deadline && <div className={`flex items-center justify-end gap-2 text-xs font-medium px-2 py-1.5 rounded-md ${daysLeft !== null && daysLeft < 0 ? 'bg-destructive/10 text-destructive' : daysLeft !== null && daysLeft <= 3 ? 'bg-warning/10 text-warning' : 'bg-muted/50 text-muted-foreground'}`}>
               <span>
-                {daysLeft !== null && daysLeft < 0 ? `${Math.abs(daysLeft)} روز تاخیر` :
-                 daysLeft !== null && daysLeft === 0 ? 'موعد امروز' :
-                 daysLeft !== null ? `${daysLeft} روز مانده` : formatDate(task.deadline)}
+                {daysLeft !== null && daysLeft < 0 ? `${Math.abs(daysLeft)} روز تاخیر` : daysLeft !== null && daysLeft === 0 ? 'موعد امروز' : daysLeft !== null ? `${daysLeft} روز مانده` : formatDate(task.deadline)}
               </span>
               <Clock className="w-3.5 h-3.5" />
-            </div>
-          )}
+            </div>}
 
           {/* زیروظایف */}
-          {task.subtasks && task.subtasks.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-border/40">
+          {task.subtasks && task.subtasks.length > 0 && <div className="space-y-2 pt-2 border-t border-border/40">
               {/* نوار پیشرفت */}
               <div className="flex items-center gap-2">
                 <Progress value={subtaskProgress} className="h-1.5 flex-1" />
@@ -219,55 +187,30 @@ function SortableTaskCard({
               
               {/* لیست زیروظایف */}
               <div className="space-y-1">
-                {task.subtasks.map(st => (
-                  <div 
-                    key={st.id}
-                    className="flex items-center gap-2 p-1.5 hover:bg-muted/30 rounded-md transition-colors"
-                  >
-                    <Checkbox
-                      checked={st.completed}
-                      onCheckedChange={() => onToggleSubtask(task.id, st.id)}
-                      className="shrink-0 h-3.5 w-3.5"
-                      aria-label={`زیروظیفه: ${st.title}`}
-                    />
-                    <span className={`flex-1 text-xs text-right leading-snug ${
-                      st.completed ? 'line-through text-muted-foreground' : 'text-foreground'
-                    }`}>
+                {task.subtasks.map(st => <div key={st.id} className="flex items-center gap-2 p-1.5 hover:bg-muted/30 rounded-md transition-colors">
+                    <Checkbox checked={st.completed} onCheckedChange={() => onToggleSubtask(task.id, st.id)} className="shrink-0 h-3.5 w-3.5" aria-label={`زیروظیفه: ${st.title}`} />
+                    <span className={`flex-1 text-xs text-right leading-snug ${st.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                       {st.title}
                     </span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* دکمه‌های عملیات */}
           <div className="flex gap-2 pt-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(task)}
-              className="flex-1 h-8 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary"
-            >
+            <Button variant="ghost" size="sm" onClick={() => onEdit(task)} className="flex-1 h-8 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary">
               <Edit className="w-3.5 h-3.5" />
               <span>ویرایش</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(task.id)}
-              className="flex-1 h-8 gap-1.5 text-xs text-destructive hover:bg-destructive/10"
-            >
+            <Button variant="ghost" size="sm" onClick={() => onDelete(task.id)} className="flex-1 h-8 gap-1.5 text-xs text-destructive hover:bg-destructive/10">
               <Trash2 className="w-3.5 h-3.5" />
               <span>حذف</span>
             </Button>
           </div>
         </div>
       </Card>
-    </motion.div>
-  );
+    </motion.div>;
 }
-
 export default function TaskManager() {
   const {
     state,
@@ -276,8 +219,9 @@ export default function TaskManager() {
     dispatch,
     reorderTasks
   } = useApp();
-  const { tasks } = state;
-  
+  const {
+    tasks
+  } = state;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -286,16 +230,13 @@ export default function TaskManager() {
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
 
   // Drag and Drop Sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const sensors = useSensors(useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 8
+    }
+  }), useSensor(KeyboardSensor, {
+    coordinateGetter: sortableKeyboardCoordinates
+  }));
 
   // Form state
   const [title, setTitle] = useState('');
@@ -306,7 +247,6 @@ export default function TaskManager() {
   const [subtasks, setSubtasks] = useState<SubTask[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-
   const resetForm = () => {
     setTitle('');
     setDescription('');
@@ -318,7 +258,6 @@ export default function TaskManager() {
     setImageUrl('');
     setEditingTask(null);
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
@@ -336,7 +275,6 @@ export default function TaskManager() {
       timeSpent: 0,
       imageUrl: imageUrl || undefined
     };
-
     if (editingTask) {
       dispatch({
         type: 'UPDATE_TASK',
@@ -352,7 +290,6 @@ export default function TaskManager() {
     resetForm();
     setIsDialogOpen(false);
   };
-
   const handleAddSubtask = () => {
     if (newSubtask.trim()) {
       setSubtasks([...subtasks, {
@@ -363,13 +300,13 @@ export default function TaskManager() {
       setNewSubtask('');
     }
   };
-
   const handleToggleSubtask = (taskId: string, subtaskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task && task.subtasks) {
-      const updatedSubtasks = task.subtasks.map(st => 
-        st.id === subtaskId ? { ...st, completed: !st.completed } : st
-      );
+      const updatedSubtasks = task.subtasks.map(st => st.id === subtaskId ? {
+        ...st,
+        completed: !st.completed
+      } : st);
       dispatch({
         type: 'UPDATE_TASK',
         payload: {
@@ -379,7 +316,6 @@ export default function TaskManager() {
       });
     }
   };
-
   const handleDeleteTask = (id: string) => {
     dispatch({
       type: 'DELETE_TASK',
@@ -387,7 +323,6 @@ export default function TaskManager() {
     });
     toast.success('وظیفه حذف شد');
   };
-
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
     setTitle(task.title);
@@ -399,33 +334,36 @@ export default function TaskManager() {
     setImageUrl(task.imageUrl || '');
     setIsDialogOpen(true);
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
+    const {
+      active,
+      over
+    } = event;
     if (over && active.id !== over.id) {
       // جابجایی در لیست فیلتر شده
-      const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
-      const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
-
+      const oldIndex = filteredTasks.findIndex(task => task.id === active.id);
+      const newIndex = filteredTasks.findIndex(task => task.id === over.id);
       if (oldIndex !== -1 && newIndex !== -1) {
         // مرتب‌سازی مجدد لیست فیلتر شده
         const reorderedFiltered = arrayMove(filteredTasks, oldIndex, newIndex);
-        
+
         // به‌روزرسانی order در لیست کامل tasks
         const updatedTasks = tasks.map(task => {
           const indexInFiltered = reorderedFiltered.findIndex(t => t.id === task.id);
           if (indexInFiltered !== -1) {
-            return { ...task, order: indexInFiltered };
+            return {
+              ...task,
+              order: indexInFiltered
+            };
           }
           return task;
         });
-        
+
         // ذخیره ترتیب جدید
         reorderTasks(updatedTasks);
         toast.success('ترتیب وظایف به‌روز شد ✨', {
           description: 'جابجایی با موفقیت ذخیره شد',
-          duration: 2000,
+          duration: 2000
         });
       }
     }
@@ -434,9 +372,7 @@ export default function TaskManager() {
   // Filter tasks
   const filteredTasks = tasks.filter(task => {
     const matchesTab = activeTab === 'pending' ? !task.completed : task.completed;
-    const matchesSearch = 
-      task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || task.category === filterCategory;
     const matchesPriority = filterPriority === 'all' || task.priority === filterPriority;
     return matchesTab && matchesSearch && matchesCategory && matchesPriority;
@@ -445,15 +381,16 @@ export default function TaskManager() {
     if (a.order !== undefined && b.order !== undefined) {
       return a.order - b.order;
     }
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    const priorityOrder = {
+      high: 0,
+      medium: 1,
+      low: 2
+    };
     return priorityOrder[a.priority] - priorityOrder[b.priority];
   });
-
   const pendingCount = tasks.filter(t => !t.completed).length;
   const completedCount = tasks.filter(t => t.completed).length;
-
-  return (
-    <div className="min-h-screen pb-24 custom-scrollbar overflow-y-auto relative" dir="rtl">
+  return <div className="min-h-screen pb-24 custom-scrollbar overflow-y-auto relative" dir="rtl">
       {/* Animated Background */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
@@ -463,11 +400,13 @@ export default function TaskManager() {
       
       <div className="max-w-4xl mx-auto space-y-5 mt-[70px] px-4">
         {/* Header بهینه شده برای موبایل */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }} 
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: -20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} className="space-y-4">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl font-bold gradient-text mb-2 flex items-center justify-center gap-2">
               <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
@@ -491,11 +430,7 @@ export default function TaskManager() {
           {/* دکمه افزودن وظیفه - عرض کامل برای موبایل */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                size="lg"
-                className="w-full gap-2 shadow-elegant hover-scale min-h-[52px] text-base font-semibold" 
-                onClick={resetForm}
-              >
+              <Button size="lg" className="w-full gap-2 shadow-elegant hover-scale min-h-[52px] text-base font-semibold" onClick={resetForm}>
                 <Plus className="w-5 h-5" />
                 افزودن وظیفه جدید
               </Button>
@@ -514,25 +449,13 @@ export default function TaskManager() {
                   <label className="text-sm font-semibold text-foreground block">
                     عنوان وظیفه <span className="text-destructive">*</span>
                   </label>
-                  <Input 
-                    value={title} 
-                    onChange={e => setTitle(e.target.value)} 
-                    placeholder="مثال: تکمیل گزارش پروژه" 
-                    required 
-                    className="text-base min-h-[48px]"
-                  />
+                  <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="مثال: تکمیل گزارش پروژه" required className="text-base min-h-[48px]" />
                 </div>
 
                 {/* توضیحات */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground block">توضیحات</label>
-                  <Textarea 
-                    value={description} 
-                    onChange={e => setDescription(e.target.value)} 
-                    placeholder="جزئیات و توضیحات بیشتر..." 
-                    rows={3}
-                    className="text-base resize-none"
-                  />
+                  <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="جزئیات و توضیحات بیشتر..." rows={3} className="text-base resize-none" />
                 </div>
 
                 {/* دسته‌بندی و اولویت */}
@@ -544,22 +467,18 @@ export default function TaskManager() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(categoryConfig).map(([key, config]) => (
-                          <SelectItem key={key} value={key} className="text-base">
+                        {Object.entries(categoryConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>{config.icon}</span>
                               <span>{config.label}</span>
                             </span>
-                          </SelectItem>
-                        ))}
-                        {state.settings.customTaskCategories.map(cat => (
-                          <SelectItem key={cat} value={cat} className="text-base">
+                          </SelectItem>)}
+                        {state.settings.customTaskCategories.map(cat => <SelectItem key={cat} value={cat} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>📌</span>
                               <span>{cat}</span>
                             </span>
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -571,14 +490,12 @@ export default function TaskManager() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(priorityConfig).map(([key, config]) => (
-                          <SelectItem key={key} value={key} className="text-base">
+                        {Object.entries(priorityConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>{config.icon}</span>
                               <span>{config.label}</span>
                             </span>
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -587,72 +504,38 @@ export default function TaskManager() {
                 {/* موعد */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground block">موعد انجام</label>
-                  <Input 
-                    type="date" 
-                    value={deadline} 
-                    onChange={e => setDeadline(e.target.value)} 
-                    className="text-base min-h-[48px]"
-                  />
+                  <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} className="text-base min-h-[48px]" />
                 </div>
 
                 {/* آپلود تصویر */}
-                <ImageUpload 
-                  imageUrl={imageUrl} 
-                  onImageChange={setImageUrl} 
-                  label="تصویر وظیفه (اختیاری)" 
-                />
+                <ImageUpload imageUrl={imageUrl} onImageChange={setImageUrl} label="تصویر وظیفه (اختیاری)" />
 
                 {/* زیروظایف */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-foreground block">زیروظایف</label>
                   <div className="flex gap-2">
-                    <Input 
-                      value={newSubtask} 
-                      onChange={e => setNewSubtask(e.target.value)} 
-                      placeholder="افزودن زیروظیفه..." 
-                      onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())}
-                      className="flex-1 text-base min-h-[48px]"
-                    />
-                    <Button 
-                      type="button" 
-                      onClick={handleAddSubtask} 
-                      variant="outline"
-                      className="min-h-[48px] min-w-[48px]"
-                    >
+                    <Input value={newSubtask} onChange={e => setNewSubtask(e.target.value)} placeholder="افزودن زیروظیفه..." onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} className="flex-1 text-base min-h-[48px]" />
+                    <Button type="button" onClick={handleAddSubtask} variant="outline" className="min-h-[48px] min-w-[48px]">
                       <Plus className="w-5 h-5" />
                     </Button>
                   </div>
                   
-                  {subtasks.length > 0 && (
-                    <div className="space-y-2">
-                      {subtasks.map(st => (
-                        <div key={st.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg min-h-[44px]">
-                          <Checkbox 
-                            checked={st.completed} 
-                            onCheckedChange={() => {
-                              setSubtasks(subtasks.map(s => 
-                                s.id === st.id ? { ...s, completed: !s.completed } : s
-                              ));
-                            }}
-                          />
-                          <span className={`flex-1 text-sm text-right ${
-                            st.completed ? 'line-through text-muted-foreground' : 'text-foreground'
-                          }`}>
+                  {subtasks.length > 0 && <div className="space-y-2">
+                      {subtasks.map(st => <div key={st.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg min-h-[44px]">
+                          <Checkbox checked={st.completed} onCheckedChange={() => {
+                      setSubtasks(subtasks.map(s => s.id === st.id ? {
+                        ...s,
+                        completed: !s.completed
+                      } : s));
+                    }} />
+                          <span className={`flex-1 text-sm text-right ${st.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                             {st.title}
                           </span>
-                          <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))}
-                            className="min-h-[44px] min-w-[44px] text-destructive hover:bg-destructive/10"
-                          >
+                          <Button type="button" variant="ghost" size="sm" onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} className="min-h-[44px] min-w-[44px] text-destructive hover:bg-destructive/10">
                             <Trash2 className="w-4 h-4" />
                           </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        </div>)}
+                    </div>}
                 </div>
 
                 {/* دکمه‌های عملیات */}
@@ -660,12 +543,7 @@ export default function TaskManager() {
                   <Button type="submit" className="flex-1 min-h-[48px] text-base font-semibold">
                     {editingTask ? '💾 ذخیره تغییرات' : '➕ افزودن وظیفه'}
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setIsDialogOpen(false)}
-                    className="min-h-[48px] text-base"
-                  >
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="min-h-[48px] text-base">
                     انصراف
                   </Button>
                 </div>
@@ -680,12 +558,7 @@ export default function TaskManager() {
             {/* جستجو */}
             <div className="relative">
               <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-              <Input 
-                value={searchQuery} 
-                onChange={e => setSearchQuery(e.target.value)} 
-                placeholder="جستجو در وظایف..." 
-                className="ps-10 min-h-[48px] text-base border-border/50 focus:border-primary"
-              />
+              <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="جستجو در وظایف..." className="ps-10 min-h-[48px] text-base border-border/50 focus:border-primary" />
             </div>
 
             {/* فیلترها */}
@@ -702,14 +575,12 @@ export default function TaskManager() {
                         همه دسته‌ها
                       </span>
                     </SelectItem>
-                    {Object.entries(categoryConfig).map(([key, config]) => (
-                      <SelectItem key={key} value={key} className="text-base">
+                    {Object.entries(categoryConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
                         <span className="flex items-center gap-2">
                           <span>{config.icon}</span>
                           {config.label}
                         </span>
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -726,14 +597,12 @@ export default function TaskManager() {
                         همه اولویت‌ها
                       </span>
                     </SelectItem>
-                    {Object.entries(priorityConfig).map(([key, config]) => (
-                      <SelectItem key={key} value={key} className="text-base">
+                    {Object.entries(priorityConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
                         <span className="flex items-center gap-2">
                           <span>{config.icon}</span>
                           {config.label}
                         </span>
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -744,20 +613,14 @@ export default function TaskManager() {
         {/* تب‌های وظایف - طراحی بهینه شده */}
         <Tabs value={activeTab} onValueChange={v => setActiveTab(v as 'pending' | 'completed')} className="w-full">
           <TabsList className="grid w-full grid-cols-2 glass-mobile h-auto p-1">
-            <TabsTrigger 
-              value="pending" 
-              className="gap-2 min-h-[48px] text-base font-semibold data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
-            >
+            <TabsTrigger value="pending" className="gap-2 min-h-[48px] text-base font-semibold data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
               <Circle className="w-4 h-4" />
               <span>در انتظار</span>
               <Badge variant="secondary" className="ms-1 text-xs">
                 {pendingCount}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger 
-              value="completed" 
-              className="gap-2 min-h-[48px] text-base font-semibold data-[state=active]:bg-success/10 data-[state=active]:text-success"
-            >
+            <TabsTrigger value="completed" className="gap-2 min-h-[48px] text-base font-semibold data-[state=active]:bg-success/10 data-[state=active]:text-success">
               <CheckCircle2 className="w-4 h-4" />
               <span>انجام شده</span>
               <Badge variant="secondary" className="ms-1 text-xs">
@@ -767,71 +630,39 @@ export default function TaskManager() {
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-5">
-            {filteredTasks.length === 0 ? (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-12 px-4"
-              >
+            {filteredTasks.length === 0 ? <motion.div initial={{
+            opacity: 0,
+            scale: 0.95
+          }} animate={{
+            opacity: 1,
+            scale: 1
+          }} className="text-center py-12 px-4">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                  {activeTab === 'pending' ? (
-                    <Circle className="w-10 h-10 text-primary" />
-                  ) : (
-                    <CheckCircle2 className="w-10 h-10 text-success" />
-                  )}
+                  {activeTab === 'pending' ? <Circle className="w-10 h-10 text-primary" /> : <CheckCircle2 className="w-10 h-10 text-success" />}
                 </div>
                 <h3 className="text-lg font-bold mb-2 text-foreground">
                   {activeTab === 'pending' ? '🎯 هیچ وظیفه‌ای در انتظار نیست' : '🎉 هنوز وظیفه‌ای تکمیل نشده'}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
-                  {activeTab === 'pending' 
-                    ? 'با کلیک روی دکمه "افزودن وظیفه جدید" شروع کنید و هدف‌های خود را مدیریت کنید.' 
-                    : 'با تکمیل وظایف خود، آن‌ها در این بخش نمایش داده می‌شوند.'}
+                  {activeTab === 'pending' ? 'با کلیک روی دکمه "افزودن وظیفه جدید" شروع کنید و هدف‌های خود را مدیریت کنید.' : 'با تکمیل وظایف خود، آن‌ها در این بخش نمایش داده می‌شوند.'}
                 </p>
-              </motion.div>
-            ) : (
-              <DndContext 
-                sensors={sensors} 
-                collisionDetection={closestCenter} 
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext 
-                  items={filteredTasks.map(t => t.id)} 
-                  strategy={verticalListSortingStrategy}
-                >
+              </motion.div> : <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={filteredTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                   <AnimatePresence mode="popLayout">
                     <div className="space-y-4">
                       {filteredTasks.map(task => {
-                        const categoryInfo = categoryConfig[task.category as keyof typeof categoryConfig] || categoryConfig.personal;
-                        const priorityInfo = priorityConfig[task.priority];
-                        const subtaskProgress = task.subtasks 
-                          ? (task.subtasks.filter(st => st.completed).length / task.subtasks.length) * 100 
-                          : 0;
-                        const daysLeft = task.deadline ? daysUntil(task.deadline) : null;
-
-                        return (
-                          <SortableTaskCard
-                            key={task.id}
-                            task={task}
-                            categoryInfo={categoryInfo}
-                            priorityInfo={priorityInfo}
-                            subtaskProgress={subtaskProgress}
-                            daysLeft={daysLeft}
-                            onComplete={completeTask}
-                            onEdit={handleEditTask}
-                            onDelete={handleDeleteTask}
-                            onToggleSubtask={handleToggleSubtask}
-                          />
-                        );
-                      })}
+                    const categoryInfo = categoryConfig[task.category as keyof typeof categoryConfig] || categoryConfig.personal;
+                    const priorityInfo = priorityConfig[task.priority];
+                    const subtaskProgress = task.subtasks ? task.subtasks.filter(st => st.completed).length / task.subtasks.length * 100 : 0;
+                    const daysLeft = task.deadline ? daysUntil(task.deadline) : null;
+                    return <SortableTaskCard key={task.id} task={task} categoryInfo={categoryInfo} priorityInfo={priorityInfo} subtaskProgress={subtaskProgress} daysLeft={daysLeft} onComplete={completeTask} onEdit={handleEditTask} onDelete={handleDeleteTask} onToggleSubtask={handleToggleSubtask} />;
+                  })}
                     </div>
                   </AnimatePresence>
                 </SortableContext>
-              </DndContext>
-            )}
+              </DndContext>}
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 }
