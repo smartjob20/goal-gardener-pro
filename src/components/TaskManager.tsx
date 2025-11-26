@@ -69,7 +69,7 @@ const priorityConfig = {
   }
 };
 
-// Sortable Task Card با طراحی بهینه برای موبایل
+// کارت وظیفه با طراحی لوکس و تمیز
 function SortableTaskCard({ 
   task, 
   categoryInfo, 
@@ -96,7 +96,7 @@ function SortableTaskCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.8 : 1,
   };
 
   return (
@@ -108,156 +108,184 @@ function SortableTaskCard({
       exit={{ opacity: 0, scale: 0.95 }}
       className="w-full"
     >
-      <Card className={`overflow-hidden glass-strong border-border/50 transition-all duration-300 ${
-        isDragging ? 'shadow-2xl scale-[1.02] border-primary/50' : 'hover:shadow-lg hover:border-primary/30'
+      <Card className={`group overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-xl border-2 transition-all duration-300 ${
+        isDragging 
+          ? 'shadow-2xl scale-[1.03] border-primary/70 rotate-2' 
+          : 'shadow-lg border-border/40 hover:shadow-xl hover:border-primary/40 hover:-translate-y-1'
       }`}>
-        {/* Task Header با تصویر */}
+        {/* تصویر انگیزشی با overlay زیبا */}
         {task.imageUrl && (
-          <div className="relative w-full h-40 overflow-hidden">
+          <div className="relative w-full h-48 overflow-hidden">
             <img
               src={task.imageUrl}
               alt={task.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            
+            {/* Floating badges روی تصویر */}
+            <div className="absolute top-3 left-3 flex gap-2">
+              <Badge className={`${priorityInfo.color} border-2 shadow-lg backdrop-blur-sm`}>
+                <span className="text-base">{priorityInfo.icon}</span>
+              </Badge>
+              {task.xpReward && (
+                <Badge className="bg-gradient-to-r from-amber-500/90 to-yellow-500/90 text-white border-0 shadow-lg backdrop-blur-sm font-bold">
+                  ⚡ {task.xpReward}
+                </Badge>
+              )}
+            </div>
           </div>
         )}
 
-        {/* محتوای اصلی کارت */}
-        <div className="p-4 space-y-4">
-          {/* Header Row: Drag Handle + Checkbox + Title */}
-          <div className="flex items-start gap-3">
-            {/* Drag Handle */}
+        {/* محتوای اصلی */}
+        <div className="p-5 space-y-5">
+          {/* هدر: Drag + Checkbox + عنوان */}
+          <div className="flex items-start gap-4">
+            {/* دستگیره جابجایی */}
             <button
               {...attributes}
               {...listeners}
-              className="cursor-grab active:cursor-grabbing p-2 hover:bg-primary/10 rounded-lg transition-all touch-none min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+              className="cursor-grab active:cursor-grabbing p-2.5 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/10 rounded-xl transition-all touch-none min-h-[48px] min-w-[48px] flex items-center justify-center shrink-0 border-2 border-transparent hover:border-primary/30"
               aria-label="جابجایی وظیفه"
             >
-              <GripVertical className="h-5 w-5 text-muted-foreground" />
+              <GripVertical className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </button>
 
-            {/* Checkbox */}
+            {/* چک‌باکس با انیمیشن */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.15, rotate: 5 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onComplete(task.id)}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+              className="min-h-[48px] min-w-[48px] flex items-center justify-center shrink-0 rounded-xl hover:bg-success/10 transition-all"
               aria-label={task.completed ? "لغو تکمیل" : "تکمیل وظیفه"}
             >
               {task.completed ? (
-                <CheckCircle2 className="w-7 h-7 text-success drop-shadow-sm" />
+                <CheckCircle2 className="w-8 h-8 text-success drop-shadow-lg" />
               ) : (
-                <Circle className="w-7 h-7 text-muted-foreground hover:text-primary transition-colors" />
+                <Circle className="w-8 h-8 text-muted-foreground hover:text-primary transition-colors" />
               )}
             </motion.button>
 
             {/* عنوان و توضیحات */}
-            <div className="flex-1 min-w-0 text-right">
-              <h3 className={`text-base font-bold leading-snug mb-1 ${
+            <div className="flex-1 min-w-0 text-right space-y-2">
+              <h3 className={`text-lg font-bold leading-tight ${
                 task.completed ? 'line-through text-muted-foreground' : 'text-foreground'
               }`}>
                 {task.title}
               </h3>
               {task.description && (
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 pe-2">
                   {task.description}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Badges Row: Category + Priority */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Badge 
-              variant="outline" 
-              className={`${categoryInfo.color} border text-xs font-medium px-3 py-1`}
-            >
-              <span className="me-1.5">{categoryInfo.icon}</span>
-              {categoryInfo.label}
-            </Badge>
-            <Badge 
-              variant="outline" 
-              className={`${priorityInfo.color} border text-xs font-medium px-3 py-1`}
-            >
-              <span className="me-1.5">{priorityInfo.icon}</span>
-              {priorityInfo.label}
-            </Badge>
-            {task.xpReward && (
-              <Badge variant="secondary" className="text-xs font-medium px-3 py-1">
-                ⚡ {task.xpReward} XP
+          {/* دسته‌بندی (اگر تصویر نداشته باشه) */}
+          {!task.imageUrl && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge 
+                variant="outline" 
+                className={`${categoryInfo.color} border-2 text-sm font-semibold px-4 py-1.5 shadow-sm`}
+              >
+                <span className="text-base me-2">{categoryInfo.icon}</span>
+                {categoryInfo.label}
               </Badge>
-            )}
-          </div>
-
-          {/* Deadline */}
-          {task.deadline && (
-            <div className={`flex items-center justify-end gap-2 text-sm font-medium px-3 py-2 rounded-lg ${
-              daysLeft !== null && daysLeft < 0 
-                ? 'bg-destructive/10 text-destructive' 
-                : daysLeft !== null && daysLeft <= 3 
-                ? 'bg-warning/10 text-warning' 
-                : 'bg-muted text-muted-foreground'
-            }`}>
-              <span>
-                {daysLeft !== null && daysLeft < 0 ? `${Math.abs(daysLeft)} روز گذشته` :
-                 daysLeft !== null && daysLeft === 0 ? 'موعد امروز است' :
-                 daysLeft !== null ? `${daysLeft} روز تا موعد` : formatDate(task.deadline)}
-              </span>
-              <Clock className="w-4 h-4" />
+              <Badge 
+                variant="outline" 
+                className={`${priorityInfo.color} border-2 text-sm font-semibold px-4 py-1.5 shadow-sm`}
+              >
+                <span className="text-base me-2">{priorityInfo.icon}</span>
+                {priorityInfo.label}
+              </Badge>
+              {task.xpReward && (
+                <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-0 shadow-md font-bold px-4 py-1.5">
+                  ⚡ {task.xpReward} XP
+                </Badge>
+              )}
             </div>
           )}
 
-          {/* Subtasks Section */}
+          {/* ضرب‌الاجل با طراحی برجسته */}
+          {task.deadline && (
+            <motion.div 
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              className={`flex items-center justify-end gap-3 text-sm font-bold px-4 py-3 rounded-xl shadow-md ${
+                daysLeft !== null && daysLeft < 0 
+                  ? 'bg-gradient-to-r from-destructive/20 to-destructive/10 text-destructive border-2 border-destructive/30' 
+                  : daysLeft !== null && daysLeft <= 3 
+                  ? 'bg-gradient-to-r from-warning/20 to-warning/10 text-warning border-2 border-warning/30' 
+                  : 'bg-gradient-to-r from-muted to-muted/50 text-muted-foreground border-2 border-border/30'
+              }`}>
+              <span>
+                {daysLeft !== null && daysLeft < 0 ? `⏰ ${Math.abs(daysLeft)} روز تاخیر` :
+                 daysLeft !== null && daysLeft === 0 ? '🔥 موعد امروز' :
+                 daysLeft !== null ? `📅 ${daysLeft} روز مانده` : formatDate(task.deadline)}
+              </span>
+              <Clock className="w-5 h-5" />
+            </motion.div>
+          )}
+
+          {/* زیروظایف با طراحی بهتر */}
           {task.subtasks && task.subtasks.length > 0 && (
-            <div className="space-y-3 pt-2 border-t border-border/50">
-              <div className="flex items-center justify-between gap-3">
-                <Progress value={subtaskProgress} className="flex-1 h-2.5" />
-                <span className="text-sm font-semibold text-muted-foreground min-w-[3rem] text-start">
-                  {Math.round(subtaskProgress)}%
-                </span>
-              </div>
+            <div className="space-y-4 pt-4 border-t-2 border-border/30">
+              {/* نوار پیشرفت */}
               <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-muted-foreground">
+                    {task.subtasks.filter(st => st.completed).length} از {task.subtasks.length}
+                  </span>
+                  <span className="text-lg font-bold gradient-text">
+                    {Math.round(subtaskProgress)}%
+                  </span>
+                </div>
+                <Progress value={subtaskProgress} className="h-3 shadow-inner" />
+              </div>
+              
+              {/* لیست زیروظایف */}
+              <div className="space-y-2.5">
                 {task.subtasks.map(st => (
-                  <div 
-                    key={st.id} 
-                    className="flex items-center gap-3 p-3 bg-muted/30 hover:bg-muted/50 rounded-lg transition-colors min-h-[44px]"
+                  <motion.div 
+                    key={st.id}
+                    whileHover={{ x: -4 }}
+                    className="flex items-center gap-3 p-3.5 bg-gradient-to-l from-muted/20 to-muted/40 hover:from-muted/30 hover:to-muted/50 rounded-xl transition-all min-h-[52px] border border-border/30"
                   >
                     <Checkbox
                       checked={st.completed}
                       onCheckedChange={() => onToggleSubtask(task.id, st.id)}
-                      className="shrink-0"
+                      className="shrink-0 h-5 w-5"
                       aria-label={`زیروظیفه: ${st.title}`}
                     />
-                    <span className={`flex-1 text-sm text-right leading-relaxed ${
+                    <span className={`flex-1 text-sm text-right leading-relaxed font-medium ${
                       st.completed ? 'line-through text-muted-foreground' : 'text-foreground'
                     }`}>
                       {st.title}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
+          {/* دکمه‌های عملیات */}
+          <div className="flex gap-3 pt-3">
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => onEdit(task)}
-              className="flex-1 gap-2 min-h-[44px] hover:bg-primary/10 hover:text-primary hover:border-primary/50"
+              className="flex-1 gap-2 min-h-[52px] font-semibold text-base border-2 hover:bg-gradient-to-br hover:from-primary/10 hover:to-primary/5 hover:text-primary hover:border-primary/50 transition-all"
             >
-              <Edit className="w-4 h-4" />
+              <Edit className="w-5 h-5" />
               <span>ویرایش</span>
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => onDelete(task.id)}
-              className="flex-1 gap-2 min-h-[44px] text-destructive hover:bg-destructive/10 hover:border-destructive/50"
+              className="flex-1 gap-2 min-h-[52px] font-semibold text-base border-2 text-destructive hover:bg-gradient-to-br hover:from-destructive/10 hover:to-destructive/5 hover:border-destructive/50 transition-all"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-5 h-5" />
               <span>حذف</span>
             </Button>
           </div>
@@ -403,12 +431,30 @@ export default function TaskManager() {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
+      // جابجایی در لیست فیلتر شده
       const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
       const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
 
-      const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex);
-      reorderTasks(reorderedTasks);
-      toast.success('ترتیب وظایف ذخیره شد ✨');
+      if (oldIndex !== -1 && newIndex !== -1) {
+        // مرتب‌سازی مجدد لیست فیلتر شده
+        const reorderedFiltered = arrayMove(filteredTasks, oldIndex, newIndex);
+        
+        // به‌روزرسانی order در لیست کامل tasks
+        const updatedTasks = tasks.map(task => {
+          const indexInFiltered = reorderedFiltered.findIndex(t => t.id === task.id);
+          if (indexInFiltered !== -1) {
+            return { ...task, order: indexInFiltered };
+          }
+          return task;
+        });
+        
+        // ذخیره ترتیب جدید
+        reorderTasks(updatedTasks);
+        toast.success('ترتیب وظایف به‌روز شد ✨', {
+          description: 'جابجایی با موفقیت ذخیره شد',
+          duration: 2000,
+        });
+      }
     }
   };
 
