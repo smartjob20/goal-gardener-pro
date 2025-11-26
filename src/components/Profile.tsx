@@ -10,25 +10,29 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { User, Edit, Award, TrendingUp, Target, Clock, Zap, Trophy, Star, Calendar, CheckCircle, Flame, Save, X, LogOut } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  User, Edit, Award, TrendingUp, Target, Clock, Zap, Trophy, Star, 
+  Calendar, CheckCircle, Flame, Save, X, LogOut, Crown, Sparkles,
+  Activity, TrendingDown, BarChart3, Users
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { format, differenceInDays } from 'date-fns';
+
 const Profile = () => {
-  const {
-    state,
-    dispatch
-  } = useApp();
-  const {
-    signOut
-  } = useAuth();
+  const { state, dispatch } = useApp();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(state.user);
-  const avatarOptions = ['👤', '😊', '🎯', '🚀', '💪', '🧠', '⭐', '🔥', '💎', '🏆', '🎨', '🌟', '✨', '🌈', '🦄', '🐉'];
+
+  const avatarOptions = [
+    '👤', '😊', '🎯', '🚀', '💪', '🧠', '⭐', '🔥', 
+    '💎', '🏆', '🎨', '🌟', '✨', '🌈', '🦄', '🐉'
+  ];
+
   const handleSave = () => {
-    // Validate inputs
     if (!editedUser.name.trim()) {
       toast.error('نام نمی‌تواند خالی باشد');
       return;
@@ -41,17 +45,17 @@ const Profile = () => {
       toast.error('بیوگرافی باید کمتر از 200 کاراکتر باشد');
       return;
     }
-    dispatch({
-      type: 'UPDATE_USER',
-      payload: editedUser
-    });
+
+    dispatch({ type: 'UPDATE_USER', payload: editedUser });
     setIsEditing(false);
     toast.success('پروفایل با موفقیت بروزرسانی شد! ✨');
   };
+
   const handleCancel = () => {
     setEditedUser(state.user);
     setIsEditing(false);
   };
+
   const handleLogout = async () => {
     await signOut();
     navigate('/auth');
@@ -66,412 +70,651 @@ const Profile = () => {
   const completedGoals = state.goals.filter(g => g.status === 'completed').length;
   const totalFocusTime = state.focusSessions.reduce((acc, s) => acc + s.duration, 0);
   const unlockedAchievements = state.achievements.filter(a => a.unlocked).length;
-  const progressToNextLevel = state.user.xp % 100;
+  const progressToNextLevel = (state.user.xp % 100);
   const currentStreak = Math.max(...state.habits.map(h => h.currentStreak), 0);
   const longestStreak = Math.max(...state.habits.map(h => h.longestStreak), 0);
+  const taskCompletionRate = state.tasks.length > 0 ? Math.round((completedTasks / state.tasks.length) * 100) : 0;
+  const goalCompletionRate = state.goals.length > 0 ? Math.round((completedGoals / state.goals.length) * 100) : 0;
 
   // Recent activities
-  const recentTasks = state.tasks.filter(t => t.completedAt).sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime()).slice(0, 5);
-  const recentAchievements = state.achievements.filter(a => a.unlocked && a.unlockedAt).sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime()).slice(0, 5);
-  return <div dir="rtl" className="container mx-auto p-4 pb-24 max-w-6xl mt-[70px]">
-      <motion.div initial={{
-      opacity: 0,
-      y: 20
-    }} animate={{
-      opacity: 1,
-      y: 0
-    }} transition={{
-      duration: 0.5
-    }}>
-        {/* Header Card */}
-        <Card className="mb-6">
-          <CardContent className="pt-6 mt-0">
-            <div className="flex flex-col md:flex-row gap-6">
-              {/* Avatar Section */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                  <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center text-6xl border-4 border-primary/20">
+  const recentTasks = state.tasks
+    .filter(t => t.completedAt)
+    .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
+    .slice(0, 5);
+
+  const recentAchievements = state.achievements
+    .filter(a => a.unlocked && a.unlockedAt)
+    .sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime())
+    .slice(0, 5);
+
+  return (
+    <div dir="rtl" className="min-h-screen pb-24 mt-[70px]">
+      <div className="container mx-auto p-4 sm:p-6 max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-6"
+        >
+          {/* Hero Header with Gradient */}
+          <Card className="relative overflow-hidden border-border/40 bg-gradient-to-br from-primary/5 via-background to-purple-500/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/10 opacity-50" />
+            
+            <CardContent className="relative p-6 sm:p-8">
+              <div className="flex flex-col items-center gap-6">
+                {/* Avatar Section with Glow */}
+                <motion.div 
+                  className="relative"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
+                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center text-6xl sm:text-7xl border-4 border-primary/30 shadow-2xl backdrop-blur-sm">
                     {state.user.avatar}
                   </div>
-                  <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
-                    {state.user.level}
+                  
+                  {/* Level Badge */}
+                  <motion.div 
+                    className="absolute -bottom-3 -left-3 bg-gradient-to-br from-primary to-purple-600 text-primary-foreground rounded-full w-14 h-14 flex items-center justify-center font-bold text-lg shadow-xl border-4 border-background"
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    <div className="flex flex-col items-center justify-center">
+                      <Crown className="w-4 h-4 mb-0.5" />
+                      <span className="text-xs">{state.user.level}</span>
+                    </div>
+                  </motion.div>
+                </motion.div>
+
+                {/* User Info */}
+                <div className="text-center space-y-3 w-full">
+                  <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-l from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+                    {state.user.name}
+                  </h1>
+                  
+                  {state.user.bio && (
+                    <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+                      {state.user.bio}
+                    </p>
+                  )}
+
+                  {/* Quick Stats Pills */}
+                  <div className="flex flex-wrap justify-center gap-2 sm:gap-3 pt-2">
+                    <Badge className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
+                      <Sparkles className="w-4 h-4 ms-1" />
+                      {state.user.xp} امتیاز
+                    </Badge>
+                    <Badge className="px-4 py-2 text-sm bg-orange-500/10 text-orange-600 border-orange-500/20">
+                      <Flame className="w-4 h-4 ms-1" />
+                      {currentStreak} روز استریک
+                    </Badge>
+                    <Badge className="px-4 py-2 text-sm bg-purple-500/10 text-purple-600 border-purple-500/20">
+                      <Trophy className="w-4 h-4 ms-1" />
+                      {unlockedAchievements} دستاورد
+                    </Badge>
+                    <Badge className="px-4 py-2 text-sm bg-blue-500/10 text-blue-600 border-blue-500/20">
+                      <Calendar className="w-4 h-4 ms-1" />
+                      {memberSince} روز عضویت
+                    </Badge>
+                  </div>
+
+                  {/* Level Progress */}
+                  <div className="space-y-2 pt-4 max-w-md mx-auto">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">پیشرفت تا سطح {state.user.level + 1}</span>
+                      <span className="font-bold text-primary">
+                        {state.user.xpToNextLevel} XP باقی‌مانده
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <Progress value={progressToNextLevel} className="h-3" />
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-l from-primary/50 to-transparent rounded-full blur-sm"
+                        animate={{ opacity: [0.3, 0.6, 0.3] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                    {!isEditing && (
+                      <Button 
+                        onClick={() => setIsEditing(true)} 
+                        variant="default"
+                        size="lg"
+                        className="min-h-[48px] text-base"
+                      >
+                        <Edit className="ms-2 h-5 w-5" />
+                        ویرایش پروفایل
+                      </Button>
+                    )}
+                    <Button 
+                      onClick={handleLogout} 
+                      variant="outline" 
+                      size="lg"
+                      className="min-h-[48px] text-base text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <LogOut className="ms-2 h-5 w-5" />
+                      خروج از حساب
+                    </Button>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 w-full">
-                  {!isEditing && <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                      <Edit className="ml-2 h-4 w-4" />
-                      ویرایش پروفایل
-                    </Button>}
-                  <Button onClick={handleLogout} variant="outline" size="sm" className="text-destructive hover:text-destructive">
-                    <LogOut className="ml-2 h-4 w-4" />
-                    خروج از حساب
-                  </Button>
-                </div>
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Info Section */}
-              <div className="flex-1 space-y-4">
-                {isEditing ? <div className="space-y-4">
+          {/* Edit Mode */}
+          <AnimatePresence>
+            {isEditing && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-purple-500/5">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Edit className="w-6 h-6 text-primary" />
+                      ویرایش اطلاعات پروفایل
+                    </CardTitle>
+                    <CardDescription>
+                      اطلاعات خود را به‌روزرسانی کنید و شخصیت‌سازی کنید
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 p-4 sm:p-6">
+                    {/* Name Input */}
                     <div className="space-y-2">
-                      <Label>نام</Label>
-                      <Input value={editedUser.name} onChange={e => setEditedUser({
-                    ...editedUser,
-                    name: e.target.value
-                  })} placeholder="نام خود را وارد کنید" maxLength={50} />
+                      <Label className="text-base font-medium">نام</Label>
+                      <Input
+                        value={editedUser.name}
+                        onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+                        placeholder="نام خود را وارد کنید"
+                        maxLength={50}
+                        className="h-12 text-base"
+                      />
+                      <p className="text-xs text-muted-foreground text-end">
+                        {editedUser.name.length}/50 کاراکتر
+                      </p>
                     </div>
 
+                    {/* Bio Input */}
                     <div className="space-y-2">
-                      <Label>بیوگرافی</Label>
-                      <Textarea value={editedUser.bio || ''} onChange={e => setEditedUser({
-                    ...editedUser,
-                    bio: e.target.value
-                  })} placeholder="درباره خود بنویسید..." maxLength={200} rows={3} />
-                      <p className="text-xs text-muted-foreground">
+                      <Label className="text-base font-medium">بیوگرافی</Label>
+                      <Textarea
+                        value={editedUser.bio || ''}
+                        onChange={(e) => setEditedUser({ ...editedUser, bio: e.target.value })}
+                        placeholder="درباره خود، اهدافتان و رویاهایتان بنویسید..."
+                        maxLength={200}
+                        rows={4}
+                        className="text-base resize-none"
+                      />
+                      <p className="text-xs text-muted-foreground text-end">
                         {(editedUser.bio || '').length}/200 کاراکتر
                       </p>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>آواتار</Label>
-                      <div className="grid grid-cols-8 gap-2">
-                        {avatarOptions.map(emoji => <button key={emoji} onClick={() => setEditedUser({
-                      ...editedUser,
-                      avatar: emoji
-                    })} className={`text-3xl p-2 rounded-lg hover:bg-secondary transition-colors ${editedUser.avatar === emoji ? 'bg-primary/20 ring-2 ring-primary' : ''}`}>
-                            {emoji}
-                          </button>)}
-                      </div>
+                    {/* Avatar Selection */}
+                    <div className="space-y-3">
+                      <Label className="text-base font-medium">انتخاب آواتار</Label>
+                      <ScrollArea className="w-full">
+                        <div className="grid grid-cols-8 sm:grid-cols-10 gap-2 pb-2">
+                          {avatarOptions.map((emoji) => (
+                            <motion.button
+                              key={emoji}
+                              onClick={() => setEditedUser({ ...editedUser, avatar: emoji })}
+                              className={`text-3xl sm:text-4xl p-3 rounded-xl hover:bg-secondary transition-all min-h-[56px] ${
+                                editedUser.avatar === emoji
+                                  ? 'bg-primary/20 ring-2 ring-primary shadow-lg scale-110'
+                                  : 'bg-secondary/30'
+                              }`}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {emoji}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </ScrollArea>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button onClick={handleSave}>
-                        <Save className="ml-2 h-4 w-4" />
-                        ذخیره
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                      <Button 
+                        onClick={handleSave} 
+                        size="lg" 
+                        className="min-h-[48px] text-base flex-1"
+                      >
+                        <Save className="ms-2 h-5 w-5" />
+                        ذخیره تغییرات
                       </Button>
-                      <Button onClick={handleCancel} variant="outline">
-                        <X className="ml-2 h-4 w-4" />
+                      <Button 
+                        onClick={handleCancel} 
+                        variant="outline" 
+                        size="lg"
+                        className="min-h-[48px] text-base flex-1"
+                      >
+                        <X className="ms-2 h-5 w-5" />
                         انصراف
                       </Button>
                     </div>
-                  </div> : <>
-                    <div>
-                      <h1 className="text-3xl font-bold mb-2">{state.user.name}</h1>
-                      {state.user.bio && <p className="text-muted-foreground">{state.user.bio}</p>}
-                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      <div className="text-center p-3 bg-secondary/50 rounded-lg">
-                        <div className="text-2xl font-bold text-primary">{state.user.level}</div>
-                        <div className="text-xs text-muted-foreground">سطح</div>
-                      </div>
-                      <div className="text-center p-3 bg-secondary/50 rounded-lg">
-                        <div className="text-2xl font-bold text-primary">{state.user.xp}</div>
-                        <div className="text-xs text-muted-foreground">XP کل</div>
-                      </div>
-                      <div className="text-center p-3 bg-secondary/50 rounded-lg">
-                        <div className="text-2xl font-bold text-primary">{unlockedAchievements}</div>
-                        <div className="text-xs text-muted-foreground">دستاوردها</div>
-                      </div>
-                      <div className="text-center p-3 bg-secondary/50 rounded-lg">
-                        <div className="text-2xl font-bold text-primary">{memberSince}</div>
-                        <div className="text-xs text-muted-foreground">روز عضویت</div>
-                      </div>
-                    </div>
+          {/* Tabs for Stats, Achievements, Activity */}
+          <Tabs defaultValue="stats" className="space-y-6">
+            <ScrollArea className="w-full">
+              <TabsList className="inline-flex h-12 w-full sm:w-auto min-w-full sm:min-w-0">
+                <TabsTrigger value="stats" className="flex-1 sm:flex-none sm:px-6 text-base min-h-[48px]">
+                  <BarChart3 className="w-5 h-5 ms-2" />
+                  آمار عملکرد
+                </TabsTrigger>
+                <TabsTrigger value="achievements" className="flex-1 sm:flex-none sm:px-6 text-base min-h-[48px]">
+                  <Trophy className="w-5 h-5 ms-2" />
+                  دستاوردها
+                </TabsTrigger>
+                <TabsTrigger value="activity" className="flex-1 sm:flex-none sm:px-6 text-base min-h-[48px]">
+                  <Activity className="w-5 h-5 ms-2" />
+                  فعالیت‌ها
+                </TabsTrigger>
+              </TabsList>
+            </ScrollArea>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>پیشرفت تا سطح بعدی</span>
-                        <span className="font-bold">{state.user.xpToNextLevel} XP باقی مانده</span>
+            {/* Stats Tab */}
+            <TabsContent value="stats" className="space-y-6 mt-6">
+              {/* Performance Overview Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Card className="border-border/40 bg-gradient-to-br from-blue-500/10 to-blue-600/5 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-3 bg-blue-500/20 rounded-xl">
+                          <Target className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <Badge variant="secondary" className="bg-blue-500/10 text-blue-700">
+                          {taskCompletionRate}%
+                        </Badge>
                       </div>
-                      <Progress value={progressToNextLevel} />
-                    </div>
-                  </>}
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">وظایف تکمیل‌شده</p>
+                        <p className="text-3xl font-bold text-blue-600">{completedTasks}</p>
+                        <p className="text-xs text-muted-foreground">از {state.tasks.length} وظیفه</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Card className="border-border/40 bg-gradient-to-br from-orange-500/10 to-orange-600/5 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-3 bg-orange-500/20 rounded-xl">
+                          <Flame className="h-6 w-6 text-orange-600" />
+                        </div>
+                        <Badge variant="secondary" className="bg-orange-500/10 text-orange-700">
+                          فعال
+                        </Badge>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">استریک فعلی</p>
+                        <p className="text-3xl font-bold text-orange-600">{currentStreak}</p>
+                        <p className="text-xs text-muted-foreground">بهترین: {longestStreak} روز</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Card className="border-border/40 bg-gradient-to-br from-purple-500/10 to-purple-600/5 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-3 bg-purple-500/20 rounded-xl">
+                          <Trophy className="h-6 w-6 text-purple-600" />
+                        </div>
+                        <Badge variant="secondary" className="bg-purple-500/10 text-purple-700">
+                          {goalCompletionRate}%
+                        </Badge>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">اهداف فعال</p>
+                        <p className="text-3xl font-bold text-purple-600">{activeGoals}</p>
+                        <p className="text-xs text-muted-foreground">تکمیل‌شده: {completedGoals}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Card className="border-border/40 bg-gradient-to-br from-green-500/10 to-green-600/5 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-3 bg-green-500/20 rounded-xl">
+                          <Clock className="h-6 w-6 text-green-600" />
+                        </div>
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-700">
+                          {state.focusSessions.filter(s => s.completed).length} جلسه
+                        </Badge>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">زمان تمرکز</p>
+                        <p className="text-3xl font-bold text-green-600">{Math.floor(totalFocusTime / 60)}h</p>
+                        <p className="text-xs text-muted-foreground">{totalFocusTime % 60}m دقیقه</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="stats">آمار</TabsTrigger>
-            <TabsTrigger value="achievements">دستاوردها</TabsTrigger>
-            <TabsTrigger value="activity">فعالیت‌ها</TabsTrigger>
-          </TabsList>
+              {/* Detailed Stats */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Tasks Detailed Card */}
+                <Card className="border-border/40 bg-card/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <motion.div
+                          animate={{ rotate: [0, 360] }}
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                          className="p-2 bg-blue-500/10 rounded-lg"
+                        >
+                          <Target className="h-6 w-6 text-blue-600" />
+                        </motion.div>
+                        <div>
+                          <CardTitle>تحلیل وظایف</CardTitle>
+                          <CardDescription>عملکرد شما در مدیریت وظایف</CardDescription>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                      <span className="text-muted-foreground font-medium">تکمیل شده</span>
+                      <span className="text-2xl font-bold text-blue-600">{completedTasks}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                      <span className="text-muted-foreground font-medium">در حال انجام</span>
+                      <span className="text-2xl font-bold text-orange-600">{activeTasks}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-l from-primary/10 to-transparent rounded-lg border border-primary/20">
+                      <span className="text-muted-foreground font-medium">نرخ موفقیت</span>
+                      <span className="text-2xl font-bold text-primary">{taskCompletionRate}%</span>
+                    </div>
+                  </CardContent>
+                </Card>
 
-          {/* Stats Tab - Mobile Friendly */}
-          <TabsContent value="stats" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
+                {/* Habits Detailed Card */}
+                <Card className="border-border/40 bg-card/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          className="p-2 bg-orange-500/10 rounded-lg"
+                        >
+                          <Flame className="h-6 w-6 text-orange-600" />
+                        </motion.div>
+                        <div>
+                          <CardTitle>تحلیل عادات</CardTitle>
+                          <CardDescription>پیشرفت شما در ساخت عادات</CardDescription>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                      <span className="text-muted-foreground font-medium">کل عادات</span>
+                      <span className="text-2xl font-bold text-orange-600">{totalHabits}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                      <span className="text-muted-foreground font-medium">استریک فعلی</span>
+                      <span className="text-2xl font-bold text-orange-600">{currentStreak} روز</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-l from-orange-500/10 to-transparent rounded-lg border border-orange-500/20">
+                      <span className="text-muted-foreground font-medium">بهترین استریک</span>
+                      <span className="text-2xl font-bold text-orange-600">{longestStreak} روز</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Achievements Tab */}
+            <TabsContent value="achievements" className="space-y-6 mt-6">
+              <Card className="border-border/40 bg-gradient-to-br from-yellow-500/5 to-orange-500/5">
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    <CardTitle>وظایف</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                        className="p-3 bg-yellow-500/20 rounded-xl"
+                      >
+                        <Trophy className="h-6 w-6 text-yellow-600" />
+                      </motion.div>
+                      <div>
+                        <CardTitle className="text-xl">دستاوردهای شما</CardTitle>
+                        <CardDescription>
+                          {unlockedAchievements} از {state.achievements.length} دستاورد را باز کرده‌اید
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <Badge className="bg-gradient-to-l from-yellow-500 to-orange-500 text-white border-0 px-4 py-2 text-base">
+                      {Math.round((unlockedAchievements / state.achievements.length) * 100)}%
+                    </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">تکمیل شده</span>
-                    <span className="text-2xl font-bold">{completedTasks}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">در حال انجام</span>
-                    <span className="text-2xl font-bold">{activeTasks}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">نرخ تکمیل</span>
-                    <span className="text-2xl font-bold">
-                      {state.tasks.length > 0 ? Math.round(completedTasks / state.tasks.length * 100) : 0}%
-                    </span>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {state.achievements.map((achievement, index) => (
+                      <motion.div
+                        key={achievement.id}
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                      >
+                        <Card
+                          className={`transition-all hover:scale-105 ${
+                            achievement.unlocked
+                              ? 'bg-gradient-to-br from-primary/10 to-purple-500/10 border-primary/30 shadow-lg'
+                              : 'opacity-40 grayscale hover:grayscale-0 hover:opacity-70'
+                          }`}
+                        >
+                          <CardContent className="p-6 text-center space-y-3">
+                            <motion.div
+                              animate={achievement.unlocked ? { scale: [1, 1.1, 1] } : {}}
+                              transition={{ duration: 2, repeat: Infinity, repeatDelay: 4 }}
+                              className="text-5xl"
+                            >
+                              {achievement.icon}
+                            </motion.div>
+                            <h3 className="font-bold text-lg">{achievement.title}</h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {achievement.description}
+                            </p>
+                            {achievement.unlocked && achievement.unlockedAt && (
+                              <Badge variant="secondary" className="w-full justify-center">
+                                <Calendar className="w-3 h-3 ms-1" />
+                                {format(new Date(achievement.unlockedAt), 'dd/MM/yyyy')}
+                              </Badge>
+                            )}
+                            {!achievement.unlocked && (
+                              <Badge variant="outline" className="w-full justify-center opacity-60">
+                                🔒 قفل شده
+                              </Badge>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Flame className="h-5 w-5 text-primary" />
-                    <CardTitle>عادات</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">کل عادات</span>
-                    <span className="text-2xl font-bold">{totalHabits}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">استریک فعلی</span>
-                    <span className="text-2xl font-bold">{currentStreak} روز</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">بهترین استریک</span>
-                    <span className="text-2xl font-bold">{longestStreak} روز</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-primary" />
-                    <CardTitle>اهداف</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">فعال</span>
-                    <span className="text-2xl font-bold">{activeGoals}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">تکمیل شده</span>
-                    <span className="text-2xl font-bold">{completedGoals}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">نرخ موفقیت</span>
-                    <span className="text-2xl font-bold">
-                      {state.goals.length > 0 ? Math.round(completedGoals / state.goals.length * 100) : 0}%
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-primary" />
-                    <CardTitle>تمرکز</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">کل زمان تمرکز</span>
-                    <span className="text-2xl font-bold">{totalFocusTime} دقیقه</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">جلسات</span>
-                    <span className="text-2xl font-bold">{state.focusSessions.filter(s => s.completed).length}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">میانگین جلسه</span>
-                    <span className="text-2xl font-bold">
-                      {state.focusSessions.length > 0 ? Math.round(totalFocusTime / state.focusSessions.filter(s => s.completed).length) : 0} دقیقه
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>پیشرفت کلی</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">سطح {state.user.level}</span>
-                      <span className="text-sm font-bold">{state.user.xp} / {state.user.level * 100} XP</span>
-                    </div>
-                    <Progress value={state.user.xp % 100} />
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t">
-                    <div className="text-center">
-                      <div className="text-3xl mb-1">🎯</div>
-                      <div className="text-2xl font-bold">{completedTasks}</div>
-                      <div className="text-xs text-muted-foreground">وظایف</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl mb-1">🔥</div>
-                      <div className="text-2xl font-bold">{currentStreak}</div>
-                      <div className="text-xs text-muted-foreground">استریک</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl mb-1">⏱️</div>
-                      <div className="text-2xl font-bold">{Math.floor(totalFocusTime / 60)}h</div>
-                      <div className="text-xs text-muted-foreground">تمرکز</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl mb-1">🏆</div>
-                      <div className="text-2xl font-bold">{unlockedAchievements}</div>
-                      <div className="text-xs text-muted-foreground">دستاورد</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Achievements Tab */}
-          <TabsContent value="achievements" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>دستاوردها</CardTitle>
-                <CardDescription>
-                  {unlockedAchievements} از {state.achievements.length} دستاورد را باز کرده‌اید
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {state.achievements.map(achievement => <motion.div key={achievement.id} initial={{
-                  scale: 0.9,
-                  opacity: 0
-                }} animate={{
-                  scale: 1,
-                  opacity: 1
-                }} transition={{
-                  duration: 0.3
-                }}>
-                      <Card className={achievement.unlocked ? 'bg-primary/5 border-primary/20' : 'opacity-50'}>
-                        <CardContent className="p-4 text-center space-y-2">
-                          <div className="text-5xl">{achievement.icon}</div>
-                          <h4 className="font-bold">{achievement.title}</h4>
-                          <p className="text-xs text-muted-foreground">{achievement.description}</p>
-                          <Badge variant={achievement.unlocked ? 'default' : 'secondary'}>
-                            {achievement.unlocked ? `+${achievement.xpReward} XP` : 'قفل شده'}
+              {/* Recent Achievements */}
+              {recentAchievements.length > 0 && (
+                <Card className="border-border/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-yellow-500" />
+                      آخرین دستاوردها
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {recentAchievements.map((achievement) => (
+                        <motion.div
+                          key={achievement.id}
+                          initial={{ x: 20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          className="flex items-center gap-4 p-4 bg-gradient-to-l from-primary/5 to-transparent rounded-lg border border-primary/10"
+                        >
+                          <div className="text-4xl">{achievement.icon}</div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold">{achievement.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {achievement.description}
+                            </p>
+                          </div>
+                          <Badge className="bg-yellow-500/10 text-yellow-700 border-yellow-500/20">
+                            {achievement.xpReward} XP
                           </Badge>
-                          {achievement.unlocked && achievement.unlockedAt && <p className="text-xs text-muted-foreground">
-                              {format(new Date(achievement.unlockedAt), 'yyyy/MM/dd')}
-                            </p>}
-                        </CardContent>
-                      </Card>
-                    </motion.div>)}
-                </div>
-              </CardContent>
-            </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
 
-            {recentAchievements.length > 0 && <Card>
+            {/* Activity Tab */}
+            <TabsContent value="activity" className="space-y-6 mt-6">
+              {/* Recent Tasks */}
+              {recentTasks.length > 0 && (
+                <Card className="border-border/40">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                        className="p-2 bg-blue-500/10 rounded-lg"
+                      >
+                        <CheckCircle className="h-5 w-5 text-blue-600" />
+                      </motion.div>
+                      <div>
+                        <CardTitle>وظایف اخیر تکمیل‌شده</CardTitle>
+                        <CardDescription>آخرین فعالیت‌های شما</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {recentTasks.map((task, index) => (
+                        <motion.div
+                          key={task.id}
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-start gap-4 p-4 bg-secondary/30 rounded-lg hover:bg-secondary/50 transition-colors"
+                        >
+                          <div className="p-2 bg-green-500/20 rounded-lg">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold truncate">{task.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {task.description && task.description.length > 50
+                                ? `${task.description.substring(0, 50)}...`
+                                : task.description}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant="outline" className="text-xs">
+                                {task.category}
+                              </Badge>
+                              {task.completedAt && (
+                                <span className="text-xs text-muted-foreground">
+                                  {format(new Date(task.completedAt), 'dd/MM/yyyy - HH:mm')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {task.xpReward && (
+                            <Badge className="bg-primary/10 text-primary border-primary/20">
+                              +{task.xpReward} XP
+                            </Badge>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Activity Summary */}
+              <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-purple-500/5">
                 <CardHeader>
-                  <CardTitle>آخرین دستاوردها</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                    خلاصه فعالیت کلی
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {recentAchievements.map(achievement => <div key={achievement.id} className="flex items-center gap-4 p-3 bg-secondary/50 rounded-lg">
-                        <div className="text-3xl">{achievement.icon}</div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{achievement.title}</h4>
-                          <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                        </div>
-                        <div className="text-left">
-                          <Badge>+{achievement.xpReward} XP</Badge>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {achievement.unlockedAt && format(new Date(achievement.unlockedAt), 'yyyy/MM/dd')}
-                          </p>
-                        </div>
-                      </div>)}
-                  </div>
-                </CardContent>
-              </Card>}
-          </TabsContent>
-
-          {/* Activity Tab */}
-          <TabsContent value="activity" className="space-y-4">
-            {recentTasks.length > 0 && <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    <CardTitle>وظایف اخیر</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {recentTasks.map(task => <div key={task.id} className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
-                        <div className="flex-1">
-                          <h4 className="font-medium">{task.title}</h4>
-                          <p className="text-xs text-muted-foreground">
-                            {task.completedAt && format(new Date(task.completedAt), 'yyyy/MM/dd HH:mm')}
-                          </p>
-                        </div>
-                        <Badge variant="outline">+{task.xpReward} XP</Badge>
-                      </div>)}
-                  </div>
-                </CardContent>
-              </Card>}
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" />
-                  <CardTitle>خلاصه فعالیت</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <div className="text-2xl font-bold mb-1">{state.tasks.length}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40 text-center">
+                      <div className="text-3xl mb-2">📝</div>
+                      <div className="text-2xl font-bold text-primary">{state.tasks.length}</div>
                       <div className="text-sm text-muted-foreground">کل وظایف ایجاد شده</div>
                     </div>
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <div className="text-2xl font-bold mb-1">{state.habits.length}</div>
+                    <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40 text-center">
+                      <div className="text-3xl mb-2">🎯</div>
+                      <div className="text-2xl font-bold text-orange-600">{state.habits.length}</div>
                       <div className="text-sm text-muted-foreground">کل عادات ایجاد شده</div>
                     </div>
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <div className="text-2xl font-bold mb-1">{state.goals.length}</div>
+                    <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40 text-center">
+                      <div className="text-3xl mb-2">🏆</div>
+                      <div className="text-2xl font-bold text-purple-600">{state.goals.length}</div>
                       <div className="text-sm text-muted-foreground">کل اهداف ایجاد شده</div>
                     </div>
-                    <div className="p-4 bg-secondary/50 rounded-lg">
-                      <div className="text-2xl font-bold mb-1">{state.plans.length}</div>
-                      <div className="text-sm text-muted-foreground">کل برنامه‌های ایجاد شده</div>
+                    <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40 text-center">
+                      <div className="text-3xl mb-2">⏱️</div>
+                      <div className="text-2xl font-bold text-green-600">{state.focusSessions.length}</div>
+                      <div className="text-sm text-muted-foreground">جلسات تمرکز</div>
+                    </div>
+                    <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40 text-center">
+                      <div className="text-3xl mb-2">💎</div>
+                      <div className="text-2xl font-bold text-primary">{state.user.xp}</div>
+                      <div className="text-sm text-muted-foreground">کل امتیاز کسب شده</div>
+                    </div>
+                    <div className="p-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/40 text-center">
+                      <div className="text-3xl mb-2">📅</div>
+                      <div className="text-2xl font-bold text-blue-600">{memberSince}</div>
+                      <div className="text-sm text-muted-foreground">روز عضویت</div>
                     </div>
                   </div>
-
-                  <div className="pt-4 border-t">
-                    <h4 className="font-medium mb-3">عضویت</h4>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">تاریخ عضویت:</span>
-                      <span className="font-medium">{format(new Date(state.user.createdAt), 'yyyy/MM/dd')}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm mt-2">
-                      <span className="text-muted-foreground">مدت عضویت:</span>
-                      <span className="font-medium">{memberSince} روز</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </motion.div>
-    </div>;
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+      </div>
+    </div>
+  );
 };
+
 export default Profile;
