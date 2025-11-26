@@ -230,6 +230,7 @@ interface AppContextType {
   dispatch: React.Dispatch<Action>;
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'completed'>) => void;
   completeTask: (id: string) => void;
+  deleteTask: (id: string) => void;
   reorderTasks: (tasks: Task[]) => void;
   addHabit: (habit: Omit<Habit, 'id' | 'createdAt' | 'currentStreak' | 'longestStreak' | 'completedDates'>) => void;
   checkHabit: (id: string, date: string) => void;
@@ -297,6 +298,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       // Success haptic feedback
       await triggerHaptic('success');
     }
+  };
+
+  const deleteTask = async (id: string) => {
+    dispatch({ type: 'DELETE_TASK', payload: id });
+    toast.success('وظیفه حذف شد');
+    await triggerHaptic('light');
   };
 
   const reorderTasks = (tasks: Task[]) => {
@@ -411,7 +418,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, reorderTasks, addHabit, checkHabit, reorderHabits, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, deleteTask, reorderTasks, addHabit, checkHabit, reorderHabits, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
       {children}
     </AppContext.Provider>
   );
