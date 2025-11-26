@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, CheckSquare, Flame, Calendar, Target, Clock, BarChart3, Settings, User, Gift, Sparkles, Menu, Plus, LogOut, Crown } from 'lucide-react';
+import { Home, CheckSquare, Flame, Calendar, Target, Clock, BarChart3, Settings, User, Gift, Sparkles, Menu, Plus, LogOut, Crown, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,12 +12,21 @@ import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState as useStateHook } from 'react';
+import { useNavigate } from 'react-router-dom';
 interface NavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onAddClick?: () => void;
 }
-const mainNavItems = [{
+
+interface NavItem {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  route?: string;
+}
+
+const mainNavItems: NavItem[] = [{
   id: 'dashboard',
   label: 'داشبورد',
   icon: Home
@@ -54,7 +63,13 @@ const mainNavItems = [{
   label: 'آمار و گزارش',
   icon: BarChart3
 }];
-const bottomNavItems = [{
+
+const bottomNavItems: NavItem[] = [{
+  id: 'tutorial',
+  label: 'راهنمای آموزش',
+  icon: BookOpen,
+  route: '/tutorial'
+}, {
   id: 'profile',
   label: 'پروفایل',
   icon: User
@@ -68,6 +83,7 @@ export default function Navigation({
   onTabChange,
   onAddClick
 }: NavigationProps) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [daysRemaining, setDaysRemaining] = useStateHook<number | null>(null);
   const {
@@ -137,9 +153,14 @@ export default function Navigation({
       </Badge>
     );
   };
-  const handleNavClick = (tabId: string) => {
-    onTabChange(tabId);
-    setOpen(false);
+  const handleNavClick = (tabId: string, route?: string) => {
+    if (route) {
+      navigate(route);
+      setOpen(false);
+    } else {
+      onTabChange(tabId);
+      setOpen(false);
+    }
   };
   const handleSignOut = async () => {
     await signOut();
@@ -230,7 +251,7 @@ export default function Navigation({
                 {bottomNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
-                return <button key={item.id} onClick={() => handleNavClick(item.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-start min-h-[44px] ${isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}>
+                return <button key={item.id} onClick={() => handleNavClick(item.id, item.route)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-start min-h-[44px] ${isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'}`}>
                       <Icon className="w-5 h-5" />
                       <span className="font-medium text-sm">{item.label}</span>
                     </button>;
