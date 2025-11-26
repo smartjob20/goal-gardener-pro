@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Search, Filter, CheckCircle2, Circle, Clock, Trash2, Edit, GripVertical } from 'lucide-react';
+import { Plus, Search, Filter, CheckCircle2, Circle, Clock, Trash2, Edit, GripVertical, LayoutGrid, Rows3 } from 'lucide-react';
 import { Task, TaskCategory, Priority, SubTask } from '@/types';
 import { formatDate, daysUntil } from '@/utils/dateUtils';
 import { toast } from 'sonner';
@@ -77,7 +77,8 @@ function SortableTaskCard({
   onComplete,
   onEdit,
   onDelete,
-  onToggleSubtask
+  onToggleSubtask,
+  viewMode = 'expanded'
 }: {
   task: Task;
   categoryInfo: any;
@@ -88,6 +89,7 @@ function SortableTaskCard({
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
+  viewMode?: 'compact' | 'expanded';
 }) {
   const {
     attributes,
@@ -104,6 +106,8 @@ function SortableTaskCard({
     transition,
     opacity: isDragging ? 0.5 : 1
   };
+  const isCompact = viewMode === 'compact';
+  
   return <motion.div ref={setNodeRef} style={style} initial={{
     opacity: 0,
     y: 10
@@ -115,25 +119,25 @@ function SortableTaskCard({
     scale: 0.98
   }} className="w-full">
       <Card className={`group relative overflow-hidden bg-card/50 backdrop-blur-sm border transition-all duration-200 ${isDragging ? 'shadow-xl scale-[1.02] border-primary/50' : 'hover:shadow-lg hover:border-primary/30'}`}>
-        {/* تصویر انگیزشی */}
-        {task.imageUrl && <div className="relative w-full h-32 overflow-hidden">
+        {/* تصویر انگیزشی - فقط در نمای گسترده */}
+        {!isCompact && task.imageUrl && <div className="relative w-full h-32 overflow-hidden">
             <img src={task.imageUrl} alt={task.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
           </div>}
 
         {/* محتوای اصلی */}
-        <div className="p-3 space-y-2.5">
+        <div className={`${isCompact ? 'p-2 space-y-1.5' : 'p-3 space-y-2.5'}`}>
           {/* هدر: Drag + Title + Actions */}
           <div className="flex items-start gap-2">
             {/* دستگیره جابجایی */}
             <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted/50 rounded-md transition-colors touch-none shrink-0" aria-label="جابجایی وظیفه">
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
+              <GripVertical className={`${isCompact ? 'h-3.5 w-3.5' : 'h-4 w-4'} text-muted-foreground`} />
             </button>
 
             {/* عنوان و توضیحات */}
             <div className="flex-1 min-w-0 text-right space-y-1">
               <div className="flex items-start gap-2">
-                <h3 className={`text-base font-semibold leading-snug flex-1 ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                <h3 className={`${isCompact ? 'text-sm' : 'text-base'} font-semibold leading-snug flex-1 ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                   {task.title}
                 </h3>
                 {/* چک‌باکس */}
@@ -142,10 +146,10 @@ function SortableTaskCard({
               }} whileTap={{
                 scale: 0.95
               }} onClick={() => onComplete(task.id)} className="shrink-0 p-1 rounded-md hover:bg-success/10 transition-colors" aria-label={task.completed ? "لغو تکمیل" : "تکمیل وظیفه"}>
-                  {task.completed ? <CheckCircle2 className="w-5 h-5 text-success" /> : <Circle className="w-5 h-5 text-muted-foreground" />}
+                  {task.completed ? <CheckCircle2 className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'} text-success`} /> : <Circle className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'} text-muted-foreground`} />}
                 </motion.button>
               </div>
-              {task.description && <p className="text-xs text-muted-foreground leading-relaxed line-clamp-1">
+              {!isCompact && task.description && <p className="text-xs text-muted-foreground leading-relaxed line-clamp-1">
                   {task.description}
                 </p>}
             </div>
@@ -176,7 +180,7 @@ function SortableTaskCard({
             </div>}
 
           {/* زیروظایف */}
-          {task.subtasks && task.subtasks.length > 0 && <div className="space-y-2 pt-2 border-t border-border/40">
+          {task.subtasks && task.subtasks.length > 0 && <div className={`${isCompact ? 'space-y-1 pt-1' : 'space-y-2 pt-2'} border-t border-border/40`}>
               {/* نوار پیشرفت */}
               <div className="flex items-center gap-2">
                 <Progress value={subtaskProgress} className="h-1.5 flex-1" />
@@ -185,15 +189,15 @@ function SortableTaskCard({
                 </span>
               </div>
               
-              {/* لیست زیروظایف */}
-              <div className="space-y-1">
+              {/* لیست زیروظایف - فقط در نمای گسترده */}
+              {!isCompact && <div className="space-y-1">
                 {task.subtasks.map(st => <div key={st.id} className="flex items-center gap-2 p-1.5 hover:bg-muted/30 rounded-md transition-colors">
                     <Checkbox checked={st.completed} onCheckedChange={() => onToggleSubtask(task.id, st.id)} className="shrink-0 h-3.5 w-3.5" aria-label={`زیروظیفه: ${st.title}`} />
                     <span className={`flex-1 text-xs text-right leading-snug ${st.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                       {st.title}
                     </span>
                   </div>)}
-              </div>
+              </div>}
             </div>}
 
           {/* دکمه‌های عملیات */}
@@ -228,6 +232,7 @@ export default function TaskManager() {
   const [filterCategory, setFilterCategory] = useState<TaskCategory | 'all'>('all');
   const [filterPriority, setFilterPriority] = useState<Priority | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
+  const [viewMode, setViewMode] = useState<'compact' | 'expanded'>('expanded');
 
   // Drag and Drop Sensors
   const sensors = useSensors(useSensor(PointerSensor, {
@@ -552,13 +557,40 @@ export default function TaskManager() {
           </Dialog>
         </motion.div>
 
-        {/* جستجو و فیلترها - طراحی بهینه شده */}
+        {/* جستجو، فیلتر و تغییر نما - بهینه شده برای موبایل */}
         <Card className="p-4 glass-mobile border-border/50">
           <div className="space-y-3">
-            {/* جستجو */}
-            <div className="relative">
-              <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-              <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="جستجو در وظایف..." className="ps-10 min-h-[48px] text-base border-border/50 focus:border-primary" />
+            {/* جستجو و Toggle نما */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* جستجو */}
+              <div className="relative flex-1">
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="جستجو در وظایف..." className="ps-10 min-h-[48px] text-base border-border/50 focus:border-primary" />
+              </div>
+              
+              {/* Toggle نمای فشرده/گسترده */}
+              <div className="flex gap-1 p-1 bg-muted/50 rounded-lg shrink-0">
+                <Button
+                  variant={viewMode === 'expanded' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('expanded')}
+                  className="gap-1.5 min-h-[42px]"
+                  aria-label="نمای گسترده"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  <span className="hidden sm:inline">گسترده</span>
+                </Button>
+                <Button
+                  variant={viewMode === 'compact' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('compact')}
+                  className="gap-1.5 min-h-[42px]"
+                  aria-label="نمای فشرده"
+                >
+                  <Rows3 className="w-4 h-4" />
+                  <span className="hidden sm:inline">فشرده</span>
+                </Button>
+              </div>
             </div>
 
             {/* فیلترها */}
@@ -650,12 +682,12 @@ export default function TaskManager() {
                 <SortableContext items={filteredTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                   <AnimatePresence mode="popLayout">
                     <div className="space-y-4">
-                      {filteredTasks.map(task => {
+                  {filteredTasks.map(task => {
                     const categoryInfo = categoryConfig[task.category as keyof typeof categoryConfig] || categoryConfig.personal;
                     const priorityInfo = priorityConfig[task.priority];
                     const subtaskProgress = task.subtasks ? task.subtasks.filter(st => st.completed).length / task.subtasks.length * 100 : 0;
                     const daysLeft = task.deadline ? daysUntil(task.deadline) : null;
-                    return <SortableTaskCard key={task.id} task={task} categoryInfo={categoryInfo} priorityInfo={priorityInfo} subtaskProgress={subtaskProgress} daysLeft={daysLeft} onComplete={completeTask} onEdit={handleEditTask} onDelete={handleDeleteTask} onToggleSubtask={handleToggleSubtask} />;
+                    return <SortableTaskCard key={task.id} task={task} categoryInfo={categoryInfo} priorityInfo={priorityInfo} subtaskProgress={subtaskProgress} daysLeft={daysLeft} onComplete={completeTask} onEdit={handleEditTask} onDelete={handleDeleteTask} onToggleSubtask={handleToggleSubtask} viewMode={viewMode} />;
                   })}
                     </div>
                   </AnimatePresence>
