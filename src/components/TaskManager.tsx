@@ -107,7 +107,6 @@ function SortableTaskCard({
     opacity: isDragging ? 0.5 : 1
   };
   const isCompact = viewMode === 'compact';
-  
   return <motion.div ref={setNodeRef} style={style} initial={{
     opacity: 0,
     y: 10
@@ -403,7 +402,7 @@ export default function TaskManager() {
         <div className="absolute -bottom-8 left-20 w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
       </div>
       
-      <div className="max-w-4xl mx-auto space-y-5 mt-[70px] px-4">
+      <div className="max-w-4xl mx-auto space-y-5 px-4 mt-0 pr-px pl-px">
         {/* Header بهینه شده برای موبایل */}
         <motion.div initial={{
         opacity: 0,
@@ -458,13 +457,7 @@ export default function TaskManager() {
                     <span>عنوان وظیفه</span>
                     <span className="text-destructive text-xs">*</span>
                   </label>
-                  <Input 
-                    value={title} 
-                    onChange={e => setTitle(e.target.value)} 
-                    placeholder="مثلاً: تکمیل گزارش پروژه" 
-                    required 
-                    className="text-base h-12 focus:ring-2 focus:ring-primary/20" 
-                  />
+                  <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="مثلاً: تکمیل گزارش پروژه" required className="text-base h-12 focus:ring-2 focus:ring-primary/20" />
                 </div>
 
                 {/* توضیحات */}
@@ -472,13 +465,7 @@ export default function TaskManager() {
                   <label className="text-sm font-semibold text-foreground block">
                     توضیحات
                   </label>
-                  <Textarea 
-                    value={description} 
-                    onChange={e => setDescription(e.target.value)} 
-                    placeholder="جزئیات و توضیحات بیشتر درباره این وظیفه..." 
-                    rows={3} 
-                    className="text-base resize-none focus:ring-2 focus:ring-primary/20" 
-                  />
+                  <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="جزئیات و توضیحات بیشتر درباره این وظیفه..." rows={3} className="text-base resize-none focus:ring-2 focus:ring-primary/20" />
                   <p className="text-xs text-muted-foreground">توضیحات کامل به شما کمک می‌کند تمرکز بهتری داشته باشید</p>
                 </div>
 
@@ -491,22 +478,18 @@ export default function TaskManager() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(categoryConfig).map(([key, config]) => 
-                          <SelectItem key={key} value={key} className="text-base">
+                        {Object.entries(categoryConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>{config.icon}</span>
                               <span>{config.label}</span>
                             </span>
-                          </SelectItem>
-                        )}
-                        {state.settings.customTaskCategories.map(cat => 
-                          <SelectItem key={cat} value={cat} className="text-base">
+                          </SelectItem>)}
+                        {state.settings.customTaskCategories.map(cat => <SelectItem key={cat} value={cat} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>📌</span>
                               <span>{cat}</span>
                             </span>
-                          </SelectItem>
-                        )}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -518,14 +501,12 @@ export default function TaskManager() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(priorityConfig).map(([key, config]) => 
-                          <SelectItem key={key} value={key} className="text-base">
+                        {Object.entries(priorityConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>{config.icon}</span>
                               <span>{config.label}</span>
                             </span>
-                          </SelectItem>
-                        )}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -534,104 +515,56 @@ export default function TaskManager() {
                 {/* موعد */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground block">موعد انجام</label>
-                  <Input 
-                    type="date" 
-                    value={deadline} 
-                    onChange={e => setDeadline(e.target.value)} 
-                    className="text-base h-12 focus:ring-2 focus:ring-primary/20" 
-                  />
+                  <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} className="text-base h-12 focus:ring-2 focus:ring-primary/20" />
                   <p className="text-xs text-muted-foreground">تعیین موعد به شما کمک می‌کند تا به موقع وظیفه را انجام دهید</p>
                 </div>
 
                 {/* آپلود تصویر */}
                 <div className="space-y-2">
-                  <ImageUpload 
-                    imageUrl={imageUrl} 
-                    onImageChange={setImageUrl} 
-                    label="تصویر وظیفه (اختیاری)" 
-                  />
+                  <ImageUpload imageUrl={imageUrl} onImageChange={setImageUrl} label="تصویر وظیفه (اختیاری)" />
                 </div>
 
                 {/* زیروظایف */}
                 <div className="space-y-3 pt-2 border-t border-border/50">
                   <label className="text-sm font-semibold text-foreground block">زیروظایف</label>
                   <div className="flex gap-2">
-                    <Input 
-                      value={newSubtask} 
-                      onChange={e => setNewSubtask(e.target.value)} 
-                      placeholder="افزودن زیروظیفه..." 
-                      onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} 
-                      className="flex-1 text-base h-11 focus:ring-2 focus:ring-primary/20" 
-                    />
-                    <Button 
-                      type="button" 
-                      onClick={handleAddSubtask} 
-                      variant="outline" 
-                      className="h-11 w-11 p-0 shrink-0"
-                    >
+                    <Input value={newSubtask} onChange={e => setNewSubtask(e.target.value)} placeholder="افزودن زیروظیفه..." onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} className="flex-1 text-base h-11 focus:ring-2 focus:ring-primary/20" />
+                    <Button type="button" onClick={handleAddSubtask} variant="outline" className="h-11 w-11 p-0 shrink-0">
                       <Plus className="w-5 h-5" />
                     </Button>
                   </div>
                   
-                  {subtasks.length > 0 && (
-                    <div className="space-y-1.5">
-                      {subtasks.map(st => 
-                        <div 
-                          key={st.id} 
-                          className="flex items-center gap-2.5 p-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
-                        >
-                          <Checkbox 
-                            checked={st.completed} 
-                            onCheckedChange={() => {
-                              setSubtasks(subtasks.map(s => 
-                                s.id === st.id ? { ...s, completed: !s.completed } : s
-                              ));
-                            }} 
-                            className="shrink-0"
-                          />
+                  {subtasks.length > 0 && <div className="space-y-1.5">
+                      {subtasks.map(st => <div key={st.id} className="flex items-center gap-2.5 p-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Checkbox checked={st.completed} onCheckedChange={() => {
+                      setSubtasks(subtasks.map(s => s.id === st.id ? {
+                        ...s,
+                        completed: !s.completed
+                      } : s));
+                    }} className="shrink-0" />
                           <span className={`flex-1 text-sm text-right ${st.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                             {st.title}
                           </span>
-                          <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} 
-                            className="h-9 w-9 p-0 text-destructive hover:bg-destructive/10 shrink-0"
-                          >
+                          <Button type="button" variant="ghost" size="sm" onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} className="h-9 w-9 p-0 text-destructive hover:bg-destructive/10 shrink-0">
                             <Trash2 className="w-4 h-4" />
                           </Button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        </div>)}
+                    </div>}
                   <p className="text-xs text-muted-foreground">تقسیم وظیفه به بخش‌های کوچکتر باعث پیشرفت بهتر می‌شود</p>
                 </div>
 
                 {/* دکمه‌های عملیات */}
                 <div className="flex gap-2.5 pt-5 border-t border-border/50">
-                  <Button 
-                    type="submit" 
-                    className="flex-1 h-12 text-base font-semibold gap-2 shadow-sm"
-                  >
-                    {editingTask ? (
-                      <>
+                  <Button type="submit" className="flex-1 h-12 text-base font-semibold gap-2 shadow-sm">
+                    {editingTask ? <>
                         <CheckCircle2 className="w-5 h-5" />
                         <span>ذخیره تغییرات</span>
-                      </>
-                    ) : (
-                      <>
+                      </> : <>
                         <Plus className="w-5 h-5" />
                         <span>افزودن وظیفه</span>
-                      </>
-                    )}
+                      </>}
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setIsDialogOpen(false)} 
-                    className="h-12 px-8 text-base"
-                  >
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="h-12 px-8 text-base">
                     انصراف
                   </Button>
                 </div>
@@ -653,23 +586,11 @@ export default function TaskManager() {
               
               {/* Toggle نمای فشرده/گسترده */}
               <div className="flex gap-1 p-1 bg-muted/50 rounded-lg shrink-0">
-                <Button
-                  variant={viewMode === 'expanded' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('expanded')}
-                  className="gap-1.5 min-h-[42px]"
-                  aria-label="نمای گسترده"
-                >
+                <Button variant={viewMode === 'expanded' ? 'default' : 'ghost'} size="sm" onClick={() => setViewMode('expanded')} className="gap-1.5 min-h-[42px]" aria-label="نمای گسترده">
                   <LayoutGrid className="w-4 h-4" />
                   <span className="hidden sm:inline">گسترده</span>
                 </Button>
-                <Button
-                  variant={viewMode === 'compact' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('compact')}
-                  className="gap-1.5 min-h-[42px]"
-                  aria-label="نمای فشرده"
-                >
+                <Button variant={viewMode === 'compact' ? 'default' : 'ghost'} size="sm" onClick={() => setViewMode('compact')} className="gap-1.5 min-h-[42px]" aria-label="نمای فشرده">
                   <Rows3 className="w-4 h-4" />
                   <span className="hidden sm:inline">فشرده</span>
                 </Button>
