@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
 import Navigation from '@/components/Navigation';
-import FloatingDock from '@/components/FloatingDock';
 import Welcome from '@/components/Welcome';
 import Onboarding from '@/components/Onboarding';
 import UnifiedDashboard from '@/components/UnifiedDashboard';
@@ -183,10 +182,7 @@ const Index = () => {
               {renderContent()}
             </motion.div>
           </AnimatePresence>
-          <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-          
-          {/* Floating Dock for Navigation */}
-          <FloatingDock activeTab={activeTab} onTabChange={setActiveTab} />
+          <Navigation activeTab={activeTab} onTabChange={setActiveTab} onAddClick={() => setQuickAddOpen(true)} />
 
           {/* Quick Add Dialog */}
           <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
