@@ -59,9 +59,9 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         silver: {
-          light: "#E0E0E0",
-          DEFAULT: "#BDBDBD",
-          dark: "#9E9E9E",
+          light: "220 220 228",   /* #DCDCE4 - HSL */
+          DEFAULT: "192 192 200", /* #C0C0C8 - HSL */
+          dark: "160 160 170",    /* #A0A0AA - HSL */
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -76,9 +76,12 @@ export default {
         sans: ['Vazirmatn', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--radius)",           /* 1rem = 16px */
+        md: "calc(var(--radius) - 4px)", /* 12px */
+        sm: "calc(var(--radius) - 8px)", /* 8px */
+        xl: "1.25rem",                 /* 20px */
+        "2xl": "1.5rem",               /* 24px */
+        "3xl": "2rem",                 /* 32px */
       },
       keyframes: {
         "accordion-down": {
