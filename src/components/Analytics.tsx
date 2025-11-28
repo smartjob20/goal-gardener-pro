@@ -215,7 +215,7 @@ const Analytics = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 pb-24 max-w-7xl" dir="rtl">
+    <div className="container mx-auto px-0 sm:px-2 pb-24 max-w-7xl" dir="rtl">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

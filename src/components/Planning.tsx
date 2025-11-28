@@ -592,7 +592,7 @@ const Planning = () => {
     : 0;
 
   return (
-    <div className="min-h-screen pb-24 p-4 sm:p-6 space-y-6" dir="rtl">
+    <div className="min-h-screen pb-24 space-y-4 sm:space-y-6" dir="rtl">
       {/* هدر الهام‌بخش */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
