@@ -702,9 +702,9 @@ const Planning = () => {
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-5 mt-4">
+            <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               {/* پیام انگیزشی */}
-              <div className="p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
+              <div className="p-2.5 sm:p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
                 <div className="flex items-start gap-3">
                   <Star className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <p className="text-sm text-muted-foreground leading-relaxed text-right">
@@ -714,7 +714,7 @@ const Planning = () => {
               </div>
 
               {/* نوع برنامه */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <Label className="text-right block text-base">نوع برنامه *</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {(Object.keys(planTypeLabels) as PlanType[]).map((type) => {
@@ -739,7 +739,7 @@ const Planning = () => {
               </div>
 
               {/* عنوان */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="title" className="text-right block text-base">
                   عنوان برنامه *
                 </Label>
@@ -754,7 +754,7 @@ const Planning = () => {
               </div>
 
               {/* توضیحات */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="description" className="text-right block text-base">
                   توضیحات و اهداف برنامه
                 </Label>
@@ -770,8 +770,8 @@ const Planning = () => {
               </div>
 
               {/* دسته‌بندی و اولویت */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="category" className="text-right block text-base">
                     دسته‌بندی *
                   </Label>
@@ -789,7 +789,7 @@ const Planning = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="priority" className="text-right block text-base">
                     اولویت
                   </Label>
