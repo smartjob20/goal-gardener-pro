@@ -21,9 +21,9 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
     <motion.div
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed bottom-6 inset-x-0 z-50 flex justify-center px-4"
+      className="fixed bottom-6 inset-x-0 z-50 flex flex-ltr justify-center px-4 safe-area-bottom"
     >
-      <div className="flex items-center justify-center gap-1 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-border/50 mx-auto">
+      <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-card/95 backdrop-blur-xl rounded-full shadow-2xl border border-border/50">
         {/* Main Navigation Items - Reversed order for RTL */}
         {[...dockItems].reverse().map((item) => {
           const Icon = item.icon;
@@ -35,13 +35,13 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
               onClick={() => onTabChange(item.id)}
               whileHover={{ scale: 1.1, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative p-2.5 rounded-xl transition-all min-w-[44px] min-h-[44px] flex items-center justify-center ${
+              className={`relative p-2.5 sm:p-3 rounded-xl transition-all min-w-[44px] min-h-[44px] flex flex-ltr items-center justify-center ${
                 isActive
                   ? 'bg-primary text-primary-foreground shadow-lg'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
               
               {/* Active Indicator Dot */}
               {isActive && (
@@ -56,21 +56,18 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
         })}
 
         {/* Divider */}
-        <div className="w-px h-8 bg-border mx-1" />
+        <div className="w-px h-8 bg-border mx-1 sm:mx-1.5" />
 
         {/* More Button */}
         <motion.button
           onClick={onMoreClick}
           whileHover={{ scale: 1.1, y: -4 }}
           whileTap={{ scale: 0.95 }}
-          className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
+          className="p-2.5 sm:p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all min-w-[44px] min-h-[44px] flex flex-ltr items-center justify-center"
         >
-          <MoreHorizontal className="w-5 h-5" />
+          <MoreHorizontal className="w-5 h-5 sm:w-6 sm:h-6" />
         </motion.button>
       </div>
-
-      {/* Safe Area Bottom Spacer */}
-      <div className="h-[env(safe-area-inset-bottom)]" />
     </motion.div>
   );
 }
