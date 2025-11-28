@@ -73,7 +73,7 @@ export default function BottomDock({
         y: -4
       }} whileTap={{
         scale: 0.95
-      }} className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all min-w-[44px] min-h-[44px] flex flex-ltr items-center justify-center pl-0">
+      }} className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all min-w-[44px] min-h-[44px] flex flex-ltr items-center justify-center pl-0 pr-0">
           <MoreHorizontal className="w-5 h-5" />
         </motion.button>
       </div>
