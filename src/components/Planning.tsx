@@ -811,118 +811,119 @@ const Planning = () => {
                 </div>
               </div>
 
-              {/* مدت زمان و تاریخ شروع */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="duration" className="text-right block text-base">
-                    مدت زمان برنامه
-                  </Label>
-                  <Select value={duration.toString()} onValueChange={(v) => setDuration(parseInt(v))} dir="rtl">
-                    <SelectTrigger id="duration" className="min-h-[48px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durationOptions.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value.toString()}>
-                          <div className="text-right">
-                            <div className="font-medium">{opt.label}</div>
-                            <div className="text-xs text-muted-foreground">{opt.description}</div>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {duration === 0 && (
-                    <Input
-                      type="number"
-                      placeholder="تعداد روز (حداقل 1)"
-                      value={customDuration}
-                      onChange={(e) => setCustomDuration(e.target.value)}
-                      min="1"
-                      className="min-h-[48px] text-base text-right"
-                      dir="rtl"
-                    />
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-right block text-base">
-                    تاریخ شروع
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start min-h-[48px] text-base"
-                      >
-                        <CalendarIcon className="ms-2 h-5 w-5" />
-                        <span>{format(startDate, 'yyyy/MM/dd')}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      {useJalali ? (
-                        <PersianCalendar
-                          mode="single"
-                          selected={startDate}
-                          onSelect={(date) => date && setStartDate(date)}
-                        />
-                      ) : (
-                        <div className="p-3">
-                          <Input
-                            type="date"
-                            value={format(startDate, 'yyyy-MM-dd')}
-                            onChange={(e) => setStartDate(new Date(e.target.value))}
-                            className="min-h-[48px]"
-                          />
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              {/* تصویر انگیزشی */}
+              {/* مدت زمان */}
               <div className="space-y-2">
-                <ImageUpload
-                  imageUrl={imageUrl}
-                  onImageChange={setImageUrl}
-                  label="تصویر انگیزشی برنامه"
-                />
-                <p className="text-xs text-muted-foreground text-right">
-                  یک تصویر که به شما انگیزه می‌دهد تا برنامه را تا پایان ادامه دهید
+                <Label className="text-sm font-semibold text-foreground">مدت زمان برنامه</Label>
+                <Select 
+                  value={duration.toString()} 
+                  onValueChange={(v) => setDuration(parseInt(v))} 
+                  dir="rtl"
+                >
+                  <SelectTrigger className="h-12 focus:ring-2 focus:ring-primary/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {durationOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value.toString()}>
+                        <div className="text-right">
+                          <div className="font-medium">{option.label}</div>
+                          <div className="text-xs text-muted-foreground">{option.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {duration === 0 && (
+                  <Input
+                    type="number"
+                    value={customDuration}
+                    onChange={(e) => setCustomDuration(e.target.value)}
+                    placeholder="تعداد روز (مثلاً: 45)"
+                    min={1}
+                    className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                    dir="rtl"
+                  />
+                )}
+                <p className="text-xs text-muted-foreground">
+                  مدت زمانی واقع‌بینانه انتخاب کنید
                 </p>
               </div>
 
+              {/* تاریخ شروع */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-foreground">تاریخ شروع</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start h-12 text-base focus:ring-2 focus:ring-primary/20"
+                    >
+                      <CalendarIcon className="ms-2 h-5 w-5" />
+                      <span>{format(startDate, 'yyyy/MM/dd')}</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    {useJalali ? (
+                      <PersianCalendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => date && setStartDate(date)}
+                      />
+                    ) : (
+                      <div className="p-3">
+                        <Input
+                          type="date"
+                          value={format(startDate, 'yyyy-MM-dd')}
+                          onChange={(e) => setStartDate(new Date(e.target.value))}
+                          className="h-11"
+                        />
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* تصویر انگیزشی */}
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <ImageUpload
+                  imageUrl={imageUrl}
+                  onImageChange={setImageUrl}
+                  label="تصویر انگیزشی برنامه (اختیاری)"
+                />
+              </div>
+
               {/* چک‌لیست مراحل */}
-              <div className="space-y-3">
+              <div className="space-y-3 pt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
-                  <Label className="text-right text-base flex items-center gap-2">
+                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <ListChecks className="w-4 h-4" />
-                    <span>مراحل اجرای برنامه *</span>
+                    <span>مراحل برنامه</span>
+                    <span className="text-destructive text-xs">*</span>
                   </Label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={addChecklistItem}
-                    className="gap-1 min-h-[40px]"
+                    className="gap-1 h-9"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>افزودن مرحله</span>
+                    <span className="text-sm">افزودن</span>
                   </Button>
                 </div>
 
                 <div className="space-y-2">
                   {checklistItems.map((item, index) => (
-                    <div key={index} className="flex gap-2">
-                      <div className="flex items-center justify-center w-8 h-12 text-sm font-medium text-muted-foreground shrink-0">
+                    <div key={index} className="flex gap-2 items-center">
+                      <div className="flex items-center justify-center w-7 h-11 text-sm font-medium text-muted-foreground shrink-0">
                         {index + 1}
                       </div>
                       <Input
                         placeholder={`مرحله ${index + 1}`}
                         value={item}
                         onChange={(e) => updateChecklistItem(index, e.target.value)}
-                        className="min-h-[48px] text-base text-right"
+                        className="h-11 text-base text-right focus:ring-2 focus:ring-primary/20"
                         dir="rtl"
                       />
                       <Button
@@ -930,7 +931,7 @@ const Planning = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeChecklistItem(index)}
-                        className="min-h-[48px] min-w-[48px] shrink-0"
+                        className="h-11 w-11 shrink-0 text-destructive hover:bg-destructive/10"
                         disabled={checklistItems.length === 1}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -939,32 +940,28 @@ const Planning = () => {
                   ))}
                 </div>
                 
-                <p className="text-xs text-muted-foreground text-right">
-                  برنامه خود را به مراحل کوچک و قابل اجرا تقسیم کنید تا پیشرفت را بهتر پیگیری کنید
+                <p className="text-xs text-muted-foreground">
+                  برنامه را به مراحل قابل انجام تقسیم کنید
                 </p>
               </div>
 
-              {/* دکمه‌های عملیات */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  onClick={editingPlan ? handleEditPlan : handleAddPlan}
-                  className="flex-1 gap-2 min-h-[52px] text-base font-medium"
+              {/* دکمه ثبت */}
+              <div className="pt-3 border-t border-border/50">
+                <Button 
+                  onClick={editingPlan ? handleEditPlan : handleAddPlan} 
+                  className="w-full gap-2 h-12 text-base font-semibold shadow-sm"
                 >
-                  <Sparkles className="w-5 h-5" />
-                  <span>{editingPlan ? 'ذخیره تغییرات' : 'ایجاد برنامه'}</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddDialogOpen(false);
-                    setIsEditDialogOpen(false);
-                    resetForm();
-                  }}
-                  className="min-h-[52px] px-6"
-                >
-                  انصراف
+                  {editingPlan ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>ذخیره تغییرات</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      <span>ایجاد برنامه</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

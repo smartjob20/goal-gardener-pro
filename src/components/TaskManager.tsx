@@ -441,49 +441,72 @@ export default function TaskManager() {
               </Button>
             </DialogTrigger>
             
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
-              <DialogHeader className="text-right">
-                <DialogTitle className="text-xl font-bold">
-                  {editingTask ? '✏️ ویرایش وظیفه' : '➕ افزودن وظیفه جدید'}
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-5" dir="rtl">
+              <DialogHeader className="text-right space-y-1">
+                <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground">
+                  {editingTask ? '✏️ ویرایش وظیفه' : '✨ افزودن وظیفه جدید'}
                 </DialogTitle>
+                <p className="text-sm text-muted-foreground">
+                  {editingTask ? 'اطلاعات وظیفه را ویرایش کنید' : 'وظیفه جدید خود را با جزئیات کامل تعریف کنید'}
+                </p>
               </DialogHeader>
               
-              <form onSubmit={handleSubmit} className="space-y-5 mt-4">
+              <form onSubmit={handleSubmit} className="space-y-4 mt-5">
                 {/* عنوان */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground block">
-                    عنوان وظیفه <span className="text-destructive">*</span>
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                    <span>عنوان وظیفه</span>
+                    <span className="text-destructive text-xs">*</span>
                   </label>
-                  <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="مثال: تکمیل گزارش پروژه" required className="text-base min-h-[48px]" />
+                  <Input 
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)} 
+                    placeholder="مثلاً: تکمیل گزارش پروژه" 
+                    required 
+                    className="text-base h-12 focus:ring-2 focus:ring-primary/20" 
+                  />
                 </div>
 
                 {/* توضیحات */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground block">توضیحات</label>
-                  <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="جزئیات و توضیحات بیشتر..." rows={3} className="text-base resize-none" />
+                  <label className="text-sm font-semibold text-foreground block">
+                    توضیحات
+                  </label>
+                  <Textarea 
+                    value={description} 
+                    onChange={e => setDescription(e.target.value)} 
+                    placeholder="جزئیات و توضیحات بیشتر درباره این وظیفه..." 
+                    rows={3} 
+                    className="text-base resize-none focus:ring-2 focus:ring-primary/20" 
+                  />
+                  <p className="text-xs text-muted-foreground">توضیحات کامل به شما کمک می‌کند تمرکز بهتری داشته باشید</p>
                 </div>
 
                 {/* دسته‌بندی و اولویت */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-foreground block">دسته‌بندی</label>
                     <Select value={category} onValueChange={v => setCategory(v as TaskCategory)}>
-                      <SelectTrigger className="min-h-[48px] text-base">
+                      <SelectTrigger className="h-12 text-base focus:ring-2 focus:ring-primary/20">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(categoryConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
+                        {Object.entries(categoryConfig).map(([key, config]) => 
+                          <SelectItem key={key} value={key} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>{config.icon}</span>
                               <span>{config.label}</span>
                             </span>
-                          </SelectItem>)}
-                        {state.settings.customTaskCategories.map(cat => <SelectItem key={cat} value={cat} className="text-base">
+                          </SelectItem>
+                        )}
+                        {state.settings.customTaskCategories.map(cat => 
+                          <SelectItem key={cat} value={cat} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>📌</span>
                               <span>{cat}</span>
                             </span>
-                          </SelectItem>)}
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -491,16 +514,18 @@ export default function TaskManager() {
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-foreground block">اولویت</label>
                     <Select value={priority} onValueChange={v => setPriority(v as Priority)}>
-                      <SelectTrigger className="min-h-[48px] text-base">
+                      <SelectTrigger className="h-12 text-base focus:ring-2 focus:ring-primary/20">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(priorityConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
+                        {Object.entries(priorityConfig).map(([key, config]) => 
+                          <SelectItem key={key} value={key} className="text-base">
                             <span className="flex items-center gap-2">
                               <span>{config.icon}</span>
                               <span>{config.label}</span>
                             </span>
-                          </SelectItem>)}
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -509,46 +534,104 @@ export default function TaskManager() {
                 {/* موعد */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground block">موعد انجام</label>
-                  <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} className="text-base min-h-[48px]" />
+                  <Input 
+                    type="date" 
+                    value={deadline} 
+                    onChange={e => setDeadline(e.target.value)} 
+                    className="text-base h-12 focus:ring-2 focus:ring-primary/20" 
+                  />
+                  <p className="text-xs text-muted-foreground">تعیین موعد به شما کمک می‌کند تا به موقع وظیفه را انجام دهید</p>
                 </div>
 
                 {/* آپلود تصویر */}
-                <ImageUpload imageUrl={imageUrl} onImageChange={setImageUrl} label="تصویر وظیفه (اختیاری)" />
+                <div className="space-y-2">
+                  <ImageUpload 
+                    imageUrl={imageUrl} 
+                    onImageChange={setImageUrl} 
+                    label="تصویر وظیفه (اختیاری)" 
+                  />
+                </div>
 
                 {/* زیروظایف */}
-                <div className="space-y-3">
+                <div className="space-y-3 pt-2 border-t border-border/50">
                   <label className="text-sm font-semibold text-foreground block">زیروظایف</label>
                   <div className="flex gap-2">
-                    <Input value={newSubtask} onChange={e => setNewSubtask(e.target.value)} placeholder="افزودن زیروظیفه..." onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} className="flex-1 text-base min-h-[48px]" />
-                    <Button type="button" onClick={handleAddSubtask} variant="outline" className="min-h-[48px] min-w-[48px]">
+                    <Input 
+                      value={newSubtask} 
+                      onChange={e => setNewSubtask(e.target.value)} 
+                      placeholder="افزودن زیروظیفه..." 
+                      onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} 
+                      className="flex-1 text-base h-11 focus:ring-2 focus:ring-primary/20" 
+                    />
+                    <Button 
+                      type="button" 
+                      onClick={handleAddSubtask} 
+                      variant="outline" 
+                      className="h-11 w-11 p-0 shrink-0"
+                    >
                       <Plus className="w-5 h-5" />
                     </Button>
                   </div>
                   
-                  {subtasks.length > 0 && <div className="space-y-2">
-                      {subtasks.map(st => <div key={st.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg min-h-[44px]">
-                          <Checkbox checked={st.completed} onCheckedChange={() => {
-                      setSubtasks(subtasks.map(s => s.id === st.id ? {
-                        ...s,
-                        completed: !s.completed
-                      } : s));
-                    }} />
+                  {subtasks.length > 0 && (
+                    <div className="space-y-1.5">
+                      {subtasks.map(st => 
+                        <div 
+                          key={st.id} 
+                          className="flex items-center gap-2.5 p-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                        >
+                          <Checkbox 
+                            checked={st.completed} 
+                            onCheckedChange={() => {
+                              setSubtasks(subtasks.map(s => 
+                                s.id === st.id ? { ...s, completed: !s.completed } : s
+                              ));
+                            }} 
+                            className="shrink-0"
+                          />
                           <span className={`flex-1 text-sm text-right ${st.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                             {st.title}
                           </span>
-                          <Button type="button" variant="ghost" size="sm" onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} className="min-h-[44px] min-w-[44px] text-destructive hover:bg-destructive/10">
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} 
+                            className="h-9 w-9 p-0 text-destructive hover:bg-destructive/10 shrink-0"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </Button>
-                        </div>)}
-                    </div>}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">تقسیم وظیفه به بخش‌های کوچکتر باعث پیشرفت بهتر می‌شود</p>
                 </div>
 
                 {/* دکمه‌های عملیات */}
-                <div className="flex gap-3 pt-4">
-                  <Button type="submit" className="flex-1 min-h-[48px] text-base font-semibold">
-                    {editingTask ? '💾 ذخیره تغییرات' : '➕ افزودن وظیفه'}
+                <div className="flex gap-2.5 pt-5 border-t border-border/50">
+                  <Button 
+                    type="submit" 
+                    className="flex-1 h-12 text-base font-semibold gap-2 shadow-sm"
+                  >
+                    {editingTask ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span>ذخیره تغییرات</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-5 h-5" />
+                        <span>افزودن وظیفه</span>
+                      </>
+                    )}
                   </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="min-h-[48px] text-base">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setIsDialogOpen(false)} 
+                    className="h-12 px-8 text-base"
+                  >
                     انصراف
                   </Button>
                 </div>
