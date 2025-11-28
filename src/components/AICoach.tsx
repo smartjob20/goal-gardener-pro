@@ -97,7 +97,7 @@ const AICoach: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary/5 to-accent/5 pb-24 pt-20">
-      <div className="container max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+      <div className="container max-w-4xl mx-auto px-0 sm:px-2 space-y-4 sm:space-y-6">
         {/* Header Card */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

@@ -35,7 +35,7 @@ export default function Dashboard() {
   const recentAchievements = unlockedAchievements.slice(-3);
 
   return (
-    <div className="min-h-screen pb-24 p-4 md:p-6 custom-scrollbar overflow-y-auto bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen pb-24 custom-scrollbar overflow-y-auto bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Hero Greeting Section */}
         <motion.div

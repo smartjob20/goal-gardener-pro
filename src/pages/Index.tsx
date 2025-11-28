@@ -155,7 +155,7 @@ const Index = () => {
         }} transition={{
           duration: 0.15,
           ease: 'easeInOut'
-        }} className="min-h-screen px-4 pt-6 pb-6">
+        }} className="min-h-screen px-2 sm:px-3 pt-4 pb-4">
               {renderContent()}
             </motion.div>
           </AnimatePresence>

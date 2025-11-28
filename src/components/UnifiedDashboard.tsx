@@ -341,7 +341,7 @@ const UnifiedDashboard = () => {
       }} />)}
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10 my-0 pr-[16px] pl-[16px] mt-0">
+      <div className="container mx-auto px-0 sm:px-2 max-w-7xl relative z-10">
         <motion.div initial={{
         opacity: 0,
         y: -20

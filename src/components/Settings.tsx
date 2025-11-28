@@ -206,7 +206,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-24" dir="rtl">
-      <div className="container mx-auto p-4 sm:p-6 max-w-4xl">
+      <div className="container mx-auto px-0 sm:px-2 py-2 sm:py-4 max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
