@@ -683,9 +683,9 @@ const HabitTracker = () => {
               </div>
 
               {/* هدف و واحد */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="target" className="text-right block">
+                  <Label htmlFor="target" className="text-sm font-semibold text-foreground">
                     هدف روزانه
                   </Label>
                   <Input
@@ -694,32 +694,32 @@ const HabitTracker = () => {
                     value={target}
                     onChange={(e) => setTarget(e.target.value)}
                     placeholder="1"
-                    className="text-right min-h-[48px] text-base"
+                    className="text-base h-12 focus:ring-2 focus:ring-primary/20"
                     dir="rtl"
                     min="1"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="targetUnit" className="text-right block">
-                    واحد
+                  <Label htmlFor="targetUnit" className="text-sm font-semibold text-foreground">
+                    واحد اندازه‌گیری
                   </Label>
                   <Input
                     id="targetUnit"
                     value={targetUnit}
                     onChange={(e) => setTargetUnit(e.target.value)}
-                    placeholder="بار، دقیقه، ..."
-                    className="text-right min-h-[48px] text-base"
+                    placeholder="بار، دقیقه، لیتر..."
+                    className="text-base h-12 focus:ring-2 focus:ring-primary/20"
                     dir="rtl"
                   />
                 </div>
               </div>
 
               {/* یادآوری */}
-              <div className="space-y-3 p-4 bg-accent/50 rounded-lg">
+              <div className="space-y-3 pt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="reminder" className="text-right text-base">
-                    فعال‌سازی یادآوری
+                  <Label htmlFor="reminder" className="text-sm font-semibold text-foreground">
+                    یادآوری روزانه
                   </Label>
                   <Switch
                     id="reminder"
@@ -732,9 +732,10 @@ const HabitTracker = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
                     className="space-y-2"
                   >
-                    <Label htmlFor="reminderTime" className="text-right block text-sm">
+                    <Label htmlFor="reminderTime" className="text-sm text-muted-foreground">
                       زمان یادآوری
                     </Label>
                     <Input
@@ -742,41 +743,40 @@ const HabitTracker = () => {
                       type="time"
                       value={reminderTime}
                       onChange={(e) => setReminderTime(e.target.value)}
-                      className="min-h-[48px]"
+                      className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                      dir="rtl"
                     />
                   </motion.div>
                 )}
               </div>
 
-              {/* آپلود تصویر */}
-              <div className="space-y-2">
+              {/* تصویر عادت */}
+              <div className="space-y-2 pt-2 border-t border-border/50">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
-                  label="تصویر انگیزشی"
+                  label="تصویر انگیزشی عادت (اختیاری)"
                 />
+                <p className="text-xs text-muted-foreground">تصویری که شما را برای انجام این عادت انگیزه می‌دهد</p>
               </div>
 
-              {/* دکمه‌های عملیات */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="flex-1 gap-2 min-h-[52px] text-base font-medium"
+              {/* دکمه ثبت */}
+              <div className="pt-3 border-t border-border/50">
+                <Button 
+                  onClick={handleSubmit} 
+                  className="w-full gap-2 h-12 text-base font-semibold shadow-sm"
                 >
-                  <Sparkles className="w-5 h-5" />
-                  <span>{editingHabit ? 'ذخیره تغییرات' : 'افزودن عادت'}</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsDialogOpen(false);
-                    resetForm();
-                  }}
-                  className="min-h-[52px] px-6"
-                >
-                  انصراف
+                  {editingHabit ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>ذخیره تغییرات</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      <span>افزودن عادت</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

@@ -184,94 +184,123 @@ const Rewards = () => {
               افزودن پاداش جدید
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
-            <DialogHeader>
-              <DialogTitle>پاداش جدید</DialogTitle>
-              <DialogDescription>
-                پاداشی که برای خودتان تعریف می‌کنید می‌تواند هر چیزی باشه: یک فیلم، یک غذای مورد علاقه، خرید، یا هر چیز دیگری!
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-3 sm:p-5" dir="rtl">
+            <DialogHeader className="space-y-1">
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground">✨ پاداش جدید</DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+                پاداشی تعریف کنید که برای خودتان ارزشمند است: یک فیلم، غذا، خرید، یا هر چیز دیگری
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>عنوان پاداش *</Label>
-                <Input value={newReward.title} onChange={e => setNewReward({
-                ...newReward,
-                title: e.target.value
-              })} placeholder="مثال: تماشای یک فیلم" />
+                <Label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <span>عنوان پاداش</span>
+                  <span className="text-destructive text-xs">*</span>
+                </Label>
+                <Input 
+                  value={newReward.title} 
+                  onChange={e => setNewReward({ ...newReward, title: e.target.value })} 
+                  placeholder="مثلاً: تماشای یک فیلم" 
+                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label>توضیحات</Label>
-                <Textarea value={newReward.description} onChange={e => setNewReward({
-                ...newReward,
-                description: e.target.value
-              })} placeholder="جزئیات بیشتر درباره این پاداش..." rows={3} />
+                <Label className="text-sm font-semibold text-foreground">توضیحات</Label>
+                <Textarea 
+                  value={newReward.description} 
+                  onChange={e => setNewReward({ ...newReward, description: e.target.value })} 
+                  placeholder="جزئیات بیشتر درباره این پاداش..." 
+                  rows={3} 
+                  className="text-base resize-none focus:ring-2 focus:ring-primary/20"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label>دسته‌بندی</Label>
-                <Select value={newReward.category} onValueChange={value => setNewReward({
-                ...newReward,
-                category: value as RewardCategory
-              })}>
-                  <SelectTrigger>
+                <Label className="text-sm font-semibold text-foreground">دسته‌بندی</Label>
+                <Select 
+                  value={newReward.category} 
+                  onValueChange={value => setNewReward({ ...newReward, category: value as RewardCategory })}
+                >
+                  <SelectTrigger className="h-12 focus:ring-2 focus:ring-primary/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(categoryNames).map(([key, name]) => <SelectItem key={key} value={key}>
+                    {Object.entries(categoryNames).map(([key, name]) => 
+                      <SelectItem key={key} value={key}>
                         {categoryIcons[key as RewardCategory]} {name}
-                      </SelectItem>)}
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label>XP مورد نیاز *</Label>
-                <Input type="number" value={newReward.xpRequired} onChange={e => setNewReward({
-                ...newReward,
-                xpRequired: parseInt(e.target.value) || 0
-              })} min={1} />
+                <Label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <span>XP مورد نیاز</span>
+                  <span className="text-destructive text-xs">*</span>
+                </Label>
+                <Input 
+                  type="number" 
+                  value={newReward.xpRequired} 
+                  onChange={e => setNewReward({ ...newReward, xpRequired: parseInt(e.target.value) || 0 })} 
+                  min={1}
+                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                />
                 <p className="text-xs text-muted-foreground">
                   XP فعلی شما: {state.user.xp}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label>ارزش واقعی (اختیاری)</Label>
-                <Input value={newReward.customValue} onChange={e => setNewReward({
-                ...newReward,
-                customValue: e.target.value
-              })} placeholder="مثال: 50,000 تومان" />
+                <Label className="text-sm font-semibold text-foreground">ارزش واقعی (اختیاری)</Label>
+                <Input 
+                  value={newReward.customValue} 
+                  onChange={e => setNewReward({ ...newReward, customValue: e.target.value })} 
+                  placeholder="مثلاً: 50,000 تومان"
+                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label>پیام انگیزشی (اختیاری)</Label>
-                <Input value={newReward.motivationalMessage} onChange={e => setNewReward({
-                ...newReward,
-                motivationalMessage: e.target.value
-              })} placeholder="مثال: عالی بود! لذت ببر!" />
+                <Label className="text-sm font-semibold text-foreground">پیام انگیزشی (اختیاری)</Label>
+                <Input 
+                  value={newReward.motivationalMessage} 
+                  onChange={e => setNewReward({ ...newReward, motivationalMessage: e.target.value })} 
+                  placeholder="مثلاً: عالی بود! لذت ببر!"
+                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                />
               </div>
 
-              <div className="space-y-2">
-                <Label>ایموجی / آیکون</Label>
-                <div className="grid grid-cols-8 gap-2">
-                  {['🎁', '🎮', '🍕', '🍔', '🍰', '🛍️', '✈️', '🎬', '📚', '💆', '🏋️', '🎨', '🎵', '☕', '🍦', '🎯'].map(emoji => <button key={emoji} onClick={() => setNewReward({
-                  ...newReward,
-                  icon: emoji
-                })} className={`text-2xl p-2 rounded-lg hover:bg-secondary transition-colors ${newReward.icon === emoji ? 'bg-primary/20 ring-2 ring-primary' : ''}`}>
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <Label className="text-sm font-semibold text-foreground">ایموجی / آیکون</Label>
+                <div className="grid grid-cols-8 gap-1.5">
+                  {['🎁', '🎮', '🍕', '🍔', '🍰', '🛍️', '✈️', '🎬', '📚', '💆', '🏋️', '🎨', '🎵', '☕', '🍦', '🎯'].map(emoji => 
+                    <button 
+                      key={emoji} 
+                      onClick={() => setNewReward({ ...newReward, icon: emoji })} 
+                      className={`text-2xl p-2 rounded-lg hover:bg-secondary transition-colors ${newReward.icon === emoji ? 'bg-primary/20 ring-2 ring-primary' : 'bg-muted/30'}`}
+                    >
                       {emoji}
-                    </button>)}
+                    </button>
+                  )}
                 </div>
               </div>
 
               {/* تصویر انگیزشی */}
-              <ImageUpload imageUrl={newReward.imageUrl} onImageChange={url => setNewReward({
-              ...newReward,
-              imageUrl: url
-            })} label="تصویر پاداش" />
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <ImageUpload 
+                  imageUrl={newReward.imageUrl} 
+                  onImageChange={url => setNewReward({ ...newReward, imageUrl: url })} 
+                  label="تصویر پاداش (اختیاری)" 
+                />
+              </div>
 
-              <Button onClick={handleAddReward} className="w-full">
-                <Gift className="ml-2 h-4 w-4" />
+              <Button 
+                onClick={handleAddReward} 
+                className="w-full h-12 gap-2 text-base font-semibold shadow-sm"
+              >
+                <Gift className="w-5 h-5" />
                 ایجاد پاداش
               </Button>
             </div>

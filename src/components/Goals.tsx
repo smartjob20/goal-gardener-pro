@@ -558,19 +558,22 @@ const Goals = () => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-xl text-right flex items-center gap-2">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-5" dir="rtl">
+            <DialogHeader className="space-y-1">
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground text-right flex items-center gap-2">
                 <Rocket className="w-6 h-6 text-primary" />
                 <span>{editingGoal ? 'ویرایش هدف' : 'ایجاد هدف جدید'}</span>
               </DialogTitle>
+              <p className="text-sm text-muted-foreground text-right">
+                {editingGoal ? 'اطلاعات هدف را ویرایش کنید' : 'رویای بزرگ خود را به هدف قابل دستیابی تبدیل کنید'}
+              </p>
             </DialogHeader>
 
-            <div className="space-y-5 mt-4">
+            <div className="space-y-4 mt-5">
               {/* پیام انگیزشی */}
-              <div className="p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
-                <div className="flex items-start gap-3">
-                  <Star className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div className="p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
+                <div className="flex items-start gap-2.5">
+                  <Star className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <p className="text-sm text-muted-foreground leading-relaxed text-right">
                     هر هدف بزرگی با یک قدم کوچک شروع می‌شود. رویاهای خود را تعریف کنید و مراحل رسیدن به آن را مشخص کنید.
                   </p>
@@ -579,22 +582,23 @@ const Goals = () => {
 
               {/* عنوان */}
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-right block text-base">
-                  عنوان هدف *
+                <Label htmlFor="title" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <span>عنوان هدف</span>
+                  <span className="text-destructive text-xs">*</span>
                 </Label>
                 <Input
                   id="title"
-                  placeholder="مثال: رسیدن به وزن ایده‌آل"
+                  placeholder="مثلاً: رسیدن به وزن ایده‌آل"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-right min-h-[48px] text-base"
+                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
                   dir="rtl"
                 />
               </div>
 
               {/* توضیحات */}
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-right block text-base">
+                <Label htmlFor="description" className="text-sm font-semibold text-foreground">
                   توضیحات و دلایل انگیزشی
                 </Label>
                 <Textarea
@@ -602,19 +606,21 @@ const Goals = () => {
                   placeholder="چرا این هدف برای شما مهم است؟ چه احساسی پس از رسیدن به آن خواهید داشت؟"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                  className="text-right min-h-[120px] text-base resize-none"
+                  rows={3}
+                  className="text-base min-h-[100px] resize-none focus:ring-2 focus:ring-primary/20"
                   dir="rtl"
                 />
+                <p className="text-xs text-muted-foreground">دلیل محکمی برای رسیدن به هدف داشته باشید</p>
               </div>
 
               {/* دسته‌بندی */}
               <div className="space-y-2">
-                <Label htmlFor="category" className="text-right block text-base">
-                  دسته‌بندی هدف *
+                <Label htmlFor="category" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <span>دسته‌بندی هدف</span>
+                  <span className="text-destructive text-xs">*</span>
                 </Label>
                 <Select value={category} onValueChange={(v) => setCategory(v)} dir="rtl">
-                  <SelectTrigger id="category" className="min-h-[48px]">
+                  <SelectTrigger id="category" className="h-12 focus:ring-2 focus:ring-primary/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -642,14 +648,14 @@ const Goals = () => {
 
               {/* تاریخ هدف */}
               <div className="space-y-2">
-                <Label className="text-right block text-base">
+                <Label className="text-sm font-semibold text-foreground">
                   تاریخ هدف
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button 
                       variant="outline" 
-                      className="w-full justify-start min-h-[48px] text-base"
+                      className="w-full justify-start h-12 text-base focus:ring-2 focus:ring-primary/20"
                     >
                       <CalendarIcon className="ms-2 h-5 w-5" />
                       <span>{format(targetDate, 'yyyy/MM/dd')}</span>
@@ -668,56 +674,58 @@ const Goals = () => {
                           type="date"
                           value={format(targetDate, 'yyyy-MM-dd')}
                           onChange={(e) => setTargetDate(new Date(e.target.value))}
-                          className="min-h-[48px]"
+                          className="h-11"
                         />
                       </div>
                     )}
                   </PopoverContent>
                 </Popover>
+                <p className="text-xs text-muted-foreground">تاریخ واقع‌بینانه‌ای انتخاب کنید</p>
               </div>
 
               {/* تصویر انگیزشی */}
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2 border-t border-border/50">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
-                  label="تصویر الهام‌بخش هدف"
+                  label="تصویر الهام‌بخش هدف (اختیاری)"
                 />
-                <p className="text-xs text-muted-foreground text-right">
-                  یک تصویر انگیزشی که هر بار با دیدن آن، انگیزه شما را برای رسیدن به هدف افزایش دهد
+                <p className="text-xs text-muted-foreground">
+                  تصویری که با دیدن آن، انگیزه شما برای رسیدن به هدف افزایش یابد
                 </p>
               </div>
 
               {/* مراحل (مایلستون‌ها) */}
-              <div className="space-y-3">
+              <div className="space-y-3 pt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
-                  <Label className="text-right text-base flex items-center gap-2">
+                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Flag className="w-4 h-4" />
-                    <span>مراحل رسیدن به هدف *</span>
+                    <span>مراحل رسیدن به هدف</span>
+                    <span className="text-destructive text-xs">*</span>
                   </Label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={addMilestone}
-                    className="gap-1 min-h-[40px]"
+                    className="gap-1 h-9"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>افزودن مرحله</span>
+                    <span className="text-sm">افزودن</span>
                   </Button>
                 </div>
 
                 <div className="space-y-2">
                   {milestones.map((milestone, index) => (
-                    <div key={index} className="flex gap-2">
-                      <div className="flex items-center justify-center w-8 h-12 text-sm font-medium text-muted-foreground shrink-0">
+                    <div key={index} className="flex gap-2 items-center">
+                      <div className="flex items-center justify-center w-7 h-11 text-sm font-medium text-muted-foreground shrink-0">
                         {index + 1}
                       </div>
                       <Input
                         placeholder={`مرحله ${index + 1}`}
                         value={milestone}
                         onChange={(e) => updateMilestone(index, e.target.value)}
-                        className="min-h-[48px] text-base text-right"
+                        className="h-11 text-base text-right focus:ring-2 focus:ring-primary/20"
                         dir="rtl"
                       />
                       <Button
@@ -725,7 +733,7 @@ const Goals = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeMilestone(index)}
-                        className="min-h-[48px] min-w-[48px] shrink-0"
+                        className="h-11 w-11 shrink-0 text-destructive hover:bg-destructive/10"
                         disabled={milestones.length === 1}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -734,20 +742,29 @@ const Goals = () => {
                   ))}
                 </div>
                 
-                <p className="text-xs text-muted-foreground text-right">
-                  هدف بزرگ خود را به مراحل کوچک‌تر و قابل اندازه‌گیری تقسیم کنید
+                <p className="text-xs text-muted-foreground">
+                  هدف بزرگ را به مراحل کوچک و قابل اندازه‌گیری تقسیم کنید
                 </p>
               </div>
 
               {/* دکمه‌های عملیات */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-2.5 pt-4 border-t border-border/50">
                 <Button
                   type="button"
                   onClick={editingGoal ? handleEditGoal : handleAddGoal}
-                  className="flex-1 gap-2 min-h-[52px] text-base font-medium"
+                  className="flex-1 gap-2 h-12 text-base font-semibold shadow-sm"
                 >
-                  <Sparkles className="w-5 h-5" />
-                  <span>{editingGoal ? 'ذخیره تغییرات' : 'ایجاد هدف'}</span>
+                  {editingGoal ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>ذخیره تغییرات</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      <span>ایجاد هدف</span>
+                    </>
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -757,7 +774,7 @@ const Goals = () => {
                     setIsEditDialogOpen(false);
                     resetForm();
                   }}
-                  className="min-h-[52px] px-6"
+                  className="h-12 px-8"
                 >
                   انصراف
                 </Button>
