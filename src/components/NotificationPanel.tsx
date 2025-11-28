@@ -56,12 +56,9 @@ export function NotificationPanel() {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 1, repeat: Infinity, repeatDelay: 3 }}
-            >
+            <div className="p-1.5 bg-primary/10 rounded-lg">
               <Bell className="h-5 w-5 text-primary" />
-            </motion.div>
+            </div>
             <span className="bg-gradient-to-l from-primary to-primary/60 bg-clip-text text-transparent">
               یادآوری‌ها
             </span>

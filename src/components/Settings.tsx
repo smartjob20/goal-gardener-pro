@@ -220,16 +220,11 @@ const Settings = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-center space-y-3"
             >
-              <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-                className="inline-block"
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/60 blur-xl opacity-50 rounded-full" />
-                  <Sparkles className="relative h-12 w-12 sm:h-16 sm:w-16 mx-auto text-primary" />
+              <div className="inline-block">
+                <div className="relative p-3 bg-primary/10 rounded-2xl">
+                  <Sparkles className="h-12 w-12 sm:h-14 sm:w-14 mx-auto text-primary" />
                 </div>
-              </motion.div>
+              </div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-l from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                 تنظیمات و شخصی‌سازی
               </h1>
@@ -315,12 +310,9 @@ const Settings = () => {
                 <Card className="overflow-hidden border-border/40 bg-card/50 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-3 space-y-1 bg-gradient-to-br from-primary/5 to-transparent">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <motion.div
-                        animate={{ rotate: [0, 360] }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                      >
+                      <div className="p-1.5 bg-primary/10 rounded-lg">
                         <Palette className="h-5 w-5 text-primary" />
-                      </motion.div>
+                      </div>
                       تم و ظاهر
                     </CardTitle>
                     <CardDescription>برنامه را با سلیقه خود طراحی کنید</CardDescription>

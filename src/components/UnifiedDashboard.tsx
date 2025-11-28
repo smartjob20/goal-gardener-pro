@@ -360,27 +360,15 @@ const UnifiedDashboard = () => {
           }} transition={{
             duration: 0.5
           }} className="flex items-center justify-center gap-3 mb-2">
-              <motion.div animate={{
-              rotate: [0, 360]
-            }} transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: 'linear'
-            }}>
-                <Sparkles className="h-8 w-8 text-primary" />
-              </motion.div>
+              <div className="p-2 bg-primary/10 rounded-xl">
+                <Target className="h-7 w-7 text-primary" />
+              </div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent">
                 داشبورد هوشمند
               </h1>
-              <motion.div animate={{
-              rotate: [0, -360]
-            }} transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: 'linear'
-            }}>
-                <BarChart3 className="h-8 w-8 text-accent" />
-              </motion.div>
+              <div className="p-2 bg-accent/10 rounded-xl">
+                <TrendingUp className="h-7 w-7 text-accent" />
+              </div>
             </motion.div>
             <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
               کنترل کامل زندگی، مدیریت هوشمند اهداف و رویاها
