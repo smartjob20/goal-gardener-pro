@@ -22,7 +22,6 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-[420px] px-4"
-      style={{ direction: 'rtl' }}
     >
       <div className="flex items-center justify-center gap-1 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-border/50 mx-auto">
         {/* Main Navigation Items - Reversed order for RTL */}
