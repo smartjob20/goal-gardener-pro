@@ -450,9 +450,9 @@ export default function TaskManager() {
                 </p>
               </DialogHeader>
               
-              <form onSubmit={handleSubmit} className="space-y-4 mt-5">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-4">
                 {/* عنوان */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                     <span>عنوان وظیفه</span>
                     <span className="text-destructive text-xs">*</span>
@@ -461,7 +461,7 @@ export default function TaskManager() {
                 </div>
 
                 {/* توضیحات */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-foreground block">
                     توضیحات
                   </label>
@@ -470,8 +470,8 @@ export default function TaskManager() {
                 </div>
 
                 {/* دسته‌بندی و اولویت */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-foreground block">دسته‌بندی</label>
                     <Select value={category} onValueChange={v => setCategory(v as TaskCategory)}>
                       <SelectTrigger className="h-12 text-base focus:ring-2 focus:ring-primary/20">
@@ -494,7 +494,7 @@ export default function TaskManager() {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-foreground block">اولویت</label>
                     <Select value={priority} onValueChange={v => setPriority(v as Priority)}>
                       <SelectTrigger className="h-12 text-base focus:ring-2 focus:ring-primary/20">
@@ -513,19 +513,19 @@ export default function TaskManager() {
                 </div>
 
                 {/* موعد */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-foreground block">موعد انجام</label>
                   <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} className="text-base h-12 focus:ring-2 focus:ring-primary/20" />
                   <p className="text-xs text-muted-foreground">تعیین موعد به شما کمک می‌کند تا به موقع وظیفه را انجام دهید</p>
                 </div>
 
                 {/* آپلود تصویر */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <ImageUpload imageUrl={imageUrl} onImageChange={setImageUrl} label="تصویر وظیفه (اختیاری)" />
                 </div>
 
                 {/* زیروظایف */}
-                <div className="space-y-3 pt-2 border-t border-border/50">
+                <div className="space-y-2.5 pt-2 border-t border-border/50">
                   <label className="text-sm font-semibold text-foreground block">زیروظایف</label>
                   <div className="flex gap-2">
                     <Input value={newSubtask} onChange={e => setNewSubtask(e.target.value)} placeholder="افزودن زیروظیفه..." onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} className="flex-1 text-base h-11 focus:ring-2 focus:ring-primary/20" />
@@ -554,7 +554,7 @@ export default function TaskManager() {
                 </div>
 
                 {/* دکمه‌های عملیات */}
-                <div className="flex gap-2.5 pt-5 border-t border-border/50">
+                <div className="flex gap-2 sm:gap-2.5 pt-3 sm:pt-4 border-t border-border/50">
                   <Button type="submit" className="flex-1 h-12 text-base font-semibold gap-2 shadow-sm">
                     {editingTask ? <>
                         <CheckCircle2 className="w-5 h-5" />

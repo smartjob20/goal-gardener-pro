@@ -569,9 +569,9 @@ const Goals = () => {
               </p>
             </DialogHeader>
 
-            <div className="space-y-4 mt-5">
+            <div className="space-y-3 sm:space-y-4 mt-4">
               {/* پیام انگیزشی */}
-              <div className="p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
+              <div className="p-2.5 sm:p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
                 <div className="flex items-start gap-2.5">
                   <Star className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <p className="text-sm text-muted-foreground leading-relaxed text-right">
@@ -581,7 +581,7 @@ const Goals = () => {
               </div>
 
               {/* عنوان */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="title" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <span>عنوان هدف</span>
                   <span className="text-destructive text-xs">*</span>
@@ -597,7 +597,7 @@ const Goals = () => {
               </div>
 
               {/* توضیحات */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="description" className="text-sm font-semibold text-foreground">
                   توضیحات و دلایل انگیزشی
                 </Label>
@@ -614,7 +614,7 @@ const Goals = () => {
               </div>
 
               {/* دسته‌بندی */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="category" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <span>دسته‌بندی هدف</span>
                   <span className="text-destructive text-xs">*</span>
@@ -647,7 +647,7 @@ const Goals = () => {
               </div>
 
               {/* تاریخ هدف */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground">
                   تاریخ هدف
                 </Label>
@@ -684,7 +684,7 @@ const Goals = () => {
               </div>
 
               {/* تصویر انگیزشی */}
-              <div className="space-y-2 pt-2 border-t border-border/50">
+              <div className="space-y-1.5 pt-2 border-t border-border/50">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
@@ -696,7 +696,7 @@ const Goals = () => {
               </div>
 
               {/* مراحل (مایلستون‌ها) */}
-              <div className="space-y-3 pt-2 border-t border-border/50">
+              <div className="space-y-2.5 pt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Flag className="w-4 h-4" />

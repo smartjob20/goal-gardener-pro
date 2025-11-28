@@ -191,8 +191,8 @@ const Rewards = () => {
                 پاداشی تعریف کنید که برای خودتان ارزشمند است: یک فیلم، غذا، خرید، یا هر چیز دیگری
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
+            <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <span>عنوان پاداش</span>
                   <span className="text-destructive text-xs">*</span>
@@ -205,7 +205,7 @@ const Rewards = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground">توضیحات</Label>
                 <Textarea 
                   value={newReward.description} 
@@ -216,7 +216,7 @@ const Rewards = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground">دسته‌بندی</Label>
                 <Select 
                   value={newReward.category} 
@@ -235,7 +235,7 @@ const Rewards = () => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <span>XP مورد نیاز</span>
                   <span className="text-destructive text-xs">*</span>
@@ -252,7 +252,7 @@ const Rewards = () => {
                 </p>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground">ارزش واقعی (اختیاری)</Label>
                 <Input 
                   value={newReward.customValue} 
@@ -262,7 +262,7 @@ const Rewards = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-sm font-semibold text-foreground">پیام انگیزشی (اختیاری)</Label>
                 <Input 
                   value={newReward.motivationalMessage} 
@@ -272,7 +272,7 @@ const Rewards = () => {
                 />
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-border/50">
+              <div className="space-y-2.5 pt-2 border-t border-border/50">
                 <Label className="text-sm font-semibold text-foreground">ایموجی / آیکون</Label>
                 <div className="grid grid-cols-8 gap-1.5">
                   {['🎁', '🎮', '🍕', '🍔', '🍰', '🛍️', '✈️', '🎬', '📚', '💆', '🏋️', '🎨', '🎵', '☕', '🍦', '🎯'].map(emoji => 

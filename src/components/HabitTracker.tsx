@@ -563,10 +563,10 @@ const HabitTracker = () => {
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-5 mt-4">
+            <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               {/* قالب‌های آماده */}
               {!editingHabit && (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   <Button
                     type="button"
                     variant="outline"
@@ -606,7 +606,7 @@ const HabitTracker = () => {
               )}
 
               {/* عنوان */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="title" className="text-right block">
                   عنوان عادت *
                 </Label>
@@ -621,7 +621,7 @@ const HabitTracker = () => {
               </div>
 
               {/* توضیحات */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="description" className="text-right block">
                   توضیحات
                 </Label>
@@ -636,8 +636,8 @@ const HabitTracker = () => {
               </div>
 
               {/* دسته‌بندی و سختی */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="category" className="text-right block">
                     دسته‌بندی
                   </Label>
@@ -658,7 +658,7 @@ const HabitTracker = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="difficulty" className="text-right block">
                     سطح سختی
                   </Label>
@@ -683,8 +683,8 @@ const HabitTracker = () => {
               </div>
 
               {/* هدف و واحد */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="space-y-1.5">
                   <Label htmlFor="target" className="text-sm font-semibold text-foreground">
                     هدف روزانه
                   </Label>
@@ -700,7 +700,7 @@ const HabitTracker = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="targetUnit" className="text-sm font-semibold text-foreground">
                     واحد اندازه‌گیری
                   </Label>
@@ -716,7 +716,7 @@ const HabitTracker = () => {
               </div>
 
               {/* یادآوری */}
-              <div className="space-y-3 pt-2 border-t border-border/50">
+              <div className="space-y-2.5 pt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="reminder" className="text-sm font-semibold text-foreground">
                     یادآوری روزانه
