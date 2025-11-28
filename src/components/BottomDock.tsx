@@ -21,12 +21,12 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
     <motion.div
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed bottom-6 start-1/2 -translate-x-1/2 z-50"
-      style={{ direction: 'ltr' }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-[420px] px-4"
+      style={{ direction: 'rtl' }}
     >
-      <div className="flex items-center gap-1 px-3 py-2 bg-card/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-border/50">
-        {/* Main Navigation Items */}
-        {dockItems.map((item) => {
+      <div className="flex items-center justify-center gap-1 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-border/50 mx-auto">
+        {/* Main Navigation Items - Reversed order for RTL */}
+        {[...dockItems].reverse().map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           
@@ -36,13 +36,13 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
               onClick={() => onTabChange(item.id)}
               whileHover={{ scale: 1.1, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative p-3 rounded-2xl transition-all min-w-[48px] min-h-[48px] flex items-center justify-center ${
+              className={`relative p-2.5 rounded-xl transition-all min-w-[44px] min-h-[44px] flex items-center justify-center ${
                 isActive
                   ? 'bg-primary text-primary-foreground shadow-lg'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
               }`}
             >
-              <Icon className="w-6 h-6" />
+              <Icon className="w-5 h-5" />
               
               {/* Active Indicator Dot */}
               {isActive && (
@@ -64,9 +64,9 @@ export default function BottomDock({ activeTab, onTabChange, onMoreClick }: Bott
           onClick={onMoreClick}
           whileHover={{ scale: 1.1, y: -4 }}
           whileTap={{ scale: 0.95 }}
-          className="p-3 rounded-2xl text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all min-w-[48px] min-h-[48px] flex items-center justify-center"
+          className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
         >
-          <MoreHorizontal className="w-6 h-6" />
+          <MoreHorizontal className="w-5 h-5" />
         </motion.button>
       </div>
 
