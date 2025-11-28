@@ -43,7 +43,7 @@ export default function OnboardingTrial({ onComplete }: OnboardingTrialProps) {
     await triggerHaptic('medium');
 
     try {
-      // Call edge function to activate trial with service role permissions
+      // Call edge function to activate trial
       const { data, error } = await supabase.functions.invoke('activate-trial', {
         body: {},
       });
@@ -54,16 +54,16 @@ export default function OnboardingTrial({ onComplete }: OnboardingTrialProps) {
         throw new Error(data?.error || 'Failed to activate trial');
       }
 
-      // Save onboarding completion to localStorage
+      // CRITICAL: Save onboarding completion BEFORE calling onComplete
       localStorage.setItem('deepbreath_onboarding_completed', 'true');
       
       await triggerHaptic('success');
       toast.success('دوره آزمایشی ۳۰ روزه شما فعال شد! 🎉');
 
-      // Small delay to ensure state is saved
-      setTimeout(() => {
-        onComplete();
-      }, 100);
+      // Ensure state is fully saved before navigation
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      onComplete();
 
     } catch (error) {
       console.error('Error activating trial:', error);
@@ -75,7 +75,7 @@ export default function OnboardingTrial({ onComplete }: OnboardingTrialProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary/20 to-accent/20 flex items-center justify-center p-4 overflow-hidden relative">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-muted to-accent flex items-center justify-center p-4 overflow-hidden relative">
       {/* Animated Background Elements */}
       <motion.div
         className="absolute inset-0 opacity-30"

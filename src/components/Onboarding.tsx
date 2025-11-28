@@ -175,7 +175,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   // Show breathing step as full screen
   if (currentStep === 2) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary-light/30 to-accent-light/30 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-gradient-to-br from-background via-muted to-accent flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -213,7 +213,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background via-primary-light/30 to-accent-light/30 flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-muted to-accent flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Logo */}
         <motion.div

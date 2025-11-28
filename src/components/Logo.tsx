@@ -59,10 +59,10 @@ export default function Logo({
       {/* Logo Icon - Breath Symbol */}
       <div className={`relative ${iconSize}`}>
         <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-primary via-info to-accent rounded-2xl opacity-20 blur-lg"
+          className="absolute inset-0 bg-gradient-to-br from-primary via-muted to-accent rounded-2xl opacity-10 blur-lg"
           animate={animated || isCelebrating ? {
             scale: isCelebrating ? [1, 1.4, 1] : [1, 1.2, 1],
-            opacity: isCelebrating ? [0.2, 0.5, 0.2] : [0.2, 0.3, 0.2],
+            opacity: isCelebrating ? [0.1, 0.3, 0.1] : [0.1, 0.2, 0.1],
           } : {}}
           transition={{
             duration: isCelebrating ? 1.5 : 3,
@@ -158,24 +158,24 @@ export default function Logo({
             }}
           />
 
-          {/* Gradients */}
+          {/* Monochrome Silver Gradients */}
           <defs>
             <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="hsl(205, 85%, 58%)" />
-              <stop offset="50%" stopColor="hsl(200, 80%, 65%)" />
-              <stop offset="100%" stopColor="hsl(180, 75%, 70%)" />
+              <stop offset="0%" stopColor="hsl(0, 0%, 65%)" />
+              <stop offset="50%" stopColor="hsl(0, 0%, 75%)" />
+              <stop offset="100%" stopColor="hsl(0, 0%, 85%)" />
             </linearGradient>
             <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(205, 85%, 58%)" />
-              <stop offset="100%" stopColor="hsl(265, 75%, 68%)" />
+              <stop offset="0%" stopColor="hsl(0, 0%, 50%)" />
+              <stop offset="100%" stopColor="hsl(0, 0%, 70%)" />
             </linearGradient>
             <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(180, 75%, 62%)" />
-              <stop offset="100%" stopColor="hsl(200, 85%, 60%)" />
+              <stop offset="0%" stopColor="hsl(0, 0%, 60%)" />
+              <stop offset="100%" stopColor="hsl(0, 0%, 80%)" />
             </linearGradient>
             <radialGradient id="gradient4">
-              <stop offset="0%" stopColor="hsl(205, 85%, 68%)" />
-              <stop offset="100%" stopColor="hsl(205, 85%, 58%)" />
+              <stop offset="0%" stopColor="hsl(0, 0%, 70%)" />
+              <stop offset="100%" stopColor="hsl(0, 0%, 50%)" />
             </radialGradient>
           </defs>
         </svg>
