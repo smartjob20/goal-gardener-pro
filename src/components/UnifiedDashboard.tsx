@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { Task } from '@/types';
 type ViewMode = 'day' | 'week' | 'month' | 'year';
 
-// Sortable Task Item Component
-function SortableTaskItem({
+// Sortable Task Item Component - Optimized with memo
+const SortableTaskItem = memo(function SortableTaskItem({
   task,
   onComplete
 }: {
@@ -37,67 +37,114 @@ function SortableTaskItem({
   } = useSortable({
     id: task.id
   });
+  
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1
   };
-  const priorityColors = {
-    high: 'border-red-500/30 bg-red-500/5',
-    medium: 'border-amber-500/30 bg-amber-500/5',
-    low: 'border-green-500/30 bg-green-500/5'
+  
+  const priorityConfig = {
+    high: { 
+      border: 'border-red-500/20', 
+      bg: 'bg-red-500/5', 
+      hover: 'hover:border-red-500/30',
+      icon: '🔴',
+      label: 'بالا',
+      badgeClass: 'border-red-500/20 text-red-600'
+    },
+    medium: { 
+      border: 'border-amber-500/20', 
+      bg: 'bg-amber-500/5', 
+      hover: 'hover:border-amber-500/30',
+      icon: '🟡',
+      label: 'متوسط',
+      badgeClass: 'border-amber-500/20 text-amber-600'
+    },
+    low: { 
+      border: 'border-green-500/20', 
+      bg: 'bg-green-500/5', 
+      hover: 'hover:border-green-500/30',
+      icon: '🟢',
+      label: 'پایین',
+      badgeClass: 'border-green-500/20 text-green-600'
+    }
   };
-  return <motion.div ref={setNodeRef} style={style} initial={{
-    opacity: 0,
-    y: 10
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} exit={{
-    opacity: 0,
-    scale: 0.95
-  }} whileHover={{
-    scale: 1.01
-  }} className="mb-3">
-      <Card className={`border-2 ${priorityColors[task.priority]} hover:shadow-lg transition-all ${isDragging ? 'shadow-2xl scale-105' : ''}`}>
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-start gap-3">
-            <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-2 hover:bg-primary/10 rounded-lg transition-colors touch-none min-h-[48px] min-w-[48px] flex items-center justify-center">
-              <GripVertical className="h-5 w-5 text-muted-foreground" />
+  
+  const config = priorityConfig[task.priority];
+  
+  return (
+    <motion.div 
+      ref={setNodeRef} 
+      style={style} 
+      initial={{ opacity: 0, y: 10 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+      className="mb-2.5"
+    >
+      <Card className={`overflow-hidden border ${config.border} ${config.bg} ${config.hover} transition-all duration-200 ${isDragging ? 'shadow-xl ring-2 ring-primary/20' : 'hover:shadow-md'}`}>
+        <CardContent className="p-2.5 sm:p-3">
+          <div className="flex items-center gap-2">
+            {/* Drag Handle */}
+            <button 
+              {...attributes} 
+              {...listeners} 
+              className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted/50 rounded-md transition-colors touch-none shrink-0"
+              aria-label="درگ کردن وظیفه"
+            >
+              <GripVertical className="h-4 w-4 text-muted-foreground/60" />
             </button>
             
-            <button onClick={() => onComplete(task.id)} className="min-h-[48px] min-w-[48px] flex items-center justify-center hover:bg-primary/10 rounded-lg transition-colors">
-              {task.completed ? <CheckCircle2 className="h-6 w-6 text-green-500" /> : <Circle className="h-6 w-6 text-muted-foreground" />}
+            {/* Complete Checkbox */}
+            <button 
+              onClick={() => onComplete(task.id)} 
+              className="p-1.5 hover:bg-muted/50 rounded-md transition-colors shrink-0"
+              aria-label={task.completed ? "لغو تکمیل" : "تکمیل وظیفه"}
+            >
+              {task.completed ? (
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+              ) : (
+                <Circle className="h-5 w-5 text-muted-foreground/60 hover:text-primary" />
+              )}
             </button>
 
+            {/* Task Content */}
             <div className="flex-1 text-right min-w-0">
-              <div className="flex items-center gap-2 justify-end flex-wrap mb-1">
-                <h4 className={`font-semibold text-base ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+              <div className="flex items-center gap-1.5 justify-end flex-wrap">
+                <h4 className={`font-semibold text-sm leading-tight ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                   {task.title}
                 </h4>
-                <Badge variant="outline" className="text-xs">
-                  {task.priority === 'high' ? '🔴 بالا' : task.priority === 'medium' ? '🟡 متوسط' : '🟢 پایین'}
+                <Badge variant="outline" className={`text-[10px] px-1.5 py-0.5 h-5 ${config.badgeClass}`}>
+                  {config.icon} {config.label}
                 </Badge>
               </div>
-              {task.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+              
+              {task.description && (
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                   {task.description}
-                </p>}
-              <div className="flex items-center gap-3 mt-2 justify-end flex-wrap">
-                {task.deadline && <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <span>{format(new Date(task.deadline), 'yyyy/MM/dd')}</span>
+                </p>
+              )}
+              
+              <div className="flex items-center gap-2 mt-1.5 justify-end flex-wrap">
+                {task.deadline && (
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
                     <Clock className="h-3 w-3" />
-                  </div>}
-                <div className="flex items-center gap-1 text-xs font-medium text-amber-500">
-                  <span>+{task.xpReward}</span>
+                    <span>{format(new Date(task.deadline), 'yyyy/MM/dd')}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded">
                   <Zap className="h-3 w-3" />
+                  <span>+{task.xpReward}</span>
                 </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-    </motion.div>;
-}
+    </motion.div>
+  );
+});
 const UnifiedDashboard = () => {
   const {
     state,
@@ -604,11 +651,12 @@ const UnifiedDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <ScrollArea className="h-[320px]">
-                      {filteredHabits.length === 0 ? <motion.div initial={{
-                      opacity: 0
-                    }} animate={{
-                      opacity: 1
-                    }} className="text-center py-12 space-y-3">
+                      {filteredHabits.length === 0 ? (
+                        <motion.div 
+                          initial={{ opacity: 0 }} 
+                          animate={{ opacity: 1 }} 
+                          className="text-center py-12 space-y-3"
+                        >
                           <div className="flex justify-center">
                             <div className="p-4 bg-muted/50 rounded-full">
                               <Flame className="h-12 w-12 text-muted-foreground/40" />
@@ -618,44 +666,60 @@ const UnifiedDashboard = () => {
                             <p className="font-medium text-muted-foreground">هنوز عادتی ثبت نشده</p>
                             <p className="text-sm text-muted-foreground/60 mt-1">عادت جدید ایجاد کنید</p>
                           </div>
-                        </motion.div> : <div className="space-y-3">
+                        </motion.div>
+                      ) : (
+                        <div className="space-y-2">
                           {filteredHabits.map((habit, index) => {
-                        const todayString = format(new Date(), 'yyyy-MM-dd');
-                        const isCompleted = habit.completedDates.includes(todayString);
-                        return <motion.div key={habit.id} initial={{
-                          opacity: 0,
-                          x: -20
-                        }} animate={{
-                          opacity: 1,
-                          x: 0
-                        }} transition={{
-                          delay: index * 0.05
-                        }} whileHover={{
-                          scale: 1.02
-                        }} onClick={() => handleHabitCheck(habit.id)} className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-border hover:border-green-500/30 hover:bg-green-500/5'}`}>
-                                <div className="flex items-center gap-3">
+                            const todayString = format(new Date(), 'yyyy-MM-dd');
+                            const isCompleted = habit.completedDates.includes(todayString);
+                            
+                            return (
+                              <motion.div 
+                                key={habit.id} 
+                                initial={{ opacity: 0, x: -10 }} 
+                                animate={{ opacity: 1, x: 0 }} 
+                                transition={{ delay: index * 0.03, duration: 0.2 }}
+                                onClick={() => handleHabitCheck(habit.id)} 
+                                className={`group p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                                  isCompleted 
+                                    ? 'border-green-500/30 bg-green-500/10 hover:bg-green-500/15' 
+                                    : 'border-border/50 bg-card/50 hover:border-green-500/30 hover:bg-green-500/5'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  {/* Checkbox */}
+                                  <div className="shrink-0">
+                                    {isCompleted ? (
+                                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                    ) : (
+                                      <Circle className="h-5 w-5 text-muted-foreground/60 group-hover:text-green-500 transition-colors" />
+                                    )}
+                                  </div>
+                                  
+                                  {/* Content */}
                                   <div className="flex-1 text-right min-w-0">
-                                    <p className={`font-medium text-base ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
+                                    <p className={`font-semibold text-sm leading-tight mb-1.5 ${
+                                      isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'
+                                    }`}>
                                       {habit.title}
                                     </p>
-                                    <div className="flex items-center gap-2 mt-2 justify-end">
-                                      <Badge variant="outline" className="text-xs">
-                                        <Flame className="ms-1 h-3 w-3" />
+                                    <div className="flex items-center gap-1.5 justify-end flex-wrap">
+                                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 h-5 border-orange-500/20 text-orange-600 bg-orange-500/5">
+                                        <Flame className="h-3 w-3 me-0.5" />
                                         {habit.currentStreak} روز
                                       </Badge>
-                                      <Badge variant="outline" className="text-xs">
-                                        <Zap className="ms-1 h-3 w-3 text-amber-500" />
+                                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 h-5 border-amber-500/20 text-amber-600 bg-amber-500/5">
+                                        <Zap className="h-3 w-3 me-0.5" />
                                         +{habit.xpReward}
                                       </Badge>
                                     </div>
                                   </div>
-                                  <div className="min-h-[48px] min-w-[48px] flex items-center justify-center">
-                                    {isCompleted ? <CheckCircle2 className="h-6 w-6 text-green-500" /> : <Circle className="h-6 w-6 text-muted-foreground" />}
-                                  </div>
                                 </div>
-                              </motion.div>;
-                      })}
-                        </div>}
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </ScrollArea>
                   </CardContent>
                 </Card>
