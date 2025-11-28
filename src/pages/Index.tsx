@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useApp } from '@/context/AppContext';
-import Navigation from '@/components/Navigation';
+import BottomDock from '@/components/BottomDock';
+import MoreMenu from '@/components/MoreMenu';
 import Welcome from '@/components/Welcome';
 import Onboarding from '@/components/Onboarding';
 import UnifiedDashboard from '@/components/UnifiedDashboard';
@@ -18,28 +19,20 @@ import Profile from '@/components/Profile';
 import Rewards from '@/components/Rewards';
 import AICoach from '@/components/AICoach';
 import ProGate from '@/components/ProGate';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'motion/react';
-import { Loader2, CheckSquare, Calendar } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { storage, STORAGE_KEYS } from '@/utils/storage';
 import { notificationService } from '@/services/NotificationService';
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showWelcome, setShowWelcome] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const [quickAddType, setQuickAddType] = useState<'task' | 'plan'>('task');
-  const [quickTitle, setQuickTitle] = useState('');
-  const [quickPriority, setQuickPriority] = useState<'high' | 'medium' | 'low'>('medium');
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const {
     user,
     loading
   } = useAuth();
   const {
-    addTask,
     state
   } = useApp();
   const navigate = useNavigate();
@@ -133,23 +126,6 @@ const Index = () => {
         return <UnifiedDashboard />;
     }
   };
-  const handleQuickAdd = () => {
-    if (!quickTitle.trim()) return;
-    if (quickAddType === 'task') {
-      addTask({
-        title: quickTitle,
-        priority: quickPriority,
-        category: 'personal',
-        xpReward: quickPriority === 'high' ? 30 : quickPriority === 'medium' ? 20 : 10
-      });
-    } else {
-      // For plans, switch to planning tab
-      setActiveTab('planning');
-    }
-    setQuickTitle('');
-    setQuickPriority('medium');
-    setQuickAddOpen(false);
-  };
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -165,82 +141,40 @@ const Index = () => {
       {showWelcome ? <Welcome onStart={() => {
       setShowWelcome(false);
       setShowOnboarding(true);
-    }} /> : showOnboarding ? <Onboarding onComplete={() => setShowOnboarding(false)} /> : <div className="min-h-screen bg-background pb-24" dir="rtl">
+    }} /> : showOnboarding ? <Onboarding onComplete={() => setShowOnboarding(false)} /> : <div className="min-h-screen bg-background pb-32" dir="rtl">
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{
           opacity: 0,
-          x: 20
+          y: 10
         }} animate={{
           opacity: 1,
-          x: 0
+          y: 0
         }} exit={{
           opacity: 0,
-          x: -20
+          y: -10
         }} transition={{
-          duration: 0.2
-        }} className="min-h-screen mt-[70px]">
+          duration: 0.15,
+          ease: 'easeInOut'
+        }} className="min-h-screen px-4 pt-6 pb-6">
               {renderContent()}
             </motion.div>
           </AnimatePresence>
-          <Navigation activeTab={activeTab} onTabChange={setActiveTab} onAddClick={() => setQuickAddOpen(true)} />
+          
+          {/* Bottom Floating Dock */}
+          <BottomDock 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab}
+            onMoreClick={() => setMoreMenuOpen(true)}
+          />
 
-          {/* Quick Add Dialog */}
-          <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
-            <DialogContent className="max-w-md" dir="rtl">
-              <DialogHeader>
-                <DialogTitle className="text-start">افزودن سریع</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                {/* Type Selection */}
-                <div className="grid grid-cols-2 gap-2">
-                  <Button type="button" variant={quickAddType === 'task' ? 'default' : 'outline'} onClick={() => setQuickAddType('task')} className="gap-2">
-                    <CheckSquare className="w-4 h-4" />
-                    وظیفه
-                  </Button>
-                  <Button type="button" variant={quickAddType === 'plan' ? 'default' : 'outline'} onClick={() => setQuickAddType('plan')} className="gap-2">
-                    <Calendar className="w-4 h-4" />
-                    برنامه
-                  </Button>
-                </div>
-
-                {/* Title Input */}
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    {quickAddType === 'task' ? 'عنوان وظیفه' : 'عنوان برنامه'}
-                  </label>
-                  <Input value={quickTitle} onChange={e => setQuickTitle(e.target.value)} placeholder={quickAddType === 'task' ? 'مثال: خرید مواد غذایی' : 'مثال: برنامه هفتگی'} onKeyDown={e => e.key === 'Enter' && handleQuickAdd()} />
-                </div>
-
-                {/* Priority (only for tasks) */}
-                {quickAddType === 'task' && <div>
-                    <label className="text-sm font-medium mb-2 block">اولویت</label>
-                    <Select value={quickPriority} onValueChange={(v: any) => setQuickPriority(v)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="high">🔴 بالا</SelectItem>
-                        <SelectItem value="medium">🟡 متوسط</SelectItem>
-                        <SelectItem value="low">🟢 پایین</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>}
-
-                {/* Actions */}
-                <div className="flex gap-2 justify-end">
-                  <Button type="button" variant="outline" onClick={() => setQuickAddOpen(false)}>
-                    انصراف
-                  </Button>
-                  <Button onClick={handleQuickAdd} disabled={!quickTitle.trim()} className="bg-gradient-metallic-silver" style={{
-                background: 'linear-gradient(135deg, #E0E0E0 0%, #FFFFFF 50%, #BDBDBD 100%)'
-              }}>
-                    افزودن
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          {/* More Menu (Slide from left) */}
+          <MoreMenu 
+            open={moreMenuOpen}
+            onClose={() => setMoreMenuOpen(false)}
+            onNavigate={setActiveTab}
+          />
         </div>}
     </>;
 };
+
 export default Index;
