@@ -21,137 +21,108 @@
   padding-bottom: max(env(safe-area-inset-bottom), 0px);
 }
 
-@layer base {
-  :root {
-    /* Deep Breath Brand - Calm & Serene Colors */
-    --background: 210 25% 98%;
-    --foreground: 215 20% 15%;
-    
-    /* Card & Surface - Soft Glass Effect */
-    --card: 0 0% 100%;
-    --card-foreground: 215 20% 15%;
-    
-    /* Primary - Calming Ocean Blue (Deep Breath Blue) */
-    --primary: 205 85% 58%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 205 85% 68%;
-    --primary-light: 205 85% 95%;
-    --primary-dark: 205 85% 40%;
-    
-    /* Secondary - Tranquil Teal */
-    --secondary: 180 60% 96%;
-    --secondary-foreground: 180 60% 25%;
-    
-    /* Success - Peaceful Green */
-    --success: 155 70% 50%;
-    --success-foreground: 0 0% 100%;
-    --success-light: 155 70% 96%;
-    
-    /* Warning - Gentle Amber */
-    --warning: 40 90% 60%;
-    --warning-foreground: 0 0% 100%;
-    --warning-light: 40 90% 96%;
-    
-    /* Danger/Destructive - Soft Coral */
-    --destructive: 5 80% 62%;
-    --destructive-foreground: 0 0% 100%;
-    --destructive-light: 5 80% 96%;
-    
-    /* Info - Sky Blue */
-    --info: 200 85% 60%;
-    --info-foreground: 0 0% 100%;
-    --info-light: 200 85% 96%;
-    
-    /* Accent - Lavender Dream */
-    --accent: 265 75% 68%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 265 75% 96%;
-    
-    /* Muted */
-    --muted: 240 8% 95%;
-    --muted-foreground: 240 6% 43%;
-    
-    /* Border & Input */
-    --border: 240 8% 88%;
-    --input: 240 8% 92%;
-    --ring: 243 80% 62%;
-    
-    /* Popover */
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 12% 8%;
-    
-    /* Deep Breath Gradients - Serene & Calming */
-    --gradient-primary: linear-gradient(135deg, hsl(205 85% 58%) 0%, hsl(200 80% 65%) 50%, hsl(195 75% 70%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(155 70% 50%) 0%, hsl(165 68% 55%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(40 90% 60%) 0%, hsl(45 88% 62%) 100%);
-    --gradient-danger: linear-gradient(135deg, hsl(5 80% 62%) 0%, hsl(10 78% 65%) 100%);
-    --gradient-info: linear-gradient(135deg, hsl(200 85% 60%) 0%, hsl(210 80% 65%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(265 75% 68%) 0%, hsl(275 70% 72%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(205 85% 58%) 0%, hsl(200 80% 60%) 25%, hsl(180 75% 62%) 50%, hsl(265 70% 68%) 75%, hsl(275 68% 70%) 100%);
-    --gradient-calm: linear-gradient(180deg, hsl(205 85% 58% / 0.1) 0%, hsl(180 75% 62% / 0.05) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
-    
-    /* Advanced Shadows */
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 30px -10px rgba(0, 0, 0, 0.12);
-    --shadow-2xl: 0 25px 40px -15px rgba(0, 0, 0, 0.15);
-    --shadow-glow-primary: 0 0 50px rgba(99, 102, 241, 0.35);
-    --shadow-glow-success: 0 0 40px rgba(34, 197, 94, 0.3);
-    --shadow-glow-warning: 0 0 40px rgba(251, 146, 60, 0.3);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    
-    --radius: 0.875rem;
-  }
+  @layer base {
+    :root {
+      /* === RADICAL MINIMALISM COLOR SYSTEM === */
+      /* Off-White / Foggy Grey Backgrounds */
+      --background: 210 17% 98%;        /* #F8F9FA - Ultra light, calm */
+      --foreground: 222 47% 20%;        /* #1F2937 - Dark grey, never black */
+      
+      /* Silver/Platinum Accents - Premium luxury */
+      --primary: 210 11% 71%;           /* #B8BFC7 - Soft silver */
+      --primary-foreground: 222 47% 11%; 
+      --primary-glow: 210 20% 85%;      /* #D9DEE3 - Lighter silver */
+      --primary-light: 210 25% 92%;     /* #EEF0F2 - Very light silver */
+      
+      /* Minimal accent colors */
+      --secondary: 210 16% 93%;         /* #ECEFF1 - Ultra soft grey */
+      --secondary-foreground: 222 47% 20%;
+      
+      --accent: 210 14% 89%;            /* #E1E5E9 - Soft accent */
+      --accent-foreground: 222 47% 20%;
+      --accent-light: 210 20% 96%;
+      
+      --muted: 210 16% 93%;             /* Soft muted */
+      --muted-foreground: 215 16% 47%;  /* #6B7280 - Soft grey text */
+      
+      /* Semantic colors - minimal, ethereal */
+      --success: 142 71% 45%;           /* Calm green */
+      --success-foreground: 0 0% 100%;
+      --success-light: 142 76% 96%;
+      
+      --warning: 38 92% 50%;            /* Soft amber */
+      --warning-foreground: 0 0% 100%;
+      --warning-light: 48 100% 96%;
+      
+      --destructive: 0 72% 51%;         /* Calm red */
+      --destructive-foreground: 0 0% 100%;
+      --destructive-light: 0 93% 94%;
+      
+      --info: 199 89% 48%;              /* Calm blue */
+      --info-foreground: 0 0% 100%;
+      --info-light: 204 94% 94%;
+      
+      /* UI Elements - ultra soft */
+      --card: 0 0% 100%;                /* Pure white cards */
+      --card-foreground: 222 47% 20%;
+      
+      --popover: 0 0% 100%;
+      --popover-foreground: 222 47% 20%;
+      
+      --border: 214 32% 91%;            /* #E5E7EB - Barely there border */
+      --input: 214 32% 91%;
+      --ring: 210 11% 71%;              /* Silver ring */
+      
+      --radius: 1rem;                   /* Larger, organic corners */
+    }
 
-  .dark {
-    /* Deep Breath Dark Mode - Night Serenity */
-    --background: 215 30% 8%;
-    --foreground: 210 20% 95%;
-    
-    --card: 215 28% 11%;
-    --card-foreground: 210 20% 95%;
-    
-    --primary: 205 85% 65%;
-    --primary-foreground: 215 30% 8%;
-    --primary-glow: 205 85% 55%;
-    --primary-light: 205 85% 18%;
-    --primary-dark: 205 85% 35%;
-    
-    --secondary: 215 20% 16%;
-    --secondary-foreground: 210 20% 95%;
-    
-    --success: 155 70% 55%;
-    --success-light: 155 70% 15%;
-    
-    --warning: 40 90% 65%;
-    --warning-light: 40 90% 15%;
-    
-    --destructive: 5 80% 67%;
-    --destructive-light: 5 80% 15%;
-    
-    --info: 200 85% 65%;
-    --info-light: 200 85% 15%;
-    
-    --accent: 265 75% 72%;
-    --accent-light: 265 75% 15%;
-    
-    --muted: 240 6% 14%;
-    --muted-foreground: 240 6% 68%;
-    
-    --border: 240 6% 18%;
-    --input: 240 6% 15%;
-    --ring: 243 80% 68%;
-    
-    --popover: 240 12% 9%;
-    --popover-foreground: 240 6% 97%;
-    
-    --shadow-glow-primary: 0 0 60px rgba(129, 140, 248, 0.5);
-    --shadow-glow-success: 0 0 50px rgba(34, 197, 94, 0.4);
-    --shadow-glow-warning: 0 0 50px rgba(251, 146, 60, 0.4);
+    .dark {
+      /* Dark mode: Deep, serene, midnight blue tones */
+      --background: 222 47% 8%;         /* #0F1419 - Deep midnight */
+      --foreground: 210 20% 92%;        /* #E8EDF2 - Soft white */
+      
+      --primary: 210 20% 65%;           /* #9BA6B3 - Muted silver-blue */
+      --primary-foreground: 222 47% 95%;
+      --primary-glow: 210 30% 45%;
+      --primary-light: 210 35% 25%;
+      
+      --secondary: 222 47% 14%;         /* #1A1F29 */
+      --secondary-foreground: 210 20% 92%;
+      
+      --accent: 222 47% 18%;            /* #232937 */
+      --accent-foreground: 210 20% 92%;
+      --accent-light: 222 47% 22%;
+      
+      --muted: 222 47% 18%;
+      --muted-foreground: 215 16% 65%;  /* #9CA3AF */
+      
+      --success: 142 71% 45%;
+      --success-foreground: 0 0% 100%;
+      --success-light: 142 71% 15%;
+      
+      --warning: 38 92% 50%;
+      --warning-foreground: 0 0% 100%;
+      --warning-light: 48 100% 15%;
+      
+      --destructive: 0 72% 51%;
+      --destructive-foreground: 0 0% 100%;
+      --destructive-light: 0 93% 15%;
+      
+      --info: 199 89% 48%;
+      --info-foreground: 0 0% 100%;
+      --info-light: 204 94% 15%;
+      
+      --card: 222 47% 11%;              /* #1A1F29 - Elevated dark */
+      --card-foreground: 210 20% 92%;
+      
+      --popover: 222 47% 11%;
+      --popover-foreground: 210 20% 92%;
+      
+      --border: 222 47% 18%;            /* Subtle dark border */
+      --input: 222 47% 18%;
+      --ring: 210 20% 65%;
+    }
   }
-}
 
 @layer base {
   * {
