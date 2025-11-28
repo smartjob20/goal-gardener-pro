@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
-import { Sparkles, Brain, TrendingUp, Target, Wand2, MessageSquare, Lightbulb, Zap, Star, Plus, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Sparkles, Brain, TrendingUp, Target, Wand2, MessageSquare, Lightbulb, Zap, Star, Plus, Loader2, Send, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useApp } from '@/context/AppContext';
 import { useAICoach } from '@/hooks/useAICoach';
+import { useAIChat } from '@/hooks/useAIChat';
 import { motion, AnimatePresence } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AICoach: React.FC = () => {
   const { state, addTask } = useApp();
   const { getSuggestions, getAnalysis, loading } = useAICoach();
+  const { messages, sendMessage, loading: chatLoading, loadingHistory, clearChat } = useAIChat();
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [analysis, setAnalysis] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'suggestions' | 'analysis'>('suggestions');
+  const [activeTab, setActiveTab] = useState<'chat' | 'suggestions' | 'analysis'>('chat');
+  const [inputMessage, setInputMessage] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleGetSuggestions = async () => {
     const longestStreak = Math.max(...state.habits.map(h => h.longestStreak), 0);
@@ -44,6 +56,25 @@ const AICoach: React.FC = () => {
     };
     const result = await getAnalysis(userData);
     setAnalysis(result);
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim()) return;
+    
+    const longestStreak = Math.max(...state.habits.map(h => h.longestStreak), 0);
+    const userData = {
+      tasks: state.tasks,
+      habits: state.habits,
+      goals: state.goals,
+      completedTasks: state.user.totalTasksCompleted,
+      currentStreak: longestStreak,
+      totalFocusTime: state.user.totalFocusTime,
+      level: state.user.level,
+      xp: state.user.xp
+    };
+    
+    await sendMessage(inputMessage, userData);
+    setInputMessage('');
   };
 
   const handleAddSuggestion = (suggestion: any) => {
@@ -122,7 +153,40 @@ const AICoach: React.FC = () => {
         </motion.div>
 
         {/* Tab Cards */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          <motion.button
+            onClick={() => setActiveTab('chat')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative"
+          >
+            <Card className={`p-4 sm:p-6 transition-all duration-300 ${
+              activeTab === 'chat' 
+                ? 'glass-strong border-2 border-info shadow-lg shadow-info/20' 
+                : 'glass border border-border/50 hover:border-info/30'
+            }`}>
+              <div className="flex flex-col items-center gap-3 text-center">
+                <div className={`p-3 rounded-xl transition-all ${
+                  activeTab === 'chat' 
+                    ? 'bg-info/20 text-info' 
+                    : 'bg-muted/50 text-muted-foreground'
+                }`}>
+                  <MessageSquare className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className={`font-bold text-base sm:text-lg ${
+                    activeTab === 'chat' ? 'text-foreground' : 'text-muted-foreground'
+                  }`}>
+                    چت هوشمند
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    گفتگو با AI
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </motion.button>
+
           <motion.button
             onClick={() => setActiveTab('suggestions')}
             whileHover={{ scale: 1.02 }}
@@ -192,6 +256,106 @@ const AICoach: React.FC = () => {
 
         {/* Content Area */}
         <AnimatePresence mode="wait">
+          {activeTab === 'chat' && (
+            <motion.div
+              key="chat"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-4"
+            >
+              <Card className="glass-strong p-4 sm:p-6 h-[500px] flex flex-col">
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-info/20">
+                      <MessageSquare className="h-5 w-5 text-info" />
+                    </div>
+                    <h3 className="font-bold text-lg">
+                      گفتگو با مربی هوشمند
+                    </h3>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearChat}
+                    className="gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    پاک کردن
+                  </Button>
+                </div>
+
+                <ScrollArea className="flex-1 pe-4" ref={scrollRef}>
+                  {loadingHistory ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                      <div className="p-4 rounded-full bg-info/20 mb-4">
+                        <MessageSquare className="h-12 w-12 text-info" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">
+                        سلام! من مربی هوشمند شما هستم 👋
+                      </h3>
+                      <p className="text-muted-foreground max-w-md">
+                        می‌تونم در مورد اهداف، وظایف و عادت‌هات باهات صحبت کنم و کمکت کنم بهترین مسیر رو برای موفقیت انتخاب کنی.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {messages.map((msg) => (
+                        <motion.div
+                          key={msg.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-[80%] p-4 rounded-2xl ${
+                            msg.role === 'user' 
+                              ? 'bg-primary text-primary-foreground' 
+                              : 'bg-muted/50 text-foreground'
+                          }`}>
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                              {msg.content}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                      {chatLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-muted/50 p-4 rounded-2xl">
+                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </ScrollArea>
+
+                <div className="flex gap-2 mt-4 pt-4 border-t border-border/50">
+                  <Input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && !chatLoading && handleSendMessage()}
+                    placeholder="پیام خود را بنویسید..."
+                    disabled={chatLoading}
+                    className="flex-1 h-12"
+                  />
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={chatLoading || !inputMessage.trim()}
+                    size="lg"
+                    className="gap-2 px-6"
+                  >
+                    <Send className="h-5 w-5" />
+                    ارسال
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
           {activeTab === 'suggestions' && (
             <motion.div
               key="suggestions"

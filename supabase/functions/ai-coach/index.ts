@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { userData, type } = await req.json();
+    const { userData, type, message, chatHistory } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -20,8 +20,43 @@ serve(async (req) => {
 
     let systemPrompt = "";
     let prompt = "";
+    let messages: any[] = [];
 
-    if (type === "suggest") {
+    if (type === "chat") {
+      systemPrompt = `تو یک مربی شخصی هوشمند، دلسوز و حرفه‌ای هستی که کاربر رو کاملاً می‌شناسی. اطلاعات زیر در مورد کاربر رو داری و باید براساس این اطلاعات با او صحبت کنی:
+
+وظایف: ${userData.tasks?.length || 0} وظیفه (${userData.completedTasks || 0} تکمیل شده)
+عادت‌ها: ${userData.habits?.length || 0} عادت (رکورد فعلی: ${userData.currentStreak || 0} روز)
+اهداف: ${userData.goals?.length || 0} هدف
+زمان تمرکز: ${Math.round((userData.totalFocusTime || 0) / 60)} ساعت
+سطح: ${userData.level || 1}, امتیاز: ${userData.xp || 0}
+
+وظایف اخیر: ${userData.tasks?.slice(0, 3).map((t: any) => t.title).join('، ')}
+عادت‌های فعال: ${userData.habits?.filter((h: any) => h.active).slice(0, 3).map((h: any) => h.title).join('، ')}
+اهداف: ${userData.goals?.slice(0, 2).map((g: any) => g.title).join('، ')}
+
+تو باید:
+- با لحنی گرم، دوستانه و انگیزشی صحبت کنی (لحن خودمونی)
+- براساس داده‌های کاربر، پیشنهادات عملی و شخصی‌سازی شده بدی
+- کاربر رو بشناسی و رفتارش رو یادت باشه
+- با ایموجی و زبانی ساده صحبت کنی
+- همیشه مثبت و امیدوار باشی`;
+
+      // Build messages array with chat history
+      messages = [
+        { role: "system", content: systemPrompt }
+      ];
+      
+      if (chatHistory && chatHistory.length > 0) {
+        messages.push(...chatHistory.map((msg: any) => ({
+          role: msg.role,
+          content: msg.content
+        })));
+      }
+      
+      messages.push({ role: "user", content: message });
+
+    } else if (type === "suggest") {
       systemPrompt = `تو یک مربی شخصی هوشمند هستی که داده‌های بهره‌وری کاربر رو تحلیل می‌کنی. بر اساس داده‌ها، ۳ تا ۵ پیشنهاد عملی برای وظایف بده که مشخص، قابل اندازه‌گیری و قابل دستیابی باشن. عادت‌ها، اهداف و حجم کاری فعلی کاربر رو در نظر بگیر. فقط با استفاده از تابع suggest_tasks جواب بده. پیشنهادات باید کاملاً به فارسی و با لحنی دوستانه و انگیزشی باشن.`;
       
       prompt = `این داده‌های کاربر رو تحلیل کن و وظایف مفید پیشنهاد بده:
@@ -59,7 +94,7 @@ serve(async (req) => {
 
     const body: any = {
       model: "google/gemini-2.5-flash",
-      messages: [
+      messages: type === "chat" ? messages : [
         { role: "system", content: systemPrompt },
         { role: "user", content: prompt }
       ],
