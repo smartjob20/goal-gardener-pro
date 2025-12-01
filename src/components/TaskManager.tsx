@@ -164,9 +164,9 @@ function SortableTaskCard({
               <span className="text-sm">{priorityInfo.icon}</span>
               <span className="font-medium">{priorityInfo.label}</span>
             </span>
-            {task.xpReward && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/30">
-                <span>⚡</span>
-                <span>{task.xpReward}</span>
+            {task.dollarReward && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/30">
+                <span>💰</span>
+                <span>{task.dollarReward}</span>
               </span>}
           </div>
 
@@ -275,7 +275,7 @@ export default function TaskManager() {
       priority,
       deadline: deadline || undefined,
       subtasks: subtasks.length > 0 ? subtasks : undefined,
-      xpReward: priorityConfig[priority].xp,
+      dollarReward: priorityConfig[priority].xp,
       timeSpent: 0,
       imageUrl: imageUrl || undefined
     };

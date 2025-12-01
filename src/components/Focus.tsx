@@ -86,7 +86,7 @@ const Focus = () => {
           taskId: selectedTaskId || undefined,
           startTime: new Date().toISOString(),
           duration: 0,
-          xpEarned: 0,
+          dollarsEarned: 0,
           completed: false,
         }
       });
@@ -118,7 +118,7 @@ const Focus = () => {
             ...lastSession,
             endTime: new Date().toISOString(),
             duration: pomodoroDuration,
-            xpEarned: xpReward,
+            dollarsEarned: xpReward,
             completed: true,
           }
         });
@@ -513,7 +513,7 @@ const Focus = () => {
                             </p>
                             {session.completed && (
                               <span className="text-[10px] sm:text-xs bg-primary/20 text-primary px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap">
-                                +{session.xpEarned} XP
+                                +{session.dollarsEarned} دلار
                               </span>
                             )}
                           </div>

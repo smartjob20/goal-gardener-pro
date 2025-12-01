@@ -36,7 +36,7 @@ const AICoach: React.FC = () => {
       currentStreak: longestStreak,
       totalFocusTime: state.user.totalFocusTime,
       level: state.user.level,
-      xp: state.user.xp
+      xp: state.user.dollars
     };
     const result = await getSuggestions(userData);
     setSuggestions(result);
@@ -52,7 +52,7 @@ const AICoach: React.FC = () => {
       currentStreak: longestStreak,
       totalFocusTime: state.user.totalFocusTime,
       level: state.user.level,
-      xp: state.user.xp
+      xp: state.user.dollars
     };
     const result = await getAnalysis(userData);
     setAnalysis(result);
@@ -70,7 +70,7 @@ const AICoach: React.FC = () => {
       currentStreak: longestStreak,
       totalFocusTime: state.user.totalFocusTime,
       level: state.user.level,
-      xp: state.user.xp
+      xp: state.user.dollars
     };
     
     await sendMessage(inputMessage, userData);
@@ -85,7 +85,7 @@ const AICoach: React.FC = () => {
       priority: suggestion.priority as any,
       deadline: null,
       subtasks: [],
-      xpReward: suggestion.priority === 'high' ? 30 : suggestion.priority === 'medium' ? 20 : 10
+      dollarReward: suggestion.priority === 'high' ? 30 : suggestion.priority === 'medium' ? 20 : 10
     });
   };
 
