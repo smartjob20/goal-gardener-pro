@@ -46,10 +46,10 @@ const categories: { value: HabitCategory; label: string; icon: string }[] = [
   { value: 'relationship', label: 'روابط عاطفی', icon: '💕' },
 ];
 
-const difficulties: { value: HabitDifficulty; label: string; dollars: number; color: string }[] = [
-  { value: 'easy', label: 'آسان', dollars: 10, color: 'hsl(142, 76%, 36%)' },
-  { value: 'medium', label: 'متوسط', dollars: 20, color: 'hsl(48, 96%, 53%)' },
-  { value: 'hard', label: 'سخت', dollars: 30, color: 'hsl(0, 84%, 60%)' },
+const difficulties: { value: HabitDifficulty; label: string; xp: number; color: string }[] = [
+  { value: 'easy', label: 'آسان', xp: 10, color: 'hsl(142, 76%, 36%)' },
+  { value: 'medium', label: 'متوسط', xp: 20, color: 'hsl(48, 96%, 53%)' },
+  { value: 'hard', label: 'سخت', xp: 30, color: 'hsl(0, 84%, 60%)' },
 ];
 
 // کامپوننت کارت عادت با قابلیت Drag & Drop
@@ -71,7 +71,7 @@ function SortableHabitCard({
   streak: number;
   last7Days: string[];
   categoryInfo: { label: string; icon: string };
-  difficultyInfo: { label: string; dollars: number; color: string };
+  difficultyInfo: { label: string; xp: number; color: string };
   onCheck: (id: string) => void;
   onEdit: (habit: Habit) => void;
   onDelete: (id: string) => void;
@@ -324,7 +324,7 @@ const HabitTracker = () => {
       return;
     }
 
-    const dollarReward = difficulties.find(d => d.value === difficulty)?.dollars || 10;
+    const xpReward = difficulties.find(d => d.value === difficulty)?.xp || 10;
 
     if (editingHabit) {
       dispatch({
@@ -342,7 +342,7 @@ const HabitTracker = () => {
           color,
           reminderEnabled,
           reminderTime: reminderEnabled ? reminderTime : undefined,
-          dollarReward,
+          xpReward,
           imageUrl: imageUrl || undefined,
         },
       });
@@ -361,7 +361,7 @@ const HabitTracker = () => {
         color,
         reminderEnabled,
         reminderTime: reminderEnabled ? reminderTime : undefined,
-        dollarReward,
+        xpReward,
         isActive: true,
         imageUrl: imageUrl || undefined,
       });

@@ -253,10 +253,10 @@ function GoalCard({
             </div>
           )}
 
-          {/* پاداش دلار */}
+          {/* پاداش XP */}
           <div className="flex items-center justify-center gap-2 p-2 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg">
             <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">پاداش: {goal.dollarReward} دلار</span>
+            <span className="text-sm font-medium">پاداش: {goal.xpReward} XP</span>
           </div>
         </CardContent>
       </Card>
@@ -307,7 +307,7 @@ const Goals = () => {
       category: category as GoalCategory,
       targetDate: targetDate.toISOString(),
       milestones: milestoneObjects,
-      dollarReward: 100,
+      xpReward: 100,
       imageUrl: imageUrl || undefined
     });
 
@@ -390,7 +390,7 @@ const Goals = () => {
     triggerHaptic('light');
 
     if (progress === 100) {
-      dispatch({ type: 'ADD_DOLLARS', payload: goal.dollarReward });
+      dispatch({ type: 'ADD_XP', payload: goal.xpReward });
       toast.success('🎉 تبریک! هدف شما تکمیل شد!');
       triggerHaptic('success');
     }

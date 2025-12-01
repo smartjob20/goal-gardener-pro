@@ -9,12 +9,12 @@ interface MoreMenuProps {
 }
 
 const moreItems = [
-  { id: 'focus', icon: Clock, label: 'تمرکز', color: 'from-blue-pastel/20 to-blue-sky/20' },
-  { id: 'planning', icon: Calendar, label: 'برنامه‌ریزی', color: 'from-purple-pastel/20 to-purple-light/20' },
-  { id: 'analytics', icon: BarChart3, label: 'آمار', color: 'from-coral-light/20 to-salmon-soft/20' },
-  { id: 'profile', icon: User, label: 'پروفایل', color: 'from-amber-soft/20 to-gold-light/20' },
-  { id: 'settings', icon: Settings, label: 'تنظیمات', color: 'from-mint-green/20 to-green-soft/20' },
-  { id: 'tutorial', icon: BookOpen, label: 'راهنما', color: 'from-pink-soft/20 to-rose-light/20' },
+  { id: 'focus', icon: Clock, label: 'تمرکز', gradient: 'from-slate-400 to-slate-600' },
+  { id: 'planning', icon: Calendar, label: 'برنامه‌ریزی', gradient: 'from-zinc-400 to-zinc-600' },
+  { id: 'analytics', icon: BarChart3, label: 'آمار', gradient: 'from-neutral-400 to-neutral-600' },
+  { id: 'profile', icon: User, label: 'پروفایل', gradient: 'from-gray-400 to-gray-600' },
+  { id: 'settings', icon: Settings, label: 'تنظیمات', gradient: 'from-stone-400 to-stone-600' },
+  { id: 'tutorial', icon: BookOpen, label: 'راهنما', gradient: 'from-slate-300 to-slate-500' },
 ];
 
 export default function MoreMenu({ open, onClose, onNavigate }: MoreMenuProps) {
@@ -47,24 +47,24 @@ export default function MoreMenu({ open, onClose, onNavigate }: MoreMenuProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '-100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed start-0 top-0 bottom-0 w-80 bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-xl border-e border-border/40 shadow-2xl z-50 overflow-hidden"
+            className="fixed start-0 top-0 bottom-0 w-80 bg-card border-e border-border shadow-2xl z-50 overflow-hidden"
             dir="rtl"
           >
             {/* Header */}
-            <div className="p-6 border-b border-border/30 flex items-center justify-between">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <h2 className="text-xl font-bold text-foreground">بیشتر</h2>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="rounded-full h-8 w-8 hover:bg-muted/50"
+                className="rounded-full hover:bg-accent"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </Button>
             </div>
 
             {/* Menu Items */}
-            <div className="p-4 space-y-3">
+            <div className="p-4 space-y-2">
               {moreItems.map((item, index) => {
                 const Icon = item.icon;
                 
@@ -75,17 +75,17 @@ export default function MoreMenu({ open, onClose, onNavigate }: MoreMenuProps) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     onClick={() => handleNavigate(item.id)}
-                    className="w-full group relative overflow-hidden rounded-[24px]"
+                    className="w-full group relative overflow-hidden rounded-2xl"
                   >
-                    {/* Soft Background */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-100 group-hover:opacity-80 transition-all duration-300`} />
+                    {/* Gradient Background on Hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                     
                     {/* Content */}
-                    <div className="relative flex items-center gap-4 p-4 backdrop-blur-sm">
-                      <div className="p-2.5 rounded-[16px] bg-background/60 group-hover:bg-background/80 transition-all duration-300 soft-shadow">
-                        <Icon className="w-5 h-5 text-foreground transition-transform duration-300 group-hover:scale-110" />
+                    <div className="relative flex items-center gap-4 p-4 bg-accent/30 group-hover:bg-transparent transition-colors duration-300">
+                      <div className="p-2 rounded-xl bg-background/50 group-hover:bg-white/20 transition-colors duration-300">
+                        <Icon className="w-6 h-6 text-foreground group-hover:text-white transition-colors duration-300" />
                       </div>
-                      <span className="text-base font-medium text-foreground">
+                      <span className="text-base font-medium text-foreground group-hover:text-white transition-colors duration-300">
                         {item.label}
                       </span>
                     </div>
@@ -95,7 +95,7 @@ export default function MoreMenu({ open, onClose, onNavigate }: MoreMenuProps) {
             </div>
 
             {/* Footer Info */}
-            <div className="absolute bottom-0 inset-x-0 p-6 border-t border-border/20 bg-gradient-to-t from-background/95 to-transparent backdrop-blur-sm">
+            <div className="absolute bottom-0 inset-x-0 p-6 border-t border-border bg-gradient-to-t from-card/80 to-transparent">
               <p className="text-xs text-muted-foreground text-center">
                 Deep Breath - کنترل کامل زندگی در آرامش
               </p>
