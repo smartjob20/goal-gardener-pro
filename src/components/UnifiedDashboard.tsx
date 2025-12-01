@@ -314,35 +314,110 @@ const UnifiedDashboard = () => {
           <PremiumBanner />
         </div>
 
-        {/* Stats Grid - Compact Mobile Design */}
-        <div className="px-3 py-3">
-          <div className="grid grid-cols-2 gap-2.5">
+        {/* Stats Grid - Artistic Mobile Design */}
+        <div className="px-4 py-4">
+          <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'وظایف', value: stats.completedTasks, total: stats.totalTasks, color: 'primary', icon: '✓', progress: stats.taskProgress },
-              { label: 'عادات', value: stats.habitsCompletedToday, total: stats.totalHabits, color: 'secondary', icon: '⚡', progress: stats.habitProgress },
-              { label: 'تمرکز', value: `${stats.focusTime}د`, total: '', color: 'accent', icon: '🎯' },
-              { label: 'XP', value: userXP, total: '', color: 'success', icon: '⭐' },
+              { 
+                label: 'وظایف', 
+                value: stats.completedTasks, 
+                total: stats.totalTasks, 
+                gradient: 'from-coral-light/20 to-coral/10',
+                iconBg: 'bg-coral-light/20',
+                icon: '✓', 
+                progress: stats.taskProgress 
+              },
+              { 
+                label: 'عادات', 
+                value: stats.habitsCompletedToday, 
+                total: stats.totalHabits, 
+                gradient: 'from-purple-light/20 to-purple-pastel/10',
+                iconBg: 'bg-purple-light/20',
+                icon: '⚡', 
+                progress: stats.habitProgress 
+              },
+              { 
+                label: 'تمرکز', 
+                value: `${stats.focusTime}د`, 
+                total: '', 
+                gradient: 'from-blue-pastel/20 to-blue-sky/10',
+                iconBg: 'bg-blue-pastel/20',
+                icon: '🎯' 
+              },
+              { 
+                label: 'امتیاز', 
+                value: userXP, 
+                total: '', 
+                gradient: 'from-amber-soft/20 to-yellow-warm/10',
+                iconBg: 'bg-amber-soft/20',
+                icon: '⭐' 
+              },
             ].map((stat, idx) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-card rounded-3xl p-3 soft-shadow-sm border border-border/30"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  delay: idx * 0.08,
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20
+                }}
+                className={`
+                  relative overflow-hidden
+                  bg-gradient-to-br ${stat.gradient}
+                  backdrop-blur-sm
+                  rounded-[24px] p-4
+                  soft-shadow
+                  border border-white/40
+                  hover:scale-[1.02] transition-transform duration-300
+                `}
               >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-lg">{stat.icon}</span>
-                  <span className="text-xs text-muted-foreground">{stat.label}</span>
+                {/* Icon Container */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`
+                    ${stat.iconBg}
+                    w-10 h-10 rounded-[16px]
+                    flex items-center justify-center
+                    soft-shadow-sm
+                  `}>
+                    <span className="text-2xl">{stat.icon}</span>
+                  </div>
+                  <span className="text-xs font-medium text-foreground/60 tracking-wide">
+                    {stat.label}
+                  </span>
                 </div>
-                <div className="flex items-baseline gap-1 mb-1.5">
-                  <span className="text-xl font-bold text-foreground">{stat.value}</span>
+
+                {/* Value Display */}
+                <div className="flex items-baseline justify-end gap-1.5 mb-2">
+                  <span className="text-2xl font-bold text-foreground tracking-tight">
+                    {stat.value}
+                  </span>
                   {stat.total && (
-                    <span className="text-xs text-muted-foreground">/{stat.total}</span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      /{stat.total}
+                    </span>
                   )}
                 </div>
+
+                {/* Progress Bar */}
                 {stat.progress !== undefined && (
-                  <Progress value={stat.progress} className="h-1.5" />
+                  <div className="relative h-2 bg-white/30 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${stat.progress}%` }}
+                      transition={{ 
+                        delay: idx * 0.08 + 0.3,
+                        duration: 0.8,
+                        ease: "easeOut"
+                      }}
+                      className="absolute inset-y-0 right-0 bg-gradient-to-l from-foreground/80 to-foreground/60 rounded-full"
+                    />
+                  </div>
                 )}
+
+                {/* Decorative Element */}
+                <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-white/5 rounded-full blur-xl" />
               </motion.div>
             ))}
           </div>
