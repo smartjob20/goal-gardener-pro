@@ -32,14 +32,18 @@ export default function Auth() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (!error) {
-          navigate('/');
+          // Wait a bit for auth state to update
+          setTimeout(() => navigate('/'), 100);
         }
       } else {
         const { error } = await signUp(email, password, displayName);
         if (!error) {
-          navigate('/');
+          // Wait for auth state to update
+          setTimeout(() => navigate('/'), 100);
         }
       }
+    } catch (error) {
+      console.error('Auth error:', error);
     } finally {
       setLoading(false);
     }
@@ -62,20 +66,20 @@ export default function Auth() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
-        <Card className="glass-strong p-8 shadow-2xl">
+        <Card className="soft-shadow p-8 rounded-3xl border-0 bg-card/95">
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-              className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-4xl shadow-lg"
+              className="w-20 h-20 mx-auto mb-4 rounded-full gradient-soft-coral flex items-center justify-center text-4xl soft-shadow-sm"
             >
               🎯
             </motion.div>
-            <h1 className="text-3xl font-bold gradient-text mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               {isLogin ? 'خوش آمدید' : 'ثبت نام'}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {isLogin ? 'وارد حساب کاربری خود شوید' : 'حساب کاربری جدید بسازید'}
             </p>
           </div>
@@ -99,7 +103,7 @@ export default function Auth() {
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   required={!isLogin}
-                  className="glass-light"
+                  className="rounded-2xl border-border/50 bg-muted/30 h-12 text-base"
                   dir="rtl"
                 />
               </motion.div>
@@ -117,7 +121,7 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="glass-light"
+                className="rounded-2xl border-border/50 bg-muted/30 h-12 text-base"
                 dir="ltr"
               />
             </div>
@@ -135,7 +139,7 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="glass-light"
+                className="rounded-2xl border-border/50 bg-muted/30 h-12 text-base"
                 dir="ltr"
               />
             </div>
@@ -143,7 +147,7 @@ export default function Auth() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full gradient-bg-primary hover:opacity-90 transition-opacity text-white shadow-lg"
+              className="w-full gradient-soft-coral hover:opacity-90 transition-all h-12 rounded-full text-white soft-shadow-sm text-base font-medium"
             >
               {loading ? (
                 <>

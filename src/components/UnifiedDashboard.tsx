@@ -1,821 +1,463 @@
-import { useState, useMemo, memo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'motion/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Circle, Target, Flame, Calendar as CalendarIcon, Clock, TrendingUp, Zap, Star, Award, ChevronLeft, ChevronRight, GripVertical, Sparkles, BarChart3 } from 'lucide-react';
-import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, addDays, addWeeks, addMonths, addYears, isSameDay } from 'date-fns';
-import { formatPersianDate, getPersianDayName } from '@/utils/persianDateUtils';
-import { toast } from 'sonner';
-import { PremiumBanner } from './PremiumBanner';
-import { CalendarWidget } from './CalendarWidget';
-import { NotificationPanel } from './NotificationPanel';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { Progress } from '@/components/ui/progress';
+import { 
+  CheckCircle2, Clock, Target, Calendar as CalendarIcon, 
+  Zap, Circle, ChevronLeft, ChevronRight, Flame
+} from 'lucide-react';
 import { Task } from '@/types';
+import { DndContext, closestCenter, DragEndEvent, useSensor, useSensors, PointerSensor, TouchSensor } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { NotificationPanel } from './NotificationPanel';
+import { CalendarWidget } from './CalendarWidget';
+import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, addDays, addWeeks, addMonths, addYears, subDays, subWeeks, subMonths, subYears, isWithinInterval } from 'date-fns';
+import { formatJalaliDate } from '@/utils/persianDateUtils';
+import { PremiumBanner } from './PremiumBanner';
+
 type ViewMode = 'day' | 'week' | 'month' | 'year';
 
-// Sortable Task Item Component - Optimized with memo
-const SortableTaskItem = memo(function SortableTaskItem({
-  task,
-  onComplete
-}: {
-  task: Task;
-  onComplete: (id: string) => void;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({
-    id: task.id
-  });
-  
+// Memoized Task Card Component
+const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (id: string) => void }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1
+    opacity: isDragging ? 0.5 : 1,
   };
-  
-  const priorityConfig = {
-    high: { 
-      border: 'border-red-500/20', 
-      bg: 'bg-red-500/5', 
-      hover: 'hover:border-red-500/30',
-      icon: '🔴',
-      label: 'بالا',
-      badgeClass: 'border-red-500/20 text-red-600'
-    },
-    medium: { 
-      border: 'border-amber-500/20', 
-      bg: 'bg-amber-500/5', 
-      hover: 'hover:border-amber-500/30',
-      icon: '🟡',
-      label: 'متوسط',
-      badgeClass: 'border-amber-500/20 text-amber-600'
-    },
-    low: { 
-      border: 'border-green-500/20', 
-      bg: 'bg-green-500/5', 
-      hover: 'hover:border-green-500/30',
-      icon: '🟢',
-      label: 'پایین',
-      badgeClass: 'border-green-500/20 text-green-600'
-    }
-  };
-  
-  const config = priorityConfig[task.priority];
-  
-  return (
-    <motion.div 
-      ref={setNodeRef} 
-      style={style} 
-      initial={{ opacity: 0, y: 10 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
-      className="mb-2.5"
-    >
-      <Card className={`overflow-hidden border ${config.border} ${config.bg} ${config.hover} transition-all duration-200 ${isDragging ? 'shadow-xl ring-2 ring-primary/20' : 'hover:shadow-md'}`}>
-        <CardContent className="p-2.5 sm:p-3">
-          <div className="flex items-center gap-2">
-            {/* Drag Handle */}
-            <button 
-              {...attributes} 
-              {...listeners} 
-              className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-muted/50 rounded-md transition-colors touch-none shrink-0"
-              aria-label="درگ کردن وظیفه"
-            >
-              <GripVertical className="h-4 w-4 text-muted-foreground/60" />
-            </button>
-            
-            {/* Complete Checkbox */}
-            <button 
-              onClick={() => onComplete(task.id)} 
-              className="p-1.5 hover:bg-muted/50 rounded-md transition-colors shrink-0"
-              aria-label={task.completed ? "لغو تکمیل" : "تکمیل وظیفه"}
-            >
-              {task.completed ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-              ) : (
-                <Circle className="h-5 w-5 text-muted-foreground/60 hover:text-primary" />
-              )}
-            </button>
 
-            {/* Task Content */}
-            <div className="flex-1 text-right min-w-0">
-              <div className="flex items-center gap-1.5 justify-end flex-wrap">
-                <h4 className={`font-semibold text-sm leading-tight ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
-                  {task.title}
-                </h4>
-                <Badge variant="outline" className={`text-[10px] px-1.5 py-0.5 h-5 ${config.badgeClass}`}>
-                  {config.icon} {config.label}
-                </Badge>
-              </div>
-              
-              {task.description && (
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                  {task.description}
-                </p>
+  const priorityColors: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
+    high: 'destructive',
+    medium: 'secondary',
+    low: 'secondary',
+  };
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="touch-none"
+    >
+      <div className={`
+        p-3 rounded-3xl border transition-all
+        ${task.completed 
+          ? 'bg-success/5 border-success/20' 
+          : 'bg-card border-border/40 hover:border-primary/30'
+        }
+        soft-shadow-sm
+      `}>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Badge variant={priorityColors[task.priority as keyof typeof priorityColors]} className="text-xs px-2 py-0.5 rounded-full">
+                {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'کم'}
+              </Badge>
+              {task.category && (
+                <span className="text-xs text-muted-foreground">{task.category}</span>
               )}
-              
-              <div className="flex items-center gap-2 mt-1.5 justify-end flex-wrap">
-                {task.deadline && (
-                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
-                    <Clock className="h-3 w-3" />
-                    <span>{format(new Date(task.deadline), 'yyyy/MM/dd')}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded">
-                  <Zap className="h-3 w-3" />
-                  <span>+{task.xpReward}</span>
-                </div>
-              </div>
             </div>
+            <h4 className={`text-sm font-medium mb-1 ${task.isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+              {task.title}
+            </h4>
+            {task.xpReward && (
+              <span className="text-xs text-primary font-medium">+{task.xpReward} XP</span>
+            )}
           </div>
-        </CardContent>
-      </Card>
+          <Button
+            variant={task.isCompleted ? 'default' : 'outline'}
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onComplete(task.id);
+            }}
+            className="shrink-0 h-9 w-9 rounded-full"
+          >
+            <CheckCircle2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </motion.div>
   );
 });
+
+SortableTaskItem.displayName = 'SortableTaskItem';
+
 const UnifiedDashboard = () => {
-  const {
-    state,
-    completeTask,
-    deleteTask,
-    dispatch,
-    addXP,
-    reorderTasks
-  } = useApp();
+  const { state, dispatch } = useApp();
   const [viewMode, setViewMode] = useState<ViewMode>('day');
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const useJalali = state.settings.calendar === 'jalali';
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Drag and Drop Sensors
-  const sensors = useSensors(useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 8
-    }
-  }), useSensor(KeyboardSensor, {
-    coordinateGetter: sortableKeyboardCoordinates
-  }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
 
-  // Get date range based on view mode
   const getDateRange = () => {
+    const baseDate = selectedDate;
     switch (viewMode) {
       case 'day':
-        return {
-          start: startOfDay(selectedDate),
-          end: endOfDay(selectedDate)
-        };
+        return { start: startOfDay(baseDate), end: endOfDay(baseDate) };
       case 'week':
-        return {
-          start: startOfWeek(selectedDate, {
-            weekStartsOn: 6
-          }),
-          end: endOfWeek(selectedDate, {
-            weekStartsOn: 6
-          })
-        };
+        return { start: startOfWeek(baseDate, { weekStartsOn: 6 }), end: endOfWeek(baseDate, { weekStartsOn: 6 }) };
       case 'month':
-        return {
-          start: startOfMonth(selectedDate),
-          end: endOfMonth(selectedDate)
-        };
+        return { start: startOfMonth(baseDate), end: endOfMonth(baseDate) };
       case 'year':
-        return {
-          start: startOfYear(selectedDate),
-          end: endOfYear(selectedDate)
-        };
+        return { start: startOfYear(baseDate), end: endOfYear(baseDate) };
     }
   };
+
+  const navigateDate = (direction: 'next' | 'prev') => {
+    setSelectedDate(prev => {
+      switch (viewMode) {
+        case 'day':
+          return direction === 'next' ? addDays(prev, 1) : subDays(prev, 1);
+        case 'week':
+          return direction === 'next' ? addWeeks(prev, 1) : subWeeks(prev, 1);
+        case 'month':
+          return direction === 'next' ? addMonths(prev, 1) : subMonths(prev, 1);
+        case 'year':
+          return direction === 'next' ? addYears(prev, 1) : subYears(prev, 1);
+      }
+    });
+  };
+
   const dateRange = getDateRange();
+  
+  const filteredTasks = useMemo(() => 
+    state.tasks.filter(task => {
+      if (!task.deadline) return viewMode === 'day';
+      const taskDate = new Date(task.deadline);
+      return isWithinInterval(taskDate, dateRange);
+    }),
+    [state.tasks, dateRange, viewMode]
+  );
 
-  // Navigate dates
-  const navigateDate = (direction: 'prev' | 'next') => {
-    switch (viewMode) {
-      case 'day':
-        setSelectedDate(direction === 'next' ? addDays(selectedDate, 1) : addDays(selectedDate, -1));
-        break;
-      case 'week':
-        setSelectedDate(direction === 'next' ? addWeeks(selectedDate, 1) : addWeeks(selectedDate, -1));
-        break;
-      case 'month':
-        setSelectedDate(direction === 'next' ? addMonths(selectedDate, 1) : addMonths(selectedDate, -1));
-        break;
-      case 'year':
-        setSelectedDate(direction === 'next' ? addYears(selectedDate, 1) : addYears(selectedDate, -1));
-        break;
-    }
-  };
+  const filteredHabits = useMemo(() => state.habits.filter(h => h.isActive), [state.habits]);
 
-  // Filter items by date range
-  const filteredTasks = useMemo(() => {
-    return state.tasks.filter(task => {
-      if (task.completed && task.completedAt) {
-        return isWithinInterval(new Date(task.completedAt), dateRange);
-      }
-      if (!task.completed && task.deadline) {
-        return isWithinInterval(new Date(task.deadline), dateRange);
-      }
-      if (!task.completed && !task.deadline) {
-        return viewMode === 'day' && isSameDay(new Date(task.createdAt), selectedDate);
-      }
-      return false;
-    }).sort((a, b) => {
-      if (a.order !== undefined && b.order !== undefined) {
-        return a.order - b.order;
-      }
-      const priorityOrder = {
-        high: 0,
-        medium: 1,
-        low: 2
-      };
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    });
-  }, [state.tasks, dateRange, viewMode, selectedDate]);
-  const filteredHabits = useMemo(() => {
-    return state.habits.filter(h => h.isActive);
-  }, [state.habits]);
-  const filteredGoals = useMemo(() => {
-    return state.goals.filter(goal => {
-      return isWithinInterval(new Date(goal.targetDate), dateRange) || isWithinInterval(new Date(goal.createdAt), dateRange);
-    });
-  }, [state.goals, dateRange]);
-  const filteredPlans = useMemo(() => {
-    return state.plans.filter(plan => {
-      return isWithinInterval(new Date(plan.startDate), dateRange) || isWithinInterval(new Date(plan.endDate), dateRange) || new Date(plan.startDate) <= dateRange.start && new Date(plan.endDate) >= dateRange.end;
-    });
-  }, [state.plans, dateRange]);
-  const filteredFocusSessions = useMemo(() => {
-    return state.focusSessions.filter(session => session.completed && isWithinInterval(new Date(session.startTime), dateRange));
-  }, [state.focusSessions, dateRange]);
-
-  // Calculate statistics
   const stats = useMemo(() => {
-    const completedTasks = filteredTasks.filter(t => t.completed).length;
+    const completedTasks = filteredTasks.filter(t => t.isCompleted).length;
     const totalTasks = filteredTasks.length;
-    const completionRate = totalTasks > 0 ? completedTasks / totalTasks * 100 : 0;
-    const todayString = format(new Date(), 'yyyy-MM-dd');
-    const habitsCompletedToday = filteredHabits.filter(h => h.completedDates.includes(todayString)).length;
-    const habitsTotal = filteredHabits.length;
-    const habitCompletionRate = habitsTotal > 0 ? habitsCompletedToday / habitsTotal * 100 : 0;
-    const totalFocusTime = filteredFocusSessions.reduce((sum, s) => sum + s.duration, 0);
-    const goalsProgress = filteredGoals.reduce((sum, g) => sum + g.progress, 0) / (filteredGoals.length || 1);
-    const plansProgress = filteredPlans.reduce((sum, p) => sum + p.progress, 0) / (filteredPlans.length || 1);
+    const habitsCompletedToday = filteredHabits.filter(h => {
+      const dates = (h.completedDates || []) as string[];
+      return dates.includes(format(new Date(), 'yyyy-MM-dd'));
+    }).length;
+    const totalFocusTime = Math.floor(
+      state.focusSessions
+        .filter(s => isWithinInterval(new Date(s.startTime), dateRange))
+        .reduce((acc, s) => acc + (s.duration || 0), 0) / 60
+    );
+
     return {
       completedTasks,
       totalTasks,
-      completionRate,
+      taskProgress: totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0,
       habitsCompletedToday,
-      habitsTotal,
-      habitCompletionRate,
-      totalFocusTime,
-      focusSessions: filteredFocusSessions.length,
-      goalsProgress,
-      activeGoals: filteredGoals.filter(g => g.status === 'active').length,
-      plansProgress,
-      activePlans: filteredPlans.filter(p => p.status === 'active').length
+      totalHabits: filteredHabits.length,
+      habitProgress: filteredHabits.length > 0 ? (habitsCompletedToday / filteredHabits.length) * 100 : 0,
+      focusTime: totalFocusTime,
+      activeGoals: state.goals.filter(g => !g.isCompleted).length,
+      activePlans: state.plans.filter(p => p.status === 'active').length,
     };
-  }, [filteredTasks, filteredHabits, filteredFocusSessions, filteredGoals, filteredPlans]);
+  }, [filteredTasks, filteredHabits, state.focusSessions, state.goals, state.plans, dateRange]);
 
-  // Format date range label
-  const getDateRangeLabel = () => {
-    if (useJalali) {
-      switch (viewMode) {
-        case 'day':
-          return `${getPersianDayName(selectedDate)} ${formatPersianDate(selectedDate)}`;
-        case 'week':
-          {
-            const start = startOfWeek(selectedDate, {
-              weekStartsOn: 6
-            });
-            const end = endOfWeek(selectedDate, {
-              weekStartsOn: 6
-            });
-            return `${formatPersianDate(start)} - ${formatPersianDate(end)}`;
-          }
-        case 'month':
-          return formatPersianDate(selectedDate, 'MMMM yyyy');
-        case 'year':
-          return formatPersianDate(selectedDate, 'yyyy');
-      }
-    } else {
-      switch (viewMode) {
-        case 'day':
-          return format(selectedDate, 'dd MMMM yyyy');
-        case 'week':
-          return `${format(dateRange.start, 'd MMM')} - ${format(dateRange.end, 'd MMM yyyy')}`;
-        case 'month':
-          return format(selectedDate, 'MMMM yyyy');
-        case 'year':
-          return format(selectedDate, 'yyyy');
-      }
-    }
-  };
   const handleTaskComplete = (taskId: string) => {
-    completeTask(taskId);
+    const task = filteredTasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    dispatch({
+      type: 'UPDATE_TASK',
+      payload: {
+        ...task,
+        isCompleted: !task.isCompleted,
+        completedAt: !task.isCompleted ? new Date().toISOString() : null,
+      },
+    });
+
+    if (!task.isCompleted && task.xpReward) {
+      dispatch({
+        type: 'ADD_XP',
+        payload: task.xpReward,
+      });
+    }
   };
+
   const handleDragEnd = (event: DragEndEvent) => {
-    const {
-      active,
-      over
-    } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = filteredTasks.findIndex(task => task.id === active.id);
-      const newIndex = filteredTasks.findIndex(task => task.id === over.id);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = filteredTasks.findIndex(t => t.id === active.id);
+    const newIndex = filteredTasks.findIndex(t => t.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
       const reorderedTasks = arrayMove(filteredTasks, oldIndex, newIndex);
-      reorderTasks(reorderedTasks);
-      toast.success('ترتیب وظایف ذخیره شد ✨');
+      reorderedTasks.forEach((task, index) => {
+        dispatch({
+          type: 'UPDATE_TASK',
+          payload: { ...task, order: index },
+        });
+      });
     }
   };
+
   const handleHabitCheck = (habitId: string) => {
-    const habit = state.habits.find(h => h.id === habitId);
+    const habit = filteredHabits.find(h => h.id === habitId);
     if (!habit) return;
+
     const today = format(new Date(), 'yyyy-MM-dd');
-    const isCompleted = habit.completedDates.includes(today);
-    if (isCompleted) {
-      const updatedDates = habit.completedDates.filter(d => d !== today);
+    const dates = (habit.completedDates || []) as string[];
+    const isCompleted = dates.includes(today);
+
+    const newDates = isCompleted ? dates.filter(d => d !== today) : [...dates, today];
+
+    dispatch({
+      type: 'UPDATE_HABIT',
+      payload: {
+        ...habit,
+        completedDates: newDates,
+      },
+    });
+
+    if (!isCompleted && habit.xpPerCompletion) {
       dispatch({
-        type: 'UPDATE_HABIT',
-        payload: {
-          ...habit,
-          completedDates: updatedDates,
-          currentStreak: habit.currentStreak > 0 ? habit.currentStreak - 1 : 0
-        }
+        type: 'ADD_XP',
+        payload: habit.xpPerCompletion,
       });
-      toast.info('عادت از لیست امروز حذف شد');
-    } else {
-      const updatedDates = [...habit.completedDates, today];
-      dispatch({
-        type: 'UPDATE_HABIT',
-        payload: {
-          ...habit,
-          completedDates: updatedDates,
-          currentStreak: habit.currentStreak + 1,
-          longestStreak: Math.max(habit.longestStreak, habit.currentStreak + 1)
-        }
-      });
-      addXP(habit.xpReward, `تکمیل عادت: ${habit.title}`);
-      toast.success(`عادت تکمیل شد! +${habit.xpReward} XP 🎉`);
     }
   };
-  return <div className="min-h-screen pb-24" dir="rtl">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-background" />
-        {[...Array(20)].map((_, i) => <motion.div key={i} className="absolute rounded-full bg-primary/10" style={{
-        width: Math.random() * 200 + 50,
-        height: Math.random() * 200 + 50,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`
-      }} animate={{
-        y: [0, Math.random() * 100 - 50],
-        x: [0, Math.random() * 100 - 50],
-        scale: [1, Math.random() + 0.5, 1],
-        opacity: [0.03, 0.08, 0.03]
-      }} transition={{
-        duration: Math.random() * 20 + 15,
-        repeat: Infinity,
-        ease: 'easeInOut'
-      }} />)}
+
+  const formattedDate = useMemo(() => {
+    return formatJalaliDate(selectedDate);
+  }, [selectedDate]);
+
+  const userXP = state.user.xp || 0;
+
+  return (
+    <div className="min-h-screen pb-24" dir="rtl">
+      {/* Organic Background Shapes */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-primary/8 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-accent/8 rounded-full blur-3xl" />
       </div>
 
-      <div className="container mx-auto px-0 sm:px-2 max-w-7xl relative z-10">
-        <motion.div initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} className="space-y-6">
-          {/* Header Section */}
-          <div className="text-center space-y-3 mb-6">
-            <motion.div initial={{
-            scale: 0.9,
-            opacity: 0
-          }} animate={{
-            scale: 1,
-            opacity: 1
-          }} transition={{
-            duration: 0.5
-          }} className="flex items-center justify-center gap-3 mb-2">
-              <div className="p-2 bg-primary/10 rounded-xl">
-                <Target className="h-7 w-7 text-primary" />
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent">
-                داشبورد هوشمند
-              </h1>
-              <div className="p-2 bg-accent/10 rounded-xl">
-                <TrendingUp className="h-7 w-7 text-accent" />
-              </div>
-            </motion.div>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-              کنترل کامل زندگی، مدیریت هوشمند اهداف و رویاها
-            </p>
+      {/* Header - Compact & Clean */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/50 px-3 py-2.5 safe-area-top"
+      >
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div>
+            <h1 className="text-base font-semibold text-foreground">داشبورد</h1>
+            <p className="text-xs text-muted-foreground">{formattedDate}</p>
           </div>
-
-          {/* View Mode Selector */}
-          <div className="flex justify-center">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full sm:w-auto max-w-2xl p-2 bg-muted/50 rounded-xl border border-border/50">
-              {[{
-              mode: 'day' as ViewMode,
-              label: 'روزانه',
-              icon: '📅'
-            }, {
-              mode: 'week' as ViewMode,
-              label: 'هفتگی',
-              icon: '📆'
-            }, {
-              mode: 'month' as ViewMode,
-              label: 'ماهانه',
-              icon: '🗓️'
-            }, {
-              mode: 'year' as ViewMode,
-              label: 'سالانه',
-              icon: '📊'
-            }].map(({
-              mode,
-              label,
-              icon
-            }) => <Button key={mode} variant={viewMode === mode ? 'default' : 'ghost'} onClick={() => setViewMode(mode)} size="lg" className={`min-h-[48px] text-base font-medium transition-all ${viewMode === mode ? 'bg-primary text-primary-foreground shadow-lg scale-105' : 'hover:bg-primary/10 hover:scale-102'}`}>
-                  <span className="ms-2">{icon}</span>
-                  {label}
-                </Button>)}
-            </div>
+          <div className="flex items-center gap-1.5">
+            {['day', 'week', 'month', 'year'].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode as ViewMode)}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                  viewMode === mode
+                    ? 'bg-primary text-primary-foreground soft-shadow-sm'
+                    : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                }`}
+              >
+                {mode === 'day' ? 'روز' : mode === 'week' ? 'هفته' : mode === 'month' ? 'ماه' : 'سال'}
+              </button>
+            ))}
           </div>
+        </div>
+      </motion.div>
 
-          {/* Premium Banner */}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto">
+        {/* Date Navigator */}
+        <div className="px-3 py-3">
+          <div className="flex items-center justify-between gap-2 bg-card/50 rounded-3xl p-2 soft-shadow-sm border border-border/20">
+            <button
+              onClick={() => navigateDate('prev')}
+              className="p-2 hover:bg-muted/50 rounded-full transition-all"
+            >
+              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            </button>
+            
+            <button
+              onClick={() => setSelectedDate(new Date())}
+              className="flex-1 text-center px-3 py-1.5 hover:bg-muted/50 rounded-full transition-all"
+            >
+              <p className="text-sm font-medium text-foreground">{formattedDate}</p>
+            </button>
+            
+            <button
+              onClick={() => navigateDate('next')}
+              className="p-2 hover:bg-muted/50 rounded-full transition-all"
+            >
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+
+        {/* Premium Banner */}
+        <div className="px-3">
           <PremiumBanner />
+        </div>
 
-          {/* Date Navigator */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.2
-        }}>
-            <Card className="border-primary/20 bg-gradient-to-l from-primary/5 to-transparent">
-              <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <Button variant="ghost" size="icon" onClick={() => navigateDate('next')} className="hover:bg-primary/10 hover:scale-110 transition-all min-h-[48px] min-w-[48px] rounded-full">
-                    <ChevronRight className="h-6 w-6" />
-                  </Button>
-
-                  <div className="text-center flex-1">
-                    <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-l from-primary to-accent bg-clip-text text-transparent">
-                      {getDateRangeLabel()}
-                    </h3>
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date())} className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 min-h-[36px] mt-1">
-                      <CalendarIcon className="ms-1 h-3 w-3" />
-                      بازگشت به امروز
-                    </Button>
-                  </div>
-
-                  <Button variant="ghost" size="icon" onClick={() => navigateDate('prev')} className="hover:bg-primary/10 hover:scale-110 transition-all min-h-[48px] min-w-[48px] rounded-full">
-                    <ChevronLeft className="h-6 w-6" />
-                  </Button>
+        {/* Stats Grid - Compact Mobile Design */}
+        <div className="px-3 py-3">
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { label: 'وظایف', value: stats.completedTasks, total: stats.totalTasks, color: 'primary', icon: '✓', progress: stats.taskProgress },
+              { label: 'عادات', value: stats.habitsCompletedToday, total: stats.totalHabits, color: 'secondary', icon: '⚡', progress: stats.habitProgress },
+              { label: 'تمرکز', value: `${stats.focusTime}د`, total: '', color: 'accent', icon: '🎯' },
+              { label: 'XP', value: userXP, total: '', color: 'success', icon: '⭐' },
+            ].map((stat, idx) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.05 }}
+                className="bg-card rounded-3xl p-3 soft-shadow-sm border border-border/30"
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-lg">{stat.icon}</span>
+                  <span className="text-xs text-muted-foreground">{stat.label}</span>
                 </div>
+                <div className="flex items-baseline gap-1 mb-1.5">
+                  <span className="text-xl font-bold text-foreground">{stat.value}</span>
+                  {stat.total && (
+                    <span className="text-xs text-muted-foreground">/{stat.total}</span>
+                  )}
+                </div>
+                {stat.progress !== undefined && (
+                  <Progress value={stat.progress} className="h-1.5" />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 px-3">
+          {/* Tasks Section */}
+          <div className="lg:col-span-2">
+            <Card className="rounded-3xl border-border/30 soft-shadow-sm">
+              <CardHeader className="pb-3 px-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <span>وظایف امروز</span>
+                  </CardTitle>
+                  <Badge variant="secondary" className="text-xs rounded-full">
+                    {stats.completedTasks}/{stats.totalTasks}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <ScrollArea className="h-[400px] pe-2">
+                  {filteredTasks.length === 0 ? (
+                    <div className="text-center py-12 space-y-2">
+                      <div className="flex justify-center">
+                        <div className="p-3 bg-muted/30 rounded-full">
+                          <Circle className="h-10 w-10 text-muted-foreground/40" />
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground">هنوز وظیفه‌ای وجود ندارد</p>
+                    </div>
+                  ) : (
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                      <SortableContext items={filteredTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+                        <div className="space-y-2.5">
+                          <AnimatePresence>
+                            {filteredTasks.map(task => (
+                              <SortableTaskItem key={task.id} task={task} onComplete={handleTaskComplete} />
+                            ))}
+                          </AnimatePresence>
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  )}
+                </ScrollArea>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {[{
-            icon: CheckCircle2,
-            value: `${stats.completedTasks}/${stats.totalTasks}`,
-            label: 'وظایف',
-            progress: stats.completionRate,
-            color: 'primary',
-            delay: 0.3
-          }, {
-            icon: Flame,
-            value: `${stats.habitsCompletedToday}/${stats.habitsTotal}`,
-            label: 'عادات',
-            progress: stats.habitCompletionRate,
-            color: 'green',
-            delay: 0.35
-          }, {
-            icon: Clock,
-            value: stats.totalFocusTime.toString(),
-            label: 'دقیقه تمرکز',
-            color: 'blue',
-            delay: 0.4
-          }, {
-            icon: Target,
-            value: stats.activeGoals.toString(),
-            label: 'اهداف فعال',
-            progress: stats.goalsProgress,
-            color: 'amber',
-            delay: 0.45
-          }, {
-            icon: CalendarIcon,
-            value: stats.activePlans.toString(),
-            label: 'برنامه‌ها',
-            progress: stats.plansProgress,
-            color: 'purple',
-            delay: 0.5
-          }, {
-            icon: Zap,
-            value: state.user.xp.toString(),
-            label: 'امتیاز XP',
-            color: 'yellow',
-            delay: 0.55
-          }].map(({
-            icon: Icon,
-            value,
-            label,
-            progress,
-            color,
-            delay
-          }) => <motion.div key={label} initial={{
-            opacity: 0,
-            y: 20
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            delay
-          }} whileHover={{
-            scale: 1.03
-          }} whileTap={{
-            scale: 0.98
-          }}>
-                <Card className={`border-2 border-${color}-500/20 hover:border-${color}-500/40 hover:shadow-xl transition-all bg-gradient-to-br from-${color}-500/5 to-transparent`}>
-                  <CardContent className="p-4">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2 justify-end">
-                        <div className={`p-2 bg-${color}-500/10 rounded-lg`}>
-                          <Icon className={`h-5 w-5 text-${color}-500`} />
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl sm:text-3xl font-bold">{value}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{label}</p>
-                      </div>
-                      {progress !== undefined && <Progress value={progress} className="h-2 mt-1" />}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>)}
           </div>
 
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            {/* Tasks Section */}
-            <motion.div className="lg:col-span-2" initial={{
-            opacity: 0,
-            y: 20
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            delay: 0.6
-          }}>
-              <Card className="border-2 border-primary/20 hover:border-primary/40 transition-all">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-right">
-                      <CardTitle className="text-xl flex items-center gap-2">
-                        <span>وظایف امروز</span>
-                        <CheckCircle2 className="h-6 w-6 text-primary" />
-                      </CardTitle>
-                      <CardDescription className="mt-1">
-                        {filteredTasks.length} وظیفه • {stats.completionRate.toFixed(0)}% تکمیل شده
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[450px] sm:h-[500px] pe-3">
-                    {filteredTasks.length === 0 ? <motion.div initial={{
-                    opacity: 0
-                  }} animate={{
-                    opacity: 1
-                  }} className="text-center py-16 space-y-3">
-                        <div className="flex justify-center">
-                          <div className="p-4 bg-muted/50 rounded-full">
-                            <Circle className="h-16 w-16 text-muted-foreground/40" />
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-lg font-medium text-muted-foreground">هنوز وظیفه‌ای وجود ندارد</p>
-                          <p className="text-sm text-muted-foreground/60 mt-1">از منوی اضافه کردن، وظیفه جدید ایجاد کنید</p>
-                        </div>
-                      </motion.div> : <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={filteredTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-                          <AnimatePresence>
-                            {filteredTasks.map(task => <SortableTaskItem key={task.id} task={task} onComplete={handleTaskComplete} />)}
-                          </AnimatePresence>
-                        </SortableContext>
-                      </DndContext>}
-                  </ScrollArea>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Right Sidebar */}
-            <div className="space-y-4 sm:space-y-6">
-              {/* Habits Section */}
-              <motion.div initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} transition={{
-              delay: 0.7
-            }}>
-                <Card className="border-2 border-green-500/20 hover:border-green-500/40 transition-all">
-                  <CardHeader className="pb-4">
-                    <div className="text-right">
-                      <CardTitle className="text-xl flex items-center gap-2">
-                        <span>عادات امروز</span>
-                        <Flame className="h-6 w-6 text-green-500" />
-                      </CardTitle>
-                      <CardDescription className="mt-1">
-                        {stats.habitsCompletedToday} از {stats.habitsTotal} عادت
-                      </CardDescription>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-[320px]">
-                      {filteredHabits.length === 0 ? (
-                        <motion.div 
-                          initial={{ opacity: 0 }} 
-                          animate={{ opacity: 1 }} 
-                          className="text-center py-12 space-y-3"
-                        >
-                          <div className="flex justify-center">
-                            <div className="p-4 bg-muted/50 rounded-full">
-                              <Flame className="h-12 w-12 text-muted-foreground/40" />
+          {/* Sidebar */}
+          <div className="space-y-4">
+            {/* Habits Card */}
+            <Card className="rounded-3xl border-border/30 soft-shadow-sm">
+              <CardHeader className="pb-3 px-4 pt-4">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Flame className="h-4 w-4 text-success" />
+                  <span>عادات امروز</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <ScrollArea className="h-[200px]">
+                  {filteredHabits.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">
+                      هنوز عادتی وجود ندارد
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {filteredHabits.map(habit => {
+                        const today = format(new Date(), 'yyyy-MM-dd');
+                        const isCompleted = ((habit.completedDates || []) as string[]).includes(today);
+                        
+                        return (
+                          <div
+                            key={habit.id}
+                            className={`p-2.5 rounded-2xl border transition-all ${
+                              isCompleted 
+                                ? 'bg-success/5 border-success/20' 
+                                : 'bg-card border-border/40'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium ${isCompleted ? 'text-success' : 'text-foreground'}`}>
+                                  {habit.title}
+                                </p>
+                              </div>
+                              <Button
+                                variant={isCompleted ? 'default' : 'outline'}
+                                size="icon"
+                                onClick={() => handleHabitCheck(habit.id)}
+                                className="shrink-0 h-8 w-8 rounded-full"
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-muted-foreground">هنوز عادتی ثبت نشده</p>
-                            <p className="text-sm text-muted-foreground/60 mt-1">عادت جدید ایجاد کنید</p>
-                          </div>
-                        </motion.div>
-                      ) : (
-                        <div className="space-y-2">
-                          {filteredHabits.map((habit, index) => {
-                            const todayString = format(new Date(), 'yyyy-MM-dd');
-                            const isCompleted = habit.completedDates.includes(todayString);
-                            
-                            return (
-                              <motion.div 
-                                key={habit.id} 
-                                initial={{ opacity: 0, x: -10 }} 
-                                animate={{ opacity: 1, x: 0 }} 
-                                transition={{ delay: index * 0.03, duration: 0.2 }}
-                                onClick={() => handleHabitCheck(habit.id)} 
-                                className={`group p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                                  isCompleted 
-                                    ? 'border-green-500/30 bg-green-500/10 hover:bg-green-500/15' 
-                                    : 'border-border/50 bg-card/50 hover:border-green-500/30 hover:bg-green-500/5'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  {/* Checkbox */}
-                                  <div className="shrink-0">
-                                    {isCompleted ? (
-                                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                    ) : (
-                                      <Circle className="h-5 w-5 text-muted-foreground/60 group-hover:text-green-500 transition-colors" />
-                                    )}
-                                  </div>
-                                  
-                                  {/* Content */}
-                                  <div className="flex-1 text-right min-w-0">
-                                    <p className={`font-semibold text-sm leading-tight mb-1.5 ${
-                                      isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'
-                                    }`}>
-                                      {habit.title}
-                                    </p>
-                                    <div className="flex items-center gap-1.5 justify-end flex-wrap">
-                                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 h-5 border-orange-500/20 text-orange-600 bg-orange-500/5">
-                                        <Flame className="h-3 w-3 me-0.5" />
-                                        {habit.currentStreak} روز
-                                      </Badge>
-                                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 h-5 border-amber-500/20 text-amber-600 bg-amber-500/5">
-                                        <Zap className="h-3 w-3 me-0.5" />
-                                        +{habit.xpReward}
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              {/* Quick Stats */}
-              <motion.div initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} transition={{
-              delay: 0.8
-            }}>
-                <Card className="border-2 border-accent/20 hover:border-accent/40 transition-all">
-                  <CardHeader className="pb-4">
-                    <div className="text-right">
-                      <CardTitle className="text-xl flex items-center gap-2">
-                        <span>آمار سریع</span>
-                        <TrendingUp className="h-6 w-6 text-accent" />
-                      </CardTitle>
+                        );
+                      })}
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {[{
-                    label: 'اهداف در حال انجام',
-                    value: filteredGoals.filter(g => g.status === 'active').length,
-                    icon: Target,
-                    color: 'amber'
-                  }, {
-                    label: 'برنامه‌های فعال',
-                    value: filteredPlans.filter(p => p.status === 'active').length,
-                    icon: CalendarIcon,
-                    color: 'purple'
-                  }, {
-                    label: 'جلسات تمرکز',
-                    value: stats.focusSessions,
-                    icon: Clock,
-                    color: 'blue'
-                  }, {
-                    label: 'سطح فعلی',
-                    value: state.user.level,
-                    icon: Star,
-                    color: 'yellow'
-                  }].map(({
-                    label,
-                    value,
-                    icon: Icon,
-                    color
-                  }) => <motion.div key={label} whileHover={{
-                    scale: 1.02
-                  }} className={`flex justify-between items-center p-3 rounded-lg hover:bg-${color}-500/5 transition-all border border-transparent hover:border-${color}-500/20`}>
-                        <div className="flex items-center gap-2">
-                          <div className={`p-2 bg-${color}-500/10 rounded-lg`}>
-                            <Icon className={`h-4 w-4 text-${color}-500`} />
-                          </div>
-                          <span className="font-bold text-xl">{value}</span>
-                        </div>
-                        <span className="text-sm text-muted-foreground text-right">{label}</span>
-                      </motion.div>)}
-                  </CardContent>
-                </Card>
-              </motion.div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
 
-              {/* Calendar Widget */}
-              <motion.div initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} transition={{
-              delay: 0.9
-            }}>
-                <CalendarWidget tasks={filteredTasks} habits={filteredHabits} onDateSelect={date => {
-                console.log('Selected date:', date);
-              }} onCompleteTask={completeTask} onDeleteTask={deleteTask} onCheckHabit={handleHabitCheck} />
-              </motion.div>
+            {/* Calendar Widget */}
+            <CalendarWidget />
 
-              {/* Notification Panel */}
-              <motion.div initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} transition={{
-              delay: 1.0
-            }}>
-                <NotificationPanel />
-              </motion.div>
-            </div>
+            {/* Notifications */}
+            <NotificationPanel />
           </div>
-        </motion.div>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default UnifiedDashboard;
