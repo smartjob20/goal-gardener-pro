@@ -7,7 +7,7 @@ import { useAICoach } from '@/hooks/useAICoach';
 import { useAIChat } from '@/hooks/useAIChat';
 import { motion, AnimatePresence } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AICoach: React.FC = () => {
@@ -264,24 +264,18 @@ const AICoach: React.FC = () => {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-4"
             >
-              <Card className="glass-strong p-4 sm:p-6 h-[500px] flex flex-col">
+              <Card className="glass-strong p-4 sm:p-6 h-[700px] flex flex-col">
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-border/50">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-info/20">
-                      <MessageSquare className="h-5 w-5 text-info" />
-                    </div>
-                    <h3 className="font-bold text-lg">
-                      گفتگو با مربی هوشمند
-                    </h3>
-                  </div>
+                  <h3 className="font-bold text-lg text-right flex-1">
+                    دستیار هوشمند
+                  </h3>
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={clearChat}
-                    className="gap-2"
+                    className="h-8 w-8 flex-shrink-0"
                   >
-                    <Trash2 className="h-4 w-4" />
-                    پاک کردن
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
 
@@ -334,22 +328,27 @@ const AICoach: React.FC = () => {
                 </ScrollArea>
 
                 <div className="flex gap-2 mt-4 pt-4 border-t border-border/50">
-                  <Input
+                  <Textarea
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && !chatLoading && handleSendMessage()}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey && !chatLoading) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     placeholder="پیام خود را بنویسید..."
                     disabled={chatLoading}
-                    className="flex-1 h-12"
+                    className="flex-1 min-h-[48px] max-h-[120px] resize-none"
+                    rows={1}
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={chatLoading || !inputMessage.trim()}
-                    size="lg"
-                    className="gap-2 px-6"
+                    size="icon"
+                    className="h-12 w-12 flex-shrink-0"
                   >
                     <Send className="h-5 w-5" />
-                    ارسال
                   </Button>
                 </div>
               </Card>
