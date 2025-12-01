@@ -22,7 +22,7 @@ import { PremiumBanner } from './PremiumBanner';
 
 type ViewMode = 'day' | 'week' | 'month' | 'year';
 
-// Memoized Task Card Component
+// Artistic Task Card Component - Soft UI Masterpiece
 const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (id: string) => void }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
 
@@ -32,11 +32,28 @@ const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const priorityColors: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-    high: 'destructive',
-    medium: 'secondary',
-    low: 'secondary',
+  const priorityConfig = {
+    high: { 
+      gradient: 'from-red-soft/20 to-coral/10',
+      iconBg: 'bg-red-soft/30',
+      label: 'فوری',
+      icon: '🔥'
+    },
+    medium: { 
+      gradient: 'from-amber-soft/20 to-yellow-warm/10',
+      iconBg: 'bg-amber-soft/30',
+      label: 'متوسط',
+      icon: '⚡'
+    },
+    low: { 
+      gradient: 'from-blue-sky/20 to-blue-pastel/10',
+      iconBg: 'bg-blue-sky/30',
+      label: 'کم',
+      icon: '💫'
+    },
   };
+
+  const priority = priorityConfig[task.priority as keyof typeof priorityConfig] || priorityConfig.low;
 
   return (
     <motion.div
@@ -45,47 +62,89 @@ const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (
       {...attributes}
       {...listeners}
       layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20, scale: 0.95 }}
+      whileHover={{ scale: 1.01 }}
       className="touch-none"
     >
       <div className={`
-        p-3 rounded-3xl border transition-all
-        ${task.completed 
-          ? 'bg-success/5 border-success/20' 
-          : 'bg-card border-border/40 hover:border-primary/30'
-        }
-        soft-shadow-sm
+        relative overflow-hidden
+        bg-gradient-to-br ${task.completed ? 'from-green-mint/15 to-green-mint/5' : priority.gradient}
+        backdrop-blur-sm
+        rounded-[28px] p-4
+        soft-shadow
+        border border-white/40
+        transition-all duration-300
+        ${!task.completed && 'hover:border-white/60'}
       `}>
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1.5">
-              <Badge variant={priorityColors[task.priority as keyof typeof priorityColors]} className="text-xs px-2 py-0.5 rounded-full">
-                {task.priority === 'high' ? 'فوری' : task.priority === 'medium' ? 'متوسط' : 'کم'}
-              </Badge>
-              {task.category && (
-                <span className="text-xs text-muted-foreground">{task.category}</span>
-              )}
-            </div>
-            <h4 className={`text-sm font-medium mb-1 ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
-              {task.title}
-            </h4>
-            {task.xpReward && (
-              <span className="text-xs text-primary font-medium">+{task.xpReward} XP</span>
-            )}
-          </div>
-          <Button
-            variant={task.completed ? 'default' : 'outline'}
-            size="icon"
+        {/* Decorative Elements */}
+        <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full blur-2xl" />
+        <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-white/3 rounded-full blur-xl" />
+        
+        <div className="relative flex items-start justify-between gap-3">
+          {/* Right Side - Complete Button */}
+          <motion.button
             onClick={(e) => {
               e.stopPropagation();
               onComplete(task.id);
             }}
-            className="shrink-0 h-9 w-9 rounded-full"
+            whileTap={{ scale: 0.9 }}
+            className={`
+              shrink-0 w-12 h-12 rounded-[18px]
+              flex items-center justify-center
+              transition-all duration-300
+              soft-shadow-sm
+              ${task.completed 
+                ? 'bg-green-mint/40 border-2 border-green-mint/50' 
+                : 'bg-white/60 border-2 border-white/40 hover:bg-white/80'
+              }
+            `}
           >
-            <CheckCircle2 className="h-4 w-4" />
-          </Button>
+            <CheckCircle2 className={`h-5 w-5 transition-colors ${
+              task.completed ? 'text-green-mint' : 'text-muted-foreground'
+            }`} />
+          </motion.button>
+
+          {/* Left Side - Content */}
+          <div className="flex-1 min-w-0 text-right">
+            {/* Priority & Category */}
+            <div className="flex items-center justify-end gap-2 mb-2">
+              <div className={`
+                ${priority.iconBg}
+                px-3 py-1 rounded-full
+                flex items-center gap-1.5
+                soft-shadow-sm
+              `}>
+                <span className="text-xs font-medium text-foreground/80">
+                  {priority.label}
+                </span>
+                <span className="text-sm">{priority.icon}</span>
+              </div>
+              {task.category && (
+                <span className="text-xs text-muted-foreground font-medium px-2.5 py-1 bg-white/30 rounded-full">
+                  {task.category}
+                </span>
+              )}
+            </div>
+
+            {/* Title */}
+            <h4 className={`
+              text-base font-semibold mb-2 leading-snug
+              ${task.completed ? 'line-through text-muted-foreground/60' : 'text-foreground'}
+            `}>
+              {task.title}
+            </h4>
+
+            {/* XP Reward */}
+            {task.xpReward && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-soft/20 rounded-full">
+                <span className="text-xs font-bold text-amber-soft">+{task.xpReward}</span>
+                <span className="text-xs font-medium text-amber-soft/80">امتیاز</span>
+                <span className="text-sm">⭐</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -470,58 +529,134 @@ const UnifiedDashboard = () => {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Habits Card */}
-            <Card className="rounded-3xl border-border/30 soft-shadow-sm">
-              <CardHeader className="pb-3 px-4 pt-4">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Flame className="h-4 w-4 text-success" />
-                  <span>عادات امروز</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 pb-4">
-                <ScrollArea className="h-[200px]">
-                  {filteredHabits.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
+            {/* Habits Card - Artistic Masterpiece */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-purple-pastel/10 via-purple-light/5 to-transparent backdrop-blur-sm rounded-[32px] p-5 soft-shadow border border-white/40">
+              {/* Decorative Background */}
+              <div className="absolute -top-8 -right-8 w-32 h-32 bg-purple-pastel/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-purple-light/10 rounded-full blur-2xl" />
+              
+              {/* Header */}
+              <div className="relative flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-[16px] bg-gradient-to-br from-purple-pastel/30 to-purple-light/20 flex items-center justify-center soft-shadow-sm">
+                    <Flame className="h-5 w-5 text-purple-pastel" />
+                  </div>
+                  <h3 className="text-base font-bold text-foreground">عادات امروز</h3>
+                </div>
+                {filteredHabits.length > 0 && (
+                  <div className="px-3 py-1.5 bg-purple-pastel/20 rounded-full">
+                    <span className="text-xs font-bold text-purple-pastel">
+                      {filteredHabits.filter(h => ((h.completedDates || []) as string[]).includes(format(new Date(), 'yyyy-MM-dd'))).length}/{filteredHabits.length}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Habits List */}
+              <ScrollArea className="h-[240px] -mx-2 px-2">
+                {filteredHabits.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="inline-flex p-4 bg-purple-pastel/10 rounded-[20px] mb-3">
+                      <Circle className="h-8 w-8 text-muted-foreground/40" />
+                    </div>
+                    <p className="text-sm text-muted-foreground font-medium">
                       هنوز عادتی وجود ندارد
                     </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {filteredHabits.map(habit => {
-                        const today = format(new Date(), 'yyyy-MM-dd');
-                        const isCompleted = ((habit.completedDates || []) as string[]).includes(today);
-                        
-                        return (
-                          <div
-                            key={habit.id}
-                            className={`p-2.5 rounded-2xl border transition-all ${
-                              isCompleted 
-                                ? 'bg-success/5 border-success/20' 
-                                : 'bg-card border-border/40'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium ${isCompleted ? 'text-success' : 'text-foreground'}`}>
-                                  {habit.title}
-                                </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredHabits.map((habit, idx) => {
+                      const today = format(new Date(), 'yyyy-MM-dd');
+                      const isCompleted = ((habit.completedDates || []) as string[]).includes(today);
+                      const streak = habit.currentStreak || 0;
+                      
+                      return (
+                        <motion.div
+                          key={habit.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.05 }}
+                          className={`
+                            relative overflow-hidden
+                            bg-gradient-to-br 
+                            ${isCompleted 
+                              ? 'from-green-mint/20 to-green-mint/5' 
+                              : 'from-white/60 to-white/30'
+                            }
+                            backdrop-blur-sm
+                            rounded-[24px] p-4
+                            soft-shadow-sm
+                            border border-white/40
+                            transition-all duration-300
+                            hover:scale-[1.01]
+                          `}
+                        >
+                          {/* Streak Fire Effect */}
+                          {isCompleted && streak > 0 && (
+                            <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 bg-orange-warm/20 rounded-full">
+                              <span className="text-xs font-bold text-orange-warm">{streak}</span>
+                              <Flame className="h-3 w-3 text-orange-warm" />
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-3">
+                            {/* Complete Button */}
+                            <motion.button
+                              onClick={() => handleHabitCheck(habit.id)}
+                              whileTap={{ scale: 0.9 }}
+                              className={`
+                                shrink-0 w-14 h-14 rounded-[20px]
+                                flex items-center justify-center
+                                transition-all duration-300
+                                soft-shadow-sm
+                                ${isCompleted
+                                  ? 'bg-green-mint/40 border-2 border-green-mint/50' 
+                                  : 'bg-white/70 border-2 border-white/50 hover:bg-white/90'
+                                }
+                              `}
+                            >
+                              {isCompleted ? (
+                                <CheckCircle2 className="h-6 w-6 text-green-mint" />
+                              ) : (
+                                <Circle className="h-6 w-6 text-muted-foreground/40" />
+                              )}
+                            </motion.button>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0 text-right">
+                              <h4 className={`
+                                text-base font-semibold mb-1 leading-tight
+                                ${isCompleted ? 'text-green-mint' : 'text-foreground'}
+                              `}>
+                                {habit.title}
+                              </h4>
+                              
+                              {/* Category & XP */}
+                              <div className="flex items-center justify-end gap-2">
+                                {habit.category && (
+                                  <span className="text-xs text-muted-foreground font-medium px-2 py-0.5 bg-white/40 rounded-full">
+                                    {habit.category}
+                                  </span>
+                                )}
+                                {habit.xpReward && (
+                                  <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-soft/20 rounded-full">
+                                    <span className="text-xs font-bold text-amber-soft">+{habit.xpReward}</span>
+                                    <span className="text-xs">⭐</span>
+                                  </div>
+                                )}
                               </div>
-                              <Button
-                                variant={isCompleted ? 'default' : 'outline'}
-                                size="icon"
-                                onClick={() => handleHabitCheck(habit.id)}
-                                className="shrink-0 h-8 w-8 rounded-full"
-                              >
-                                <CheckCircle2 className="h-4 w-4" />
-                              </Button>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
+
+                          {/* Decorative Element */}
+                          <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-white/5 rounded-full blur-xl" />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
 
             {/* Calendar Widget */}
             <CalendarWidget 
