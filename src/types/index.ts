@@ -27,7 +27,7 @@ export interface Task {
   completedAt?: string;
   deadline?: string;
   subtasks?: SubTask[];
-  xpReward: number;
+  dollarReward: number;
   timeSpent?: number;
   imageUrl?: string;
   order?: number;
@@ -44,7 +44,7 @@ export interface Habit {
   currentStreak: number;
   longestStreak: number;
   completedDates: string[];
-  xpReward: number;
+  dollarReward: number;
   color: string;
   frequency: HabitFrequency;
   reminderTime?: string;
@@ -72,7 +72,7 @@ export interface Goal {
   progress: number;
   targetDate: string;
   milestones: Milestone[];
-  xpReward: number;
+  dollarReward: number;
   status: 'active' | 'completed' | 'paused';
   imageUrl?: string;
   createdAt: string;
@@ -84,7 +84,7 @@ export interface FocusSession {
   startTime: string;
   endTime?: string;
   duration: number;
-  xpEarned: number;
+  dollarsEarned: number;
   completed: boolean;
 }
 
@@ -93,7 +93,7 @@ export interface Achievement {
   title: string;
   description: string;
   icon: string;
-  xpReward: number;
+  dollarReward: number;
   unlocked: boolean;
   unlockedAt?: string;
 }
@@ -103,15 +103,15 @@ export interface DailyStats {
   tasksCompleted: number;
   habitsCompleted: number;
   focusTime: number;
-  xpEarned: number;
+  dollarsEarned: number;
 }
 
 export interface User {
   id: string;
   name: string;
   level: number;
-  xp: number;
-  xpToNextLevel: number;
+  dollars: number;
+  dollarsToNextLevel: number;
   avatar: string;
   bio?: string;
   achievements: string[];
@@ -172,7 +172,7 @@ export interface Reward {
   title: string;
   description?: string;
   category: RewardCategory;
-  xpRequired: number;
+  dollarsRequired: number;
   icon: string;
   status: RewardStatus;
   claimedAt?: string;

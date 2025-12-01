@@ -136,12 +136,12 @@ const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (
               {task.title}
             </h4>
 
-            {/* XP Reward */}
-            {task.xpReward && (
+            {/* Dollar Reward */}
+            {task.dollarReward && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-soft/20 rounded-full">
-                <span className="text-xs font-bold text-amber-soft">+{task.xpReward}</span>
-                <span className="text-xs font-medium text-amber-soft/80">امتیاز</span>
-                <span className="text-sm">⭐</span>
+                <span className="text-xs font-bold text-amber-soft">+{task.dollarReward}</span>
+                <span className="text-xs font-medium text-amber-soft/80">دلار</span>
+                <span className="text-sm">💰</span>
               </div>
             )}
           </div>
@@ -244,10 +244,10 @@ const UnifiedDashboard = () => {
       },
     });
 
-    if (!task.completed && task.xpReward) {
+    if (!task.completed && task.dollarReward) {
       dispatch({
-        type: 'ADD_XP',
-        payload: task.xpReward,
+        type: 'ADD_DOLLARS',
+        payload: task.dollarReward,
       });
     }
   };
@@ -288,10 +288,10 @@ const UnifiedDashboard = () => {
       },
     });
 
-    if (!isCompleted && habit.xpReward) {
+    if (!isCompleted && habit.dollarReward) {
       dispatch({
-        type: 'ADD_XP',
-        payload: habit.xpReward,
+        type: 'ADD_DOLLARS',
+        payload: habit.dollarReward,
       });
     }
   };
@@ -300,7 +300,7 @@ const UnifiedDashboard = () => {
     return formatPersianDate(selectedDate, 'dd MMMM yyyy');
   }, [selectedDate]);
 
-  const userXP = state.user.xp || 0;
+  const userDollars = state.user.dollars || 0;
 
   return (
     <div className="min-h-screen pb-24" dir="rtl">
@@ -404,12 +404,12 @@ const UnifiedDashboard = () => {
                 icon: '🎯' 
               },
               { 
-                label: 'امتیاز', 
-                value: userXP, 
+                label: 'دلار', 
+                value: userDollars, 
                 total: '', 
                 gradient: 'from-amber-soft/20 to-yellow-warm/10',
                 iconBg: 'bg-amber-soft/20',
-                icon: '⭐' 
+                icon: '💰' 
               },
             ].map((stat, idx) => (
               <motion.div
@@ -638,10 +638,10 @@ const UnifiedDashboard = () => {
                                     {habit.category}
                                   </span>
                                 )}
-                                {habit.xpReward && (
+                                {habit.dollarReward && (
                                   <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-soft/20 rounded-full">
-                                    <span className="text-xs font-bold text-amber-soft">+{habit.xpReward}</span>
-                                    <span className="text-xs">⭐</span>
+                                    <span className="text-xs font-bold text-amber-soft">+{habit.dollarReward}</span>
+                                    <span className="text-xs">💰</span>
                                   </div>
                                 )}
                               </div>

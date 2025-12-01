@@ -8,8 +8,8 @@ const initialUser: User = {
   id: '1',
   name: 'کاربر عزیز',
   level: 1,
-  xp: 0,
-  xpToNextLevel: 100,
+  dollars: 0,
+  dollarsToNextLevel: 100,
   avatar: '👤',
   achievements: [],
   totalTasksCompleted: 0,
@@ -34,14 +34,14 @@ const initialSettings: AppSettings = {
 };
 
 const initialAchievements: Achievement[] = [
-  { id: '1', title: 'اولین قدم', description: 'اولین وظیفه را تکمیل کنید', icon: '🎯', xpReward: 10, unlocked: false },
-  { id: '2', title: 'هفته‌ای پرانرژی', description: '7 روز پشت سر هم عادت انجام دهید', icon: '🔥', xpReward: 50, unlocked: false },
-  { id: '3', title: 'استاد تمرکز', description: '2 ساعت متوالی تمرکز کنید', icon: '🧘', xpReward: 30, unlocked: false },
-  { id: '4', title: 'پیشرفت چشمگیر', description: 'به سطح 5 برسید', icon: '⭐', xpReward: 100, unlocked: false },
-  { id: '5', title: 'سازمان‌دهنده ماهر', description: '50 وظیفه تکمیل کنید', icon: '📋', xpReward: 75, unlocked: false },
-  { id: '6', title: 'قهرمان عادت', description: '30 روز پیاپی عادت انجام دهید', icon: '💪', xpReward: 100, unlocked: false },
-  { id: '7', title: 'استاد زمان', description: '10 ساعت تمرکز در هفته', icon: '🏆', xpReward: 80, unlocked: false },
-  { id: '8', title: 'افسانه‌ای', description: 'به سطح 10 برسید', icon: '🌟', xpReward: 200, unlocked: false },
+  { id: '1', title: 'اولین قدم', description: 'اولین وظیفه را تکمیل کنید', icon: '🎯', dollarReward: 10, unlocked: false },
+  { id: '2', title: 'هفته‌ای پرانرژی', description: '7 روز پشت سر هم عادت انجام دهید', icon: '🔥', dollarReward: 50, unlocked: false },
+  { id: '3', title: 'استاد تمرکز', description: '2 ساعت متوالی تمرکز کنید', icon: '🧘', dollarReward: 30, unlocked: false },
+  { id: '4', title: 'پیشرفت چشمگیر', description: 'به سطح 5 برسید', icon: '⭐', dollarReward: 100, unlocked: false },
+  { id: '5', title: 'سازمان‌دهنده ماهر', description: '50 وظیفه تکمیل کنید', icon: '📋', dollarReward: 75, unlocked: false },
+  { id: '6', title: 'قهرمان عادت', description: '30 روز پیاپی عادت انجام دهید', icon: '💪', dollarReward: 100, unlocked: false },
+  { id: '7', title: 'استاد زمان', description: '10 ساعت تمرکز در هفته', icon: '🏆', dollarReward: 80, unlocked: false },
+  { id: '8', title: 'افسانه‌ای', description: 'به سطح 10 برسید', icon: '🌟', dollarReward: 200, unlocked: false },
 ];
 
 const initialState: AppState = {
@@ -78,6 +78,7 @@ type Action =
   | { type: 'UPDATE_FOCUS_SESSION'; payload: FocusSession }
   | { type: 'UPDATE_USER'; payload: Partial<User> }
   | { type: 'ADD_XP'; payload: number }
+  | { type: 'ADD_DOLLARS'; payload: number }
   | { type: 'UNLOCK_ACHIEVEMENT'; payload: string }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<AppSettings> }
   | { type: 'ADD_AI_SUGGESTION'; payload: AICoachSuggestion }
@@ -85,7 +86,7 @@ type Action =
   | { type: 'ADD_REWARD'; payload: Reward }
   | { type: 'UPDATE_REWARD'; payload: Reward }
   | { type: 'DELETE_REWARD'; payload: string }
-  | { type: 'CLAIM_REWARD'; payload: { rewardId: string; xpSpent: number } }
+  | { type: 'CLAIM_REWARD'; payload: { rewardId: string; dollarsSpent: number } }
   | { type: 'LOAD_STATE'; payload: AppState };
 
 // Reducer
@@ -145,13 +146,14 @@ const appReducer = (state: AppState, action: Action): AppState => {
     }
     case 'UPDATE_USER':
       return { ...state, user: { ...state.user, ...action.payload } };
-    case 'ADD_XP': {
-      const newXP = state.user.xp + action.payload;
-      const newLevel = Math.floor(newXP / 100) + 1;
-      const xpToNext = (newLevel * 100) - newXP;
+    case 'ADD_XP':
+    case 'ADD_DOLLARS': {
+      const newDollars = state.user.dollars + action.payload;
+      const newLevel = Math.floor(newDollars / 100) + 1;
+      const dollarsToNext = (newLevel * 100) - newDollars;
       return {
         ...state,
-        user: { ...state.user, xp: newXP, level: newLevel, xpToNextLevel: xpToNext }
+        user: { ...state.user, dollars: newDollars, level: newLevel, dollarsToNextLevel: dollarsToNext }
       };
     }
     case 'UNLOCK_ACHIEVEMENT': {
@@ -193,14 +195,14 @@ const appReducer = (state: AppState, action: Action): AppState => {
         r.id === action.payload.rewardId ? updatedReward : r
       );
       
-      // Update XP (subtract spent XP)
-      const newXP = state.user.xp - action.payload.xpSpent;
-      const newLevel = Math.floor(newXP / 100) + 1;
-      const xpToNext = (newLevel * 100) - newXP;
+      // Update dollars (subtract spent dollars)
+      const newDollars = state.user.dollars - action.payload.dollarsSpent;
+      const newLevel = Math.floor(newDollars / 100) + 1;
+      const dollarsToNext = (newLevel * 100) - newDollars;
       
       // Check if any locked rewards should now be available
       const rewardsToUpdate = updatedRewards.map(r => {
-        if (r.status === 'locked' && newXP >= r.xpRequired) {
+        if (r.status === 'locked' && newDollars >= r.dollarsRequired) {
           return { ...r, status: 'available' as const };
         }
         return r;
@@ -211,9 +213,9 @@ const appReducer = (state: AppState, action: Action): AppState => {
         rewards: rewardsToUpdate,
         user: { 
           ...state.user, 
-          xp: newXP, 
+          dollars: newDollars, 
           level: newLevel, 
-          xpToNextLevel: xpToNext 
+          dollarsToNextLevel: dollarsToNext 
         }
       };
     }
@@ -240,6 +242,7 @@ interface AppContextType {
   updatePlan: (id: string, updates: Partial<Plan>) => void;
   deletePlan: (id: string) => void;
   addXP: (amount: number, reason: string) => void;
+  addDollars: (amount: number, reason: string) => void;
   checkAchievements: () => void;
 }
 
@@ -292,7 +295,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (task && !task.completed) {
       const updatedTask = { ...task, completed: true, completedAt: new Date().toISOString() };
       dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
-      addXP(task.xpReward, 'تکمیل وظیفه');
+      addDollars(task.dollarReward, 'تکمیل وظیفه');
       dispatch({ type: 'UPDATE_USER', payload: { totalTasksCompleted: state.user.totalTasksCompleted + 1 } });
       
       // Success haptic feedback
@@ -335,7 +338,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       dispatch({ type: 'UPDATE_HABIT', payload: updatedHabit });
       
       if (!isCompleted) {
-        addXP(habit.xpReward, 'انجام عادت');
+        addDollars(habit.dollarReward, 'انجام عادت');
         // Success haptic feedback
         await triggerHaptic('success');
       }
@@ -359,13 +362,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addXP = (amount: number, reason: string) => {
-    dispatch({ type: 'ADD_XP', payload: amount });
-    toast.success(`${amount} XP کسب کردید! ${reason} 🌟`);
+    dispatch({ type: 'ADD_DOLLARS', payload: amount });
+    toast.success(`${amount} دلار کسب کردید! ${reason} 💵`);
     checkAchievements();
     
     // Check if any locked rewards should become available
     const updatedRewards = state.rewards.map(reward => {
-      if (reward.status === 'locked' && (state.user.xp + amount) >= reward.xpRequired) {
+      if (reward.status === 'locked' && (state.user.dollars + amount) >= reward.dollarsRequired) {
         toast.success(`🎁 پاداش "${reward.title}" آماده دریافت است!`);
         return { ...reward, status: 'available' as const };
       }
@@ -378,6 +381,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'UPDATE_REWARD', payload: reward });
       }
     });
+  };
+
+  const addDollars = (amount: number, reason: string) => {
+    addXP(amount, reason); // Alias for backwards compatibility
   };
 
   const addPlan = (plan: Plan) => {
@@ -418,7 +425,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, deleteTask, reorderTasks, addHabit, checkHabit, reorderHabits, addGoal, addPlan, updatePlan, deletePlan, addXP, checkAchievements }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, completeTask, deleteTask, reorderTasks, addHabit, checkHabit, reorderHabits, addGoal, addPlan, updatePlan, deletePlan, addXP, addDollars, checkAchievements }}>
       {children}
     </AppContext.Provider>
   );
