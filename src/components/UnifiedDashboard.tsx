@@ -17,7 +17,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { NotificationPanel } from './NotificationPanel';
 import { CalendarWidget } from './CalendarWidget';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, addDays, addWeeks, addMonths, addYears, subDays, subWeeks, subMonths, subYears, isWithinInterval } from 'date-fns';
-import { formatJalaliDate } from '@/utils/persianDateUtils';
+import { formatPersianDate } from '@/utils/persianDateUtils';
 import { PremiumBanner } from './PremiumBanner';
 
 type ViewMode = 'day' | 'week' | 'month' | 'year';
@@ -68,7 +68,7 @@ const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (
                 <span className="text-xs text-muted-foreground">{task.category}</span>
               )}
             </div>
-            <h4 className={`text-sm font-medium mb-1 ${task.isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+            <h4 className={`text-sm font-medium mb-1 ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
               {task.title}
             </h4>
             {task.xpReward && (
@@ -76,7 +76,7 @@ const SortableTaskItem = memo(({ task, onComplete }: { task: Task; onComplete: (
             )}
           </div>
           <Button
-            variant={task.isCompleted ? 'default' : 'outline'}
+            variant={task.completed ? 'default' : 'outline'}
             size="icon"
             onClick={(e) => {
               e.stopPropagation();
@@ -147,7 +147,7 @@ const UnifiedDashboard = () => {
   const filteredHabits = useMemo(() => state.habits.filter(h => h.isActive), [state.habits]);
 
   const stats = useMemo(() => {
-    const completedTasks = filteredTasks.filter(t => t.isCompleted).length;
+    const completedTasks = filteredTasks.filter(t => t.completed).length;
     const totalTasks = filteredTasks.length;
     const habitsCompletedToday = filteredHabits.filter(h => {
       const dates = (h.completedDates || []) as string[];
@@ -167,7 +167,7 @@ const UnifiedDashboard = () => {
       totalHabits: filteredHabits.length,
       habitProgress: filteredHabits.length > 0 ? (habitsCompletedToday / filteredHabits.length) * 100 : 0,
       focusTime: totalFocusTime,
-      activeGoals: state.goals.filter(g => !g.isCompleted).length,
+      activeGoals: state.goals.filter(g => g.status !== 'completed').length,
       activePlans: state.plans.filter(p => p.status === 'active').length,
     };
   }, [filteredTasks, filteredHabits, state.focusSessions, state.goals, state.plans, dateRange]);
@@ -180,12 +180,12 @@ const UnifiedDashboard = () => {
       type: 'UPDATE_TASK',
       payload: {
         ...task,
-        isCompleted: !task.isCompleted,
-        completedAt: !task.isCompleted ? new Date().toISOString() : null,
+        completed: !task.completed,
+        completedAt: !task.completed ? new Date().toISOString() : null,
       },
     });
 
-    if (!task.isCompleted && task.xpReward) {
+    if (!task.completed && task.xpReward) {
       dispatch({
         type: 'ADD_XP',
         payload: task.xpReward,
@@ -229,16 +229,16 @@ const UnifiedDashboard = () => {
       },
     });
 
-    if (!isCompleted && habit.xpPerCompletion) {
+    if (!isCompleted && habit.xpReward) {
       dispatch({
         type: 'ADD_XP',
-        payload: habit.xpPerCompletion,
+        payload: habit.xpReward,
       });
     }
   };
 
   const formattedDate = useMemo(() => {
-    return formatJalaliDate(selectedDate);
+    return formatPersianDate(selectedDate, 'dd MMMM yyyy');
   }, [selectedDate]);
 
   const userXP = state.user.xp || 0;
@@ -449,7 +449,12 @@ const UnifiedDashboard = () => {
             </Card>
 
             {/* Calendar Widget */}
-            <CalendarWidget />
+            <CalendarWidget 
+              tasks={filteredTasks}
+              habits={filteredHabits}
+              onCompleteTask={handleTaskComplete}
+              onCheckHabit={handleHabitCheck}
+            />
 
             {/* Notifications */}
             <NotificationPanel />
