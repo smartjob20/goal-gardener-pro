@@ -558,106 +558,97 @@ const Goals = () => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-5" dir="rtl">
-            <DialogHeader className="space-y-1">
-              <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground text-right flex items-center gap-2">
-                <Rocket className="w-6 h-6 text-primary" />
-                <span>{editingGoal ? 'ویرایش هدف' : 'ایجاد هدف جدید'}</span>
-              </DialogTitle>
-              <p className="text-sm text-muted-foreground text-right">
-                {editingGoal ? 'اطلاعات هدف را ویرایش کنید' : 'رویای بزرگ خود را به هدف قابل دستیابی تبدیل کنید'}
-              </p>
-            </DialogHeader>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl border-0 bg-gradient-to-br from-background via-background to-muted/20 shadow-2xl p-0" dir="rtl">
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-background via-background to-transparent pb-4 px-5 pt-5">
+              <DialogHeader className="text-right space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                    <Rocket className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <div className="flex-1">
+                    <DialogTitle className="text-xl font-bold text-foreground">
+                      {editingGoal ? 'ویرایش هدف' : 'هدف جدید'}
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      رویای بزرگ خود را تعریف کنید
+                    </p>
+                  </div>
+                </div>
+              </DialogHeader>
+            </div>
 
-            <div className="space-y-3 sm:space-y-4 mt-4">
-              {/* پیام انگیزشی */}
-              <div className="p-2.5 sm:p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
-                <div className="flex items-start gap-2.5">
-                  <Star className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <p className="text-sm text-muted-foreground leading-relaxed text-right">
-                    هر هدف بزرگی با یک قدم کوچک شروع می‌شود. رویاهای خود را تعریف کنید و مراحل رسیدن به آن را مشخص کنید.
+            <div className="px-5 pb-5 space-y-5">
+              {/* Motivational Banner */}
+              <div className="p-3 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl border border-primary/10">
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-primary shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    هر هدف بزرگی با یک قدم کوچک شروع می‌شود ✨
                   </p>
                 </div>
               </div>
 
-              {/* عنوان */}
-              <div className="space-y-1.5">
-                <Label htmlFor="title" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                  <span>عنوان هدف</span>
-                  <span className="text-destructive text-xs">*</span>
-                </Label>
+              {/* Title */}
+              <div className="space-y-2">
                 <Input
-                  id="title"
-                  placeholder="مثلاً: رسیدن به وزن ایده‌آل"
+                  placeholder="عنوان هدف..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                  className="h-14 text-lg font-medium border-0 bg-muted/50 rounded-2xl px-4 focus:ring-2 focus:ring-primary/30 focus:bg-background placeholder:text-muted-foreground/60 transition-all"
                   dir="rtl"
                 />
               </div>
 
-              {/* توضیحات */}
-              <div className="space-y-1.5">
-                <Label htmlFor="description" className="text-sm font-semibold text-foreground">
-                  توضیحات و دلایل انگیزشی
-                </Label>
+              {/* Description */}
+              <div className="space-y-2">
                 <Textarea
-                  id="description"
-                  placeholder="چرا این هدف برای شما مهم است؟ چه احساسی پس از رسیدن به آن خواهید داشت؟"
+                  placeholder="چرا این هدف برای شما مهم است؟"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                  className="text-base min-h-[100px] resize-none focus:ring-2 focus:ring-primary/20"
+                  rows={2}
+                  className="text-base border-0 bg-muted/30 rounded-xl px-4 py-3 resize-none focus:ring-2 focus:ring-primary/20 focus:bg-muted/50 placeholder:text-muted-foreground/50 transition-all"
                   dir="rtl"
                 />
-                <p className="text-xs text-muted-foreground">دلیل محکمی برای رسیدن به هدف داشته باشید</p>
               </div>
 
-              {/* دسته‌بندی */}
-              <div className="space-y-1.5">
-                <Label htmlFor="category" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                  <span>دسته‌بندی هدف</span>
-                  <span className="text-destructive text-xs">*</span>
-                </Label>
-                <Select value={category} onValueChange={(v) => setCategory(v)} dir="rtl">
-                  <SelectTrigger id="category" className="h-12 focus:ring-2 focus:ring-primary/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoryOptions.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        <div className="flex items-center gap-2">
-                          <span>{cat.icon}</span>
-                          <span>{cat.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                    {state.settings.customGoalCategories && state.settings.customGoalCategories.length > 0 && (
-                      <>
-                        <SelectItem value="_separator_" disabled>───────────</SelectItem>
-                        {state.settings.customGoalCategories.map(cat => (
-                          <SelectItem key={cat} value={cat}>
-                            ⭐ {cat}
-                          </SelectItem>
-                        ))}
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
+              {/* Category Pills */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 block">دسته‌بندی</label>
+                <div className="flex flex-wrap gap-2">
+                  {categoryOptions.slice(0, 6).map((cat) => (
+                    <motion.button
+                      key={cat.value}
+                      type="button"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setCategory(cat.value)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                        category === cat.value
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      <span>{cat.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
 
-              {/* تاریخ هدف */}
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground">
-                  تاریخ هدف
-                </Label>
+              {/* Target Date */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  <span>تاریخ هدف</span>
+                </label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button 
-                      variant="outline" 
-                      className="w-full justify-start h-12 text-base focus:ring-2 focus:ring-primary/20"
+                      variant="ghost" 
+                      className="w-full h-12 justify-start bg-muted/40 rounded-xl hover:bg-muted/60 border-0"
                     >
-                      <CalendarIcon className="ms-2 h-5 w-5" />
+                      <CalendarIcon className="ms-2 h-5 w-5 text-muted-foreground" />
                       <span>{format(targetDate, 'yyyy/MM/dd')}</span>
                     </Button>
                   </PopoverTrigger>
@@ -680,52 +671,52 @@ const Goals = () => {
                     )}
                   </PopoverContent>
                 </Popover>
-                <p className="text-xs text-muted-foreground">تاریخ واقع‌بینانه‌ای انتخاب کنید</p>
               </div>
 
-              {/* تصویر انگیزشی */}
-              <div className="space-y-1.5 pt-2 border-t border-border/50">
+              {/* Image Upload */}
+              <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-muted-foreground/20">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
-                  label="تصویر الهام‌بخش هدف (اختیاری)"
+                  label="تصویر الهام‌بخش (اختیاری)"
                 />
-                <p className="text-xs text-muted-foreground">
-                  تصویری که با دیدن آن، انگیزه شما برای رسیدن به هدف افزایش یابد
-                </p>
               </div>
 
-              {/* مراحل (مایلستون‌ها) */}
-              <div className="space-y-2.5 pt-2 border-t border-border/50">
+              {/* Milestones */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
                     <Flag className="w-4 h-4" />
-                    <span>مراحل رسیدن به هدف</span>
-                    <span className="text-destructive text-xs">*</span>
-                  </Label>
+                    <span>مراحل هدف</span>
+                  </label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={addMilestone}
-                    className="gap-1 h-9"
+                    className="gap-1 h-8 text-primary"
                   >
                     <Plus className="w-4 h-4" />
-                    <span className="text-sm">افزودن</span>
+                    <span className="text-xs">افزودن</span>
                   </Button>
                 </div>
 
                 <div className="space-y-2">
                   {milestones.map((milestone, index) => (
-                    <div key={index} className="flex gap-2 items-center">
-                      <div className="flex items-center justify-center w-7 h-11 text-sm font-medium text-muted-foreground shrink-0">
+                    <motion.div 
+                      key={index} 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex gap-2 items-center"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-muted/50 flex items-center justify-center text-xs font-medium text-muted-foreground shrink-0">
                         {index + 1}
                       </div>
                       <Input
                         placeholder={`مرحله ${index + 1}`}
                         value={milestone}
                         onChange={(e) => updateMilestone(index, e.target.value)}
-                        className="h-11 text-base text-right focus:ring-2 focus:ring-primary/20"
+                        className="h-11 border-0 bg-muted/40 rounded-xl px-4 text-right focus:ring-2 focus:ring-primary/20"
                         dir="rtl"
                       />
                       <Button
@@ -733,48 +724,38 @@ const Goals = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeMilestone(index)}
-                        className="h-11 w-11 shrink-0 text-destructive hover:bg-destructive/10"
+                        className="h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         disabled={milestones.length === 1}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-                
-                <p className="text-xs text-muted-foreground">
-                  هدف بزرگ را به مراحل کوچک و قابل اندازه‌گیری تقسیم کنید
-                </p>
               </div>
 
-              {/* دکمه‌های عملیات */}
-              <div className="flex gap-2.5 pt-4 border-t border-border/50">
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-border/30">
                 <Button
                   type="button"
                   onClick={editingGoal ? handleEditGoal : handleAddGoal}
-                  className="flex-1 gap-2 h-12 text-base font-semibold shadow-sm"
+                  className="flex-1 h-13 text-base font-semibold rounded-2xl gap-2 shadow-lg shadow-primary/20"
                 >
                   {editingGoal ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5" />
-                      <span>ذخیره تغییرات</span>
-                    </>
+                    <><CheckCircle2 className="w-5 h-5" /><span>ذخیره</span></>
                   ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      <span>ایجاد هدف</span>
-                    </>
+                    <><Sparkles className="w-5 h-5" /><span>ایجاد هدف</span></>
                   )}
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => {
                     setIsAddDialogOpen(false);
                     setIsEditDialogOpen(false);
                     resetForm();
                   }}
-                  className="h-12 px-8"
+                  className="h-13 px-6 rounded-2xl text-muted-foreground hover:bg-muted/50"
                 >
                   انصراف
                 </Button>

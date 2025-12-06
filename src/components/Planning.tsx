@@ -694,89 +694,96 @@ const Planning = () => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-xl text-right flex items-center gap-2">
-                <Calendar className="w-6 h-6 text-primary" />
-                <span>{editingPlan ? 'ویرایش برنامه' : 'ایجاد برنامه جدید'}</span>
-              </DialogTitle>
-            </DialogHeader>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl border-0 bg-gradient-to-br from-background via-background to-muted/20 shadow-2xl p-0" dir="rtl">
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-background via-background to-transparent pb-4 px-5 pt-5">
+              <DialogHeader className="text-right space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                    <Calendar className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div className="flex-1">
+                    <DialogTitle className="text-xl font-bold text-foreground">
+                      {editingPlan ? 'ویرایش برنامه' : 'برنامه جدید'}
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      مسیر موفقیت خود را طراحی کنید
+                    </p>
+                  </div>
+                </div>
+              </DialogHeader>
+            </div>
 
-            <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-              {/* پیام انگیزشی */}
-              <div className="p-2.5 sm:p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
-                <div className="flex items-start gap-3">
-                  <Star className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <p className="text-sm text-muted-foreground leading-relaxed text-right">
-                    برنامه‌ریزی دقیق، نصف موفقیت است. هر برنامه را با مراحل مشخص و زمان‌بندی دقیق تعریف کنید.
+            <div className="px-5 pb-5 space-y-5">
+              {/* Motivational Banner */}
+              <div className="p-3 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl border border-primary/10">
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-primary shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    برنامه‌ریزی دقیق، نصف موفقیت است 📅
                   </p>
                 </div>
               </div>
 
-              {/* نوع برنامه */}
-              <div className="space-y-2.5">
-                <Label className="text-right block text-base">نوع برنامه *</Label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {/* Plan Type - Modern Cards */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 block">نوع برنامه</label>
+                <div className="grid grid-cols-3 gap-2">
                   {(Object.keys(planTypeLabels) as PlanType[]).map((type) => {
                     const typeInfo = planTypeLabels[type];
                     return (
-                      <Button
+                      <motion.button
                         key={type}
-                        variant={planType === type ? 'default' : 'outline'}
+                        type="button"
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={() => {
                           setPlanType(type);
                           setCategory('');
                         }}
-                        className="w-full gap-2 min-h-[48px] justify-start"
-                        style={planType === type ? { backgroundColor: typeInfo.color } : {}}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl text-sm font-medium transition-all ${
+                          planType === type
+                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                            : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'
+                        }`}
                       >
-                        <span>{typeInfo.icon}</span>
-                        <span>{typeInfo.label}</span>
-                      </Button>
+                        <span className="text-lg">{typeInfo.icon}</span>
+                        <span className="text-xs">{typeInfo.label}</span>
+                      </motion.button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* عنوان */}
-              <div className="space-y-1.5">
-                <Label htmlFor="title" className="text-right block text-base">
-                  عنوان برنامه *
-                </Label>
+              {/* Title */}
+              <div className="space-y-2">
                 <Input
-                  id="title"
-                  placeholder="مثال: برنامه ورزش صبحگاهی 30 روزه"
+                  placeholder="عنوان برنامه..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-right min-h-[48px] text-base"
+                  className="h-14 text-lg font-medium border-0 bg-muted/50 rounded-2xl px-4 focus:ring-2 focus:ring-primary/30 focus:bg-background placeholder:text-muted-foreground/60 transition-all"
                   dir="rtl"
                 />
               </div>
 
-              {/* توضیحات */}
-              <div className="space-y-1.5">
-                <Label htmlFor="description" className="text-right block text-base">
-                  توضیحات و اهداف برنامه
-                </Label>
+              {/* Description */}
+              <div className="space-y-2">
                 <Textarea
-                  id="description"
-                  placeholder="چه چیزی را می‌خواهید با این برنامه به دست آورید؟"
+                  placeholder="توضیحات و اهداف برنامه..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                  className="text-right min-h-[120px] text-base resize-none"
+                  rows={2}
+                  className="text-base border-0 bg-muted/30 rounded-xl px-4 py-3 resize-none focus:ring-2 focus:ring-primary/20 focus:bg-muted/50 placeholder:text-muted-foreground/50 transition-all"
                   dir="rtl"
                 />
               </div>
 
-              {/* دسته‌بندی و اولویت */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="category" className="text-right block text-base">
-                    دسته‌بندی *
-                  </Label>
+              {/* Category & Priority */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80">دسته‌بندی</label>
                   <Select value={category} onValueChange={setCategory} dir="rtl">
-                    <SelectTrigger id="category" className="min-h-[48px]">
+                    <SelectTrigger className="h-12 border-0 bg-muted/40 rounded-xl focus:ring-2 focus:ring-primary/20">
                       <SelectValue placeholder="انتخاب دسته" />
                     </SelectTrigger>
                     <SelectContent>
@@ -789,12 +796,10 @@ const Planning = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="priority" className="text-right block text-base">
-                    اولویت
-                  </Label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80">اولویت</label>
                   <Select value={priority} onValueChange={(v) => setPriority(v as Priority)} dir="rtl">
-                    <SelectTrigger id="priority" className="min-h-[48px]">
+                    <SelectTrigger className="h-12 border-0 bg-muted/40 rounded-xl focus:ring-2 focus:ring-primary/20">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -811,24 +816,20 @@ const Planning = () => {
                 </div>
               </div>
 
-              {/* مدت زمان */}
+              {/* Duration - Clean Select */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-foreground">مدت زمان برنامه</Label>
-                <Select 
-                  value={duration.toString()} 
-                  onValueChange={(v) => setDuration(parseInt(v))} 
-                  dir="rtl"
-                >
-                  <SelectTrigger className="h-12 focus:ring-2 focus:ring-primary/20">
+                <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>مدت زمان</span>
+                </label>
+                <Select value={duration.toString()} onValueChange={(v) => setDuration(parseInt(v))} dir="rtl">
+                  <SelectTrigger className="h-12 border-0 bg-muted/40 rounded-xl focus:ring-2 focus:ring-primary/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {durationOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value.toString()}>
-                        <div className="text-right">
-                          <div className="font-medium">{option.label}</div>
-                          <div className="text-xs text-muted-foreground">{option.description}</div>
-                        </div>
+                        <span>{option.label}</span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -839,27 +840,27 @@ const Planning = () => {
                     type="number"
                     value={customDuration}
                     onChange={(e) => setCustomDuration(e.target.value)}
-                    placeholder="تعداد روز (مثلاً: 45)"
+                    placeholder="تعداد روز..."
                     min={1}
-                    className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                    className="h-11 border-0 bg-muted/40 rounded-xl px-4 focus:ring-2 focus:ring-primary/20"
                     dir="rtl"
                   />
                 )}
-                <p className="text-xs text-muted-foreground">
-                  مدت زمانی واقع‌بینانه انتخاب کنید
-                </p>
               </div>
 
-              {/* تاریخ شروع */}
+              {/* Start Date */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-foreground">تاریخ شروع</Label>
+                <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  <span>تاریخ شروع</span>
+                </label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button 
-                      variant="outline" 
-                      className="w-full justify-start h-12 text-base focus:ring-2 focus:ring-primary/20"
+                      variant="ghost" 
+                      className="w-full h-12 justify-start bg-muted/40 rounded-xl hover:bg-muted/60 border-0"
                     >
-                      <CalendarIcon className="ms-2 h-5 w-5" />
+                      <CalendarIcon className="ms-2 h-5 w-5 text-muted-foreground" />
                       <span>{format(startDate, 'yyyy/MM/dd')}</span>
                     </Button>
                   </PopoverTrigger>
@@ -884,46 +885,50 @@ const Planning = () => {
                 </Popover>
               </div>
 
-              {/* تصویر انگیزشی */}
-              <div className="space-y-2 pt-2 border-t border-border/50">
+              {/* Image Upload */}
+              <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-muted-foreground/20">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
-                  label="تصویر انگیزشی برنامه (اختیاری)"
+                  label="تصویر انگیزشی (اختیاری)"
                 />
               </div>
 
-              {/* چک‌لیست مراحل */}
-              <div className="space-y-3 pt-2 border-t border-border/50">
+              {/* Checklist */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
                     <ListChecks className="w-4 h-4" />
                     <span>مراحل برنامه</span>
-                    <span className="text-destructive text-xs">*</span>
-                  </Label>
+                  </label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={addChecklistItem}
-                    className="gap-1 h-9"
+                    className="gap-1 h-8 text-primary"
                   >
                     <Plus className="w-4 h-4" />
-                    <span className="text-sm">افزودن</span>
+                    <span className="text-xs">افزودن</span>
                   </Button>
                 </div>
 
                 <div className="space-y-2">
                   {checklistItems.map((item, index) => (
-                    <div key={index} className="flex gap-2 items-center">
-                      <div className="flex items-center justify-center w-7 h-11 text-sm font-medium text-muted-foreground shrink-0">
+                    <motion.div 
+                      key={index} 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex gap-2 items-center"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-muted/50 flex items-center justify-center text-xs font-medium text-muted-foreground shrink-0">
                         {index + 1}
                       </div>
                       <Input
                         placeholder={`مرحله ${index + 1}`}
                         value={item}
                         onChange={(e) => updateChecklistItem(index, e.target.value)}
-                        className="h-11 text-base text-right focus:ring-2 focus:ring-primary/20"
+                        className="h-11 border-0 bg-muted/40 rounded-xl px-4 text-right focus:ring-2 focus:ring-primary/20"
                         dir="rtl"
                       />
                       <Button
@@ -931,37 +936,37 @@ const Planning = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeChecklistItem(index)}
-                        className="h-11 w-11 shrink-0 text-destructive hover:bg-destructive/10"
+                        className="h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         disabled={checklistItems.length === 1}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-                
-                <p className="text-xs text-muted-foreground">
-                  برنامه را به مراحل قابل انجام تقسیم کنید
-                </p>
               </div>
 
-              {/* دکمه ثبت */}
-              <div className="pt-3 border-t border-border/50">
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-border/30">
                 <Button 
                   onClick={editingPlan ? handleEditPlan : handleAddPlan} 
-                  className="w-full gap-2 h-12 text-base font-semibold shadow-sm"
+                  className="flex-1 h-13 text-base font-semibold rounded-2xl gap-2 shadow-lg shadow-primary/20"
                 >
                   {editingPlan ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5" />
-                      <span>ذخیره تغییرات</span>
-                    </>
+                    <><CheckCircle2 className="w-5 h-5" /><span>ذخیره</span></>
                   ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      <span>ایجاد برنامه</span>
-                    </>
+                    <><Sparkles className="w-5 h-5" /><span>ایجاد برنامه</span></>
                   )}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    setIsAddDialogOpen(false);
+                    resetForm();
+                  }} 
+                  className="h-13 px-6 rounded-2xl text-muted-foreground hover:bg-muted/50"
+                >
+                  انصراف
                 </Button>
               </div>
             </div>

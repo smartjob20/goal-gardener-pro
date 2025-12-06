@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Flame, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock, GripVertical, Sparkles } from 'lucide-react';
+import { Plus, Flame, TrendingUp, Edit2, Trash2, Power, Lightbulb, CheckCircle2, Circle, Zap, Lock, GripVertical, Sparkles, Clock } from 'lucide-react';
 import { getTodayString, calculateStreak } from '@/utils/dateUtils';
 import { toast } from 'sonner';
 import { ImageUpload } from '@/components/ImageUpload';
@@ -556,227 +556,230 @@ const HabitTracker = () => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-xl text-right">
-                {editingHabit ? 'ویرایش عادت' : 'افزودن عادت جدید'}
-              </DialogTitle>
-            </DialogHeader>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl border-0 bg-gradient-to-br from-background via-background to-muted/20 shadow-2xl p-0" dir="rtl">
+            {/* Header with gradient */}
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-background via-background to-transparent pb-4 px-5 pt-5">
+              <DialogHeader className="text-right space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 flex items-center justify-center">
+                    <Flame className="w-6 h-6 text-orange-500" />
+                  </div>
+                  <div className="flex-1">
+                    <DialogTitle className="text-xl font-bold text-foreground">
+                      {editingHabit ? 'ویرایش عادت' : 'عادت جدید'}
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {editingHabit ? 'تنظیمات عادت را تغییر دهید' : 'چه عادتی می‌خواهید بسازید؟'}
+                    </p>
+                  </div>
+                </div>
+              </DialogHeader>
+            </div>
 
-            <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-              {/* قالب‌های آماده */}
+            <div className="px-5 pb-5 space-y-5">
+              {/* Quick Templates */}
               {!editingHabit && (
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => setShowTemplates(!showTemplates)}
-                    className="w-full gap-2 min-h-[48px]"
+                    className="w-full h-12 gap-2 rounded-xl bg-gradient-to-r from-primary/5 to-accent/5 hover:from-primary/10 hover:to-accent/10 border border-primary/10"
                   >
-                    <Lightbulb className="w-4 h-4" />
-                    <span>{showTemplates ? 'بستن قالب‌ها' : 'انتخاب از قالب‌های آماده'}</span>
+                    <Lightbulb className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">{showTemplates ? 'بستن قالب‌ها' : '✨ شروع سریع با قالب‌های آماده'}</span>
                   </Button>
 
-                  {showTemplates && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-2"
-                    >
-                      {habitTemplates.map((template, index) => (
-                        <Button
-                          key={index}
-                          type="button"
-                          variant="ghost"
-                          onClick={() => handleTemplateSelect(template)}
-                          className="justify-start text-right h-auto py-3 px-4 min-h-[48px]"
-                        >
-                          <div className="text-right">
-                            <div className="font-medium">{template.title}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {template.target} {template.targetUnit} • {difficulties.find(d => d.value === template.difficulty)?.label}
+                  <AnimatePresence>
+                    {showTemplates && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="grid grid-cols-2 gap-2 overflow-hidden"
+                      >
+                        {habitTemplates.map((template, index) => (
+                          <motion.button
+                            key={index}
+                            type="button"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            onClick={() => handleTemplateSelect(template)}
+                            className="text-right p-3 rounded-xl bg-muted/40 hover:bg-muted/70 transition-all text-sm"
+                          >
+                            <div className="font-medium text-foreground">{template.title}</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">
+                              {template.target} {template.targetUnit}
                             </div>
-                          </div>
-                        </Button>
-                      ))}
-                    </motion.div>
-                  )}
+                          </motion.button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
 
-              {/* عنوان */}
-              <div className="space-y-1.5">
-                <Label htmlFor="title" className="text-right block">
-                  عنوان عادت *
-                </Label>
+              {/* Title Field */}
+              <div className="space-y-2">
                 <Input
-                  id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="مثال: ورزش روزانه"
-                  className="text-right min-h-[48px] text-base"
+                  placeholder="عنوان عادت..."
+                  className="h-14 text-lg font-medium border-0 bg-muted/50 rounded-2xl px-4 focus:ring-2 focus:ring-primary/30 focus:bg-background placeholder:text-muted-foreground/60 transition-all"
                   dir="rtl"
                 />
               </div>
 
-              {/* توضیحات */}
-              <div className="space-y-1.5">
-                <Label htmlFor="description" className="text-right block">
-                  توضیحات
-                </Label>
+              {/* Description */}
+              <div className="space-y-2">
                 <Textarea
-                  id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="توضیحات بیشتر درباره این عادت..."
-                  className="text-right min-h-[100px] text-base resize-none"
+                  placeholder="توضیحات (اختیاری)..."
+                  rows={2}
+                  className="text-base border-0 bg-muted/30 rounded-xl px-4 py-3 resize-none focus:ring-2 focus:ring-primary/20 focus:bg-muted/50 placeholder:text-muted-foreground/50 transition-all"
                   dir="rtl"
                 />
               </div>
 
-              {/* دسته‌بندی و سختی */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="category" className="text-right block">
-                    دسته‌بندی
-                  </Label>
-                  <Select value={category} onValueChange={setCategory} dir="rtl">
-                    <SelectTrigger id="category" className="min-h-[48px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          <div className="flex items-center gap-2">
-                            <span>{cat.icon}</span>
-                            <span>{cat.label}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="difficulty" className="text-right block">
-                    سطح سختی
-                  </Label>
-                  <Select value={difficulty} onValueChange={(v) => setDifficulty(v as HabitDifficulty)} dir="rtl">
-                    <SelectTrigger id="difficulty" className="min-h-[48px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {difficulties.map((diff) => (
-                        <SelectItem key={diff.value} value={diff.value}>
-                          <div className="flex items-center gap-2">
-                            <span>{diff.label}</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {diff.xp} XP
-                            </Badge>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* Category - Scrollable Pills */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 block">دسته‌بندی</label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.slice(0, 6).map((cat) => (
+                    <motion.button
+                      key={cat.value}
+                      type="button"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setCategory(cat.value)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                        category === cat.value
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      <span>{cat.label}</span>
+                    </motion.button>
+                  ))}
                 </div>
               </div>
 
-              {/* هدف و واحد */}
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="space-y-1.5">
-                  <Label htmlFor="target" className="text-sm font-semibold text-foreground">
-                    هدف روزانه
-                  </Label>
+              {/* Difficulty Pills */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 block">سطح سختی</label>
+                <div className="flex gap-2">
+                  {difficulties.map((diff) => (
+                    <motion.button
+                      key={diff.value}
+                      type="button"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setDifficulty(diff.value)}
+                      className={`flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-2xl text-sm font-medium transition-all ${
+                        difficulty === diff.value
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                          : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'
+                      }`}
+                    >
+                      <span>{diff.label}</span>
+                      <span className="text-xs opacity-80">{diff.xp} XP</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Target & Unit - Clean Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80">هدف روزانه</label>
                   <Input
-                    id="target"
                     type="number"
                     value={target}
                     onChange={(e) => setTarget(e.target.value)}
                     placeholder="1"
-                    className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                    className="h-12 border-0 bg-muted/40 rounded-xl px-4 text-center text-lg font-semibold focus:ring-2 focus:ring-primary/20"
                     dir="rtl"
                     min="1"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="targetUnit" className="text-sm font-semibold text-foreground">
-                    واحد اندازه‌گیری
-                  </Label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80">واحد</label>
                   <Input
-                    id="targetUnit"
                     value={targetUnit}
                     onChange={(e) => setTargetUnit(e.target.value)}
-                    placeholder="بار، دقیقه، لیتر..."
-                    className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                    placeholder="بار، دقیقه..."
+                    className="h-12 border-0 bg-muted/40 rounded-xl px-4 focus:ring-2 focus:ring-primary/20"
                     dir="rtl"
                   />
                 </div>
               </div>
 
-              {/* یادآوری */}
-              <div className="space-y-2.5 pt-2 border-t border-border/50">
+              {/* Reminder Toggle */}
+              <div className="p-4 bg-muted/20 rounded-2xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="reminder" className="text-sm font-semibold text-foreground">
-                    یادآوری روزانه
-                  </Label>
+                  <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>یادآوری روزانه</span>
+                  </label>
                   <Switch
-                    id="reminder"
                     checked={reminderEnabled}
                     onCheckedChange={setReminderEnabled}
                   />
                 </div>
 
-                {reminderEnabled && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-2"
-                  >
-                    <Label htmlFor="reminderTime" className="text-sm text-muted-foreground">
-                      زمان یادآوری
-                    </Label>
-                    <Input
-                      id="reminderTime"
-                      type="time"
-                      value={reminderTime}
-                      onChange={(e) => setReminderTime(e.target.value)}
-                      className="text-base h-12 focus:ring-2 focus:ring-primary/20"
-                      dir="rtl"
-                    />
-                  </motion.div>
-                )}
+                <AnimatePresence>
+                  {reminderEnabled && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                    >
+                      <Input
+                        type="time"
+                        value={reminderTime}
+                        onChange={(e) => setReminderTime(e.target.value)}
+                        className="h-11 border-0 bg-background rounded-xl px-4 focus:ring-2 focus:ring-primary/20"
+                        dir="rtl"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              {/* تصویر عادت */}
-              <div className="space-y-2 pt-2 border-t border-border/50">
+              {/* Image Upload */}
+              <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-muted-foreground/20">
                 <ImageUpload
                   imageUrl={imageUrl}
                   onImageChange={setImageUrl}
-                  label="تصویر انگیزشی عادت (اختیاری)"
+                  label="تصویر انگیزشی (اختیاری)"
                 />
-                <p className="text-xs text-muted-foreground">تصویری که شما را برای انجام این عادت انگیزه می‌دهد</p>
               </div>
 
-              {/* دکمه ثبت */}
-              <div className="pt-3 border-t border-border/50">
+              {/* Action Button */}
+              <div className="flex gap-3 pt-4 border-t border-border/30">
                 <Button 
                   onClick={handleSubmit} 
-                  className="w-full gap-2 h-12 text-base font-semibold shadow-sm"
+                  className="flex-1 h-13 text-base font-semibold rounded-2xl gap-2 shadow-lg shadow-primary/20"
                 >
                   {editingHabit ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5" />
-                      <span>ذخیره تغییرات</span>
-                    </>
+                    <><CheckCircle2 className="w-5 h-5" /><span>ذخیره</span></>
                   ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      <span>افزودن عادت</span>
-                    </>
+                    <><Sparkles className="w-5 h-5" /><span>افزودن عادت</span></>
                   )}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    resetForm();
+                  }} 
+                  className="h-13 px-6 rounded-2xl text-muted-foreground hover:bg-muted/50"
+                >
+                  انصراف
                 </Button>
               </div>
             </div>
