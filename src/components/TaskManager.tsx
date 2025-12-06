@@ -440,131 +440,175 @@ export default function TaskManager() {
               </Button>
             </DialogTrigger>
             
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-5" dir="rtl">
-              <DialogHeader className="text-right space-y-1">
-                <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground">
-                  {editingTask ? '✏️ ویرایش وظیفه' : '✨ افزودن وظیفه جدید'}
-                </DialogTitle>
-                <p className="text-sm text-muted-foreground">
-                  {editingTask ? 'اطلاعات وظیفه را ویرایش کنید' : 'وظیفه جدید خود را با جزئیات کامل تعریف کنید'}
-                </p>
-              </DialogHeader>
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl border-0 bg-gradient-to-br from-background via-background to-muted/20 shadow-2xl p-0" dir="rtl">
+              {/* Header with gradient */}
+              <div className="sticky top-0 z-10 bg-gradient-to-b from-background via-background to-transparent pb-4 px-5 pt-5">
+                <DialogHeader className="text-right space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                      {editingTask ? <Edit className="w-6 h-6 text-primary" /> : <Plus className="w-6 h-6 text-primary" />}
+                    </div>
+                    <div className="flex-1">
+                      <DialogTitle className="text-xl font-bold text-foreground">
+                        {editingTask ? 'ویرایش وظیفه' : 'وظیفه جدید'}
+                      </DialogTitle>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {editingTask ? 'جزئیات وظیفه را تغییر دهید' : 'چه کاری می‌خواهید انجام دهید؟'}
+                      </p>
+                    </div>
+                  </div>
+                </DialogHeader>
+              </div>
               
-              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-4">
-                {/* عنوان */}
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                    <span>عنوان وظیفه</span>
-                    <span className="text-destructive text-xs">*</span>
-                  </label>
-                  <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="مثلاً: تکمیل گزارش پروژه" required className="text-base h-12 focus:ring-2 focus:ring-primary/20" />
+              <form onSubmit={handleSubmit} className="px-5 pb-5 space-y-5">
+                {/* Title Field - Hero Style */}
+                <div className="space-y-2">
+                  <Input 
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)} 
+                    placeholder="عنوان وظیفه را وارد کنید..." 
+                    required 
+                    className="h-14 text-lg font-medium border-0 bg-muted/50 rounded-2xl px-4 focus:ring-2 focus:ring-primary/30 focus:bg-background placeholder:text-muted-foreground/60 transition-all" 
+                  />
                 </div>
 
-                {/* توضیحات */}
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-foreground block">
-                    توضیحات
-                  </label>
-                  <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="جزئیات و توضیحات بیشتر درباره این وظیفه..." rows={3} className="text-base resize-none focus:ring-2 focus:ring-primary/20" />
-                  <p className="text-xs text-muted-foreground">توضیحات کامل به شما کمک می‌کند تمرکز بهتری داشته باشید</p>
+                {/* Description Field */}
+                <div className="space-y-2">
+                  <Textarea 
+                    value={description} 
+                    onChange={e => setDescription(e.target.value)} 
+                    placeholder="توضیحات (اختیاری)..." 
+                    rows={2} 
+                    className="text-base border-0 bg-muted/30 rounded-xl px-4 py-3 resize-none focus:ring-2 focus:ring-primary/20 focus:bg-muted/50 placeholder:text-muted-foreground/50 transition-all" 
+                  />
                 </div>
 
-                {/* دسته‌بندی و اولویت */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-foreground block">دسته‌بندی</label>
-                    <Select value={category} onValueChange={v => setCategory(v as TaskCategory)}>
-                      <SelectTrigger className="h-12 text-base focus:ring-2 focus:ring-primary/20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(categoryConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
-                            <span className="flex items-center gap-2">
-                              <span>{config.icon}</span>
-                              <span>{config.label}</span>
-                            </span>
-                          </SelectItem>)}
-                        {state.settings.customTaskCategories.map(cat => <SelectItem key={cat} value={cat} className="text-base">
-                            <span className="flex items-center gap-2">
-                              <span>📌</span>
-                              <span>{cat}</span>
-                            </span>
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-foreground block">اولویت</label>
-                    <Select value={priority} onValueChange={v => setPriority(v as Priority)}>
-                      <SelectTrigger className="h-12 text-base focus:ring-2 focus:ring-primary/20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(priorityConfig).map(([key, config]) => <SelectItem key={key} value={key} className="text-base">
-                            <span className="flex items-center gap-2">
-                              <span>{config.icon}</span>
-                              <span>{config.label}</span>
-                            </span>
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                {/* Category & Priority - Pill Buttons */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-foreground/80 block">دسته‌بندی</label>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(categoryConfig).map(([key, config]) => (
+                      <motion.button
+                        key={key}
+                        type="button"
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setCategory(key as TaskCategory)}
+                        className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium transition-all ${
+                          category === key 
+                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25' 
+                            : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                        }`}
+                      >
+                        <span>{config.icon}</span>
+                        <span>{config.label}</span>
+                      </motion.button>
+                    ))}
                   </div>
                 </div>
 
-                {/* موعد */}
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-foreground block">موعد انجام</label>
-                  <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} className="text-base h-12 focus:ring-2 focus:ring-primary/20" />
-                  <p className="text-xs text-muted-foreground">تعیین موعد به شما کمک می‌کند تا به موقع وظیفه را انجام دهید</p>
-                </div>
-
-                {/* آپلود تصویر */}
-                <div className="space-y-1.5">
-                  <ImageUpload imageUrl={imageUrl} onImageChange={setImageUrl} label="تصویر وظیفه (اختیاری)" />
-                </div>
-
-                {/* زیروظایف */}
-                <div className="space-y-2.5 pt-2 border-t border-border/50">
-                  <label className="text-sm font-semibold text-foreground block">زیروظایف</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-foreground/80 block">اولویت</label>
                   <div className="flex gap-2">
-                    <Input value={newSubtask} onChange={e => setNewSubtask(e.target.value)} placeholder="افزودن زیروظیفه..." onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} className="flex-1 text-base h-11 focus:ring-2 focus:ring-primary/20" />
-                    <Button type="button" onClick={handleAddSubtask} variant="outline" className="h-11 w-11 p-0 shrink-0">
+                    {Object.entries(priorityConfig).map(([key, config]) => (
+                      <motion.button
+                        key={key}
+                        type="button"
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setPriority(key as Priority)}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium transition-all ${
+                          priority === key 
+                            ? key === 'high' ? 'bg-red-soft text-red-700 dark:text-red-300 shadow-lg' 
+                              : key === 'medium' ? 'bg-amber-soft text-amber-700 dark:text-amber-300 shadow-lg'
+                              : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 shadow-lg'
+                            : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'
+                        }`}
+                      >
+                        <span>{config.icon}</span>
+                        <span>{config.label}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Deadline - Clean Date Input */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>موعد انجام</span>
+                  </label>
+                  <Input 
+                    type="date" 
+                    value={deadline} 
+                    onChange={e => setDeadline(e.target.value)} 
+                    className="h-12 border-0 bg-muted/40 rounded-xl px-4 focus:ring-2 focus:ring-primary/20 transition-all" 
+                  />
+                </div>
+
+                {/* Image Upload - Minimal */}
+                <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-muted-foreground/20">
+                  <ImageUpload imageUrl={imageUrl} onImageChange={setImageUrl} label="تصویر انگیزشی (اختیاری)" />
+                </div>
+
+                {/* Subtasks - Clean List */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-foreground/80 block">زیروظایف</label>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={newSubtask} 
+                      onChange={e => setNewSubtask(e.target.value)} 
+                      placeholder="افزودن زیروظیفه..." 
+                      onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())} 
+                      className="flex-1 h-11 border-0 bg-muted/40 rounded-xl px-4 focus:ring-2 focus:ring-primary/20" 
+                    />
+                    <Button type="button" onClick={handleAddSubtask} size="icon" className="h-11 w-11 rounded-xl shrink-0">
                       <Plus className="w-5 h-5" />
                     </Button>
                   </div>
                   
-                  {subtasks.length > 0 && <div className="space-y-1.5">
-                      {subtasks.map(st => <div key={st.id} className="flex items-center gap-2.5 p-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-                          <Checkbox checked={st.completed} onCheckedChange={() => {
-                      setSubtasks(subtasks.map(s => s.id === st.id ? {
-                        ...s,
-                        completed: !s.completed
-                      } : s));
-                    }} className="shrink-0" />
+                  {subtasks.length > 0 && (
+                    <div className="space-y-2">
+                      {subtasks.map(st => (
+                        <motion.div 
+                          key={st.id} 
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl group hover:bg-muted/50 transition-colors"
+                        >
+                          <Checkbox 
+                            checked={st.completed} 
+                            onCheckedChange={() => setSubtasks(subtasks.map(s => s.id === st.id ? {...s, completed: !s.completed} : s))} 
+                            className="shrink-0 rounded-md" 
+                          />
                           <span className={`flex-1 text-sm text-right ${st.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                             {st.title}
                           </span>
-                          <Button type="button" variant="ghost" size="sm" onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} className="h-9 w-9 p-0 text-destructive hover:bg-destructive/10 shrink-0">
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => setSubtasks(subtasks.filter(s => s.id !== st.id))} 
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </Button>
-                        </div>)}
-                    </div>}
-                  <p className="text-xs text-muted-foreground">تقسیم وظیفه به بخش‌های کوچکتر باعث پیشرفت بهتر می‌شود</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* دکمه‌های عملیات */}
-                <div className="flex gap-2 sm:gap-2.5 pt-3 sm:pt-4 border-t border-border/50">
-                  <Button type="submit" className="flex-1 h-12 text-base font-semibold gap-2 shadow-sm">
-                    {editingTask ? <>
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>ذخیره تغییرات</span>
-                      </> : <>
-                        <Plus className="w-5 h-5" />
-                        <span>افزودن وظیفه</span>
-                      </>}
+                {/* Action Buttons - Sticky Bottom */}
+                <div className="flex gap-3 pt-4 border-t border-border/30">
+                  <Button type="submit" className="flex-1 h-13 text-base font-semibold rounded-2xl gap-2 shadow-lg shadow-primary/20">
+                    {editingTask ? (
+                      <><CheckCircle2 className="w-5 h-5" /><span>ذخیره</span></>
+                    ) : (
+                      <><Plus className="w-5 h-5" /><span>افزودن</span></>
+                    )}
                   </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="h-12 px-8 text-base">
+                  <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="h-13 px-6 rounded-2xl text-muted-foreground hover:bg-muted/50">
                     انصراف
                   </Button>
                 </div>

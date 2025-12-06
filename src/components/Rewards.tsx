@@ -184,111 +184,138 @@ const Rewards = () => {
               افزودن پاداش جدید
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-3 sm:p-5" dir="rtl">
-            <DialogHeader className="space-y-1">
-              <DialogTitle className="text-xl sm:text-2xl font-bold text-foreground">✨ پاداش جدید</DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                پاداشی تعریف کنید که برای خودتان ارزشمند است: یک فیلم، غذا، خرید، یا هر چیز دیگری
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                  <span>عنوان پاداش</span>
-                  <span className="text-destructive text-xs">*</span>
-                </Label>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[85vh] overflow-y-auto rounded-3xl border-0 bg-gradient-to-br from-background via-background to-muted/20 shadow-2xl p-0" dir="rtl">
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-background via-background to-transparent pb-4 px-5 pt-5">
+              <DialogHeader className="text-right space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-500/20 flex items-center justify-center">
+                    <Gift className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <div className="flex-1">
+                    <DialogTitle className="text-xl font-bold text-foreground">
+                      پاداش جدید
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      برای خودتان انگیزه بسازید
+                    </p>
+                  </div>
+                </div>
+              </DialogHeader>
+            </div>
+
+            <div className="px-5 pb-5 space-y-5">
+              {/* Title */}
+              <div className="space-y-2">
                 <Input 
                   value={newReward.title} 
                   onChange={e => setNewReward({ ...newReward, title: e.target.value })} 
-                  placeholder="مثلاً: تماشای یک فیلم" 
-                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                  placeholder="عنوان پاداش..." 
+                  className="h-14 text-lg font-medium border-0 bg-muted/50 rounded-2xl px-4 focus:ring-2 focus:ring-primary/30 focus:bg-background placeholder:text-muted-foreground/60 transition-all"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground">توضیحات</Label>
+              {/* Description */}
+              <div className="space-y-2">
                 <Textarea 
                   value={newReward.description} 
                   onChange={e => setNewReward({ ...newReward, description: e.target.value })} 
-                  placeholder="جزئیات بیشتر درباره این پاداش..." 
-                  rows={3} 
-                  className="text-base resize-none focus:ring-2 focus:ring-primary/20"
+                  placeholder="توضیحات (اختیاری)..." 
+                  rows={2} 
+                  className="text-base border-0 bg-muted/30 rounded-xl px-4 py-3 resize-none focus:ring-2 focus:ring-primary/20 focus:bg-muted/50 placeholder:text-muted-foreground/50 transition-all"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground">دسته‌بندی</Label>
-                <Select 
-                  value={newReward.category} 
-                  onValueChange={value => setNewReward({ ...newReward, category: value as RewardCategory })}
-                >
-                  <SelectTrigger className="h-12 focus:ring-2 focus:ring-primary/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(categoryNames).map(([key, name]) => 
-                      <SelectItem key={key} value={key}>
-                        {categoryIcons[key as RewardCategory]} {name}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
+              {/* Category Pills */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 block">دسته‌بندی</label>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(categoryNames).map(([key, name]) => (
+                    <motion.button
+                      key={key}
+                      type="button"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setNewReward({ ...newReward, category: key as RewardCategory })}
+                      className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                        newReward.category === key
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <span>{categoryIcons[key as RewardCategory]}</span>
+                      <span>{name}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              {/* XP Required - Big Number */}
+              <div className="p-4 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 rounded-2xl border border-amber-500/20 space-y-3">
+                <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-500" />
                   <span>XP مورد نیاز</span>
-                  <span className="text-destructive text-xs">*</span>
-                </Label>
+                </label>
                 <Input 
                   type="number" 
                   value={newReward.xpRequired} 
                   onChange={e => setNewReward({ ...newReward, xpRequired: parseInt(e.target.value) || 0 })} 
                   min={1}
-                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
+                  className="h-14 text-2xl font-bold text-center border-0 bg-background rounded-xl focus:ring-2 focus:ring-amber-500/30"
                 />
-                <p className="text-xs text-muted-foreground">
-                  XP فعلی شما: {state.user.xp}
+                <p className="text-xs text-muted-foreground text-center">
+                  XP فعلی شما: <span className="font-semibold text-primary">{state.user.xp}</span>
                 </p>
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground">ارزش واقعی (اختیاری)</Label>
-                <Input 
-                  value={newReward.customValue} 
-                  onChange={e => setNewReward({ ...newReward, customValue: e.target.value })} 
-                  placeholder="مثلاً: 50,000 تومان"
-                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
+              {/* Real Value & Motivational Message */}
+              <div className="grid grid-cols-1 gap-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80">ارزش واقعی (اختیاری)</label>
+                  <Input 
+                    value={newReward.customValue} 
+                    onChange={e => setNewReward({ ...newReward, customValue: e.target.value })} 
+                    placeholder="مثلاً: 50,000 تومان"
+                    className="h-11 border-0 bg-muted/40 rounded-xl px-4 focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-sm font-semibold text-foreground">پیام انگیزشی (اختیاری)</Label>
-                <Input 
-                  value={newReward.motivationalMessage} 
-                  onChange={e => setNewReward({ ...newReward, motivationalMessage: e.target.value })} 
-                  placeholder="مثلاً: عالی بود! لذت ببر!"
-                  className="text-base h-12 focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="space-y-2.5 pt-2 border-t border-border/50">
-                <Label className="text-sm font-semibold text-foreground">ایموجی / آیکون</Label>
-                <div className="grid grid-cols-8 gap-1.5">
-                  {['🎁', '🎮', '🍕', '🍔', '🍰', '🛍️', '✈️', '🎬', '📚', '💆', '🏋️', '🎨', '🎵', '☕', '🍦', '🎯'].map(emoji => 
-                    <button 
-                      key={emoji} 
-                      onClick={() => setNewReward({ ...newReward, icon: emoji })} 
-                      className={`text-2xl p-2 rounded-lg hover:bg-secondary transition-colors ${newReward.icon === emoji ? 'bg-primary/20 ring-2 ring-primary' : 'bg-muted/30'}`}
-                    >
-                      {emoji}
-                    </button>
-                  )}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80">پیام انگیزشی</label>
+                  <Input 
+                    value={newReward.motivationalMessage} 
+                    onChange={e => setNewReward({ ...newReward, motivationalMessage: e.target.value })} 
+                    placeholder="مثلاً: لذت ببر!"
+                    className="h-11 border-0 bg-muted/40 rounded-xl px-4 focus:ring-2 focus:ring-primary/20"
+                  />
                 </div>
               </div>
 
-              {/* تصویر انگیزشی */}
-              <div className="space-y-2 pt-2 border-t border-border/50">
+              {/* Emoji Picker */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80 block">آیکون</label>
+                <div className="grid grid-cols-8 gap-1.5">
+                  {['🎁', '🎮', '🍕', '🍔', '🍰', '🛍️', '✈️', '🎬', '📚', '💆', '🏋️', '🎨', '🎵', '☕', '🍦', '🎯'].map(emoji => (
+                    <motion.button 
+                      key={emoji} 
+                      type="button"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setNewReward({ ...newReward, icon: emoji })} 
+                      className={`text-2xl p-2 rounded-xl transition-all ${
+                        newReward.icon === emoji 
+                          ? 'bg-primary/20 ring-2 ring-primary shadow-lg' 
+                          : 'bg-muted/30 hover:bg-muted/50'
+                      }`}
+                    >
+                      {emoji}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-muted-foreground/20">
                 <ImageUpload 
                   imageUrl={newReward.imageUrl} 
                   onImageChange={url => setNewReward({ ...newReward, imageUrl: url })} 
@@ -296,9 +323,10 @@ const Rewards = () => {
                 />
               </div>
 
+              {/* Action Button */}
               <Button 
                 onClick={handleAddReward} 
-                className="w-full h-12 gap-2 text-base font-semibold shadow-sm"
+                className="w-full h-13 text-base font-semibold rounded-2xl gap-2 shadow-lg shadow-primary/20"
               >
                 <Gift className="w-5 h-5" />
                 ایجاد پاداش
