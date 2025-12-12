@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Home, CheckSquare, Flame, Target, Sparkles, Gift, MoreHorizontal } from 'lucide-react';
+import { Home, CheckSquare, Flame, Target, Sparkles, Gift, Heart, MoreHorizontal } from 'lucide-react';
 interface BottomDockProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -22,9 +22,9 @@ const dockItems = [{
   icon: Target,
   label: 'اهداف'
 }, {
-  id: 'aicoach',
-  icon: Sparkles,
-  label: 'مربی'
+  id: 'growth',
+  icon: Heart,
+  label: 'توسعه'
 }, {
   id: 'rewards',
   icon: Gift,

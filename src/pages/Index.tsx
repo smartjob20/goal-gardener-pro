@@ -18,6 +18,7 @@ import Settings from '@/components/Settings';
 import Profile from '@/components/Profile';
 import Rewards from '@/components/Rewards';
 import AICoach from '@/components/AICoach';
+import PersonalGrowth from '@/components/PersonalGrowth';
 import ProGate from '@/components/ProGate';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
@@ -108,6 +109,10 @@ const Index = () => {
         return <Goals />;
       case 'focus':
         return <Focus />;
+      case 'growth':
+        return <ProGate fallback={<p className="text-sm text-center">شناخت و توسعه فردی فقط برای کاربران Pro در دسترس است</p>}>
+            <PersonalGrowth />
+          </ProGate>;
       case 'aicoach':
         return <ProGate fallback={<p className="text-sm text-center">مربی هوشمند AI فقط برای کاربران Pro در دسترس است</p>}>
             <AICoach />

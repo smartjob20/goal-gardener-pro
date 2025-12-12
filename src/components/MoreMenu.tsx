@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, Calendar, BarChart3, User, Settings, BookOpen, X } from 'lucide-react';
+import { Clock, Calendar, BarChart3, User, Settings, BookOpen, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface MoreMenuProps {
@@ -11,6 +11,7 @@ interface MoreMenuProps {
 const moreItems = [
   { id: 'focus', icon: Clock, label: 'تمرکز', gradient: 'from-slate-400 to-slate-600' },
   { id: 'planning', icon: Calendar, label: 'برنامه‌ریزی', gradient: 'from-zinc-400 to-zinc-600' },
+  { id: 'aicoach', icon: Sparkles, label: 'مربی هوشمند', gradient: 'from-purple-400 to-violet-600' },
   { id: 'analytics', icon: BarChart3, label: 'آمار', gradient: 'from-neutral-400 to-neutral-600' },
   { id: 'profile', icon: User, label: 'پروفایل', gradient: 'from-gray-400 to-gray-600' },
   { id: 'settings', icon: Settings, label: 'تنظیمات', gradient: 'from-stone-400 to-stone-600' },
