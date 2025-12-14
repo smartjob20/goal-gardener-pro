@@ -19,7 +19,8 @@ import {
   Star,
   ChevronLeft,
   Loader2,
-  ClipboardList
+  ClipboardList,
+  Feather
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import PersonalityAssessments from './PersonalityAssessments';
+import GuidedDiscovery from './GuidedDiscovery';
 
 interface Message {
   id: string;
@@ -52,7 +54,7 @@ interface JourneyStep {
 const PersonalGrowth = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [activeView, setActiveView] = useState<'home' | 'session' | 'insights' | 'journey' | 'assessments'>('home');
+  const [activeView, setActiveView] = useState<'home' | 'session' | 'insights' | 'journey' | 'assessments' | 'discovery'>('home');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -284,11 +286,34 @@ const PersonalGrowth = () => {
         </div>
       </motion.div>
 
-      {/* Personality Assessment Button */}
+      {/* Guided Discovery Button */}
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.85 }}
+        className="px-4 mb-4"
+      >
+        <Card 
+          className="p-4 rounded-2xl bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-0 cursor-pointer hover:shadow-lg transition-all"
+          onClick={() => setActiveView('discovery')}
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white shadow-lg">
+              <Feather className="w-7 h-7" />
+            </div>
+            <div className="flex-1 text-right">
+              <h3 className="font-semibold text-foreground mb-1">کاوش درونی</h3>
+              <p className="text-sm text-muted-foreground">وقتی یه حسی داری ولی نمیدونی چیه...</p>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* Personality Assessment Button */}
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.9 }}
         className="px-4 mb-6"
       >
         <Card 
@@ -535,6 +560,9 @@ const PersonalGrowth = () => {
         {activeView === 'journey' && renderJourney()}
         {activeView === 'assessments' && (
           <PersonalityAssessments onBack={() => setActiveView('home')} />
+        )}
+        {activeView === 'discovery' && (
+          <GuidedDiscovery onBack={() => setActiveView('home')} />
         )}
       </AnimatePresence>
     </div>

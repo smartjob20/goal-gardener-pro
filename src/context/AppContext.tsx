@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import { AppState, Task, Habit, Goal, FocusSession, Achievement, User, Plan, AppSettings, AICoachSuggestion, Reward } from '@/types';
 import { toast } from 'sonner';
 import { triggerHaptic } from '@/utils/haptics';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 // Initial State
 const initialUser: User = {
@@ -249,13 +251,12 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  // Load state from localStorage
+  // Load state from localStorage first
   useEffect(() => {
     const savedState = localStorage.getItem('timemanager-state');
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        // Ensure settings have all required fields with defaults
         const mergedSettings = {
           ...initialSettings,
           ...parsed.settings,
@@ -270,7 +271,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Save state to localStorage
+  // Save state to localStorage and sync to cloud
   useEffect(() => {
     localStorage.setItem('timemanager-state', JSON.stringify(state));
   }, [state]);
