@@ -9,6 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { AnimatePresence } from 'motion/react';
 import { AppProvider } from "./context/AppContext";
+import { DataSyncProvider } from "./context/DataSyncContext";
 import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import Install from "./pages/Install";
@@ -77,25 +78,27 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AppProvider>
-          <BackButtonHandler />
-          <TooltipProvider delayDuration={0}>
-            {/* Safe Area Container with safe area insets support */}
-            <div className="safe-area-container safe-area-top pt-16">
-              <Toaster />
-              <Sonner />
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-                  <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-                  <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
-                  <Route path="/subscription" element={<Subscription />} />
-                  <Route path="/tutorial" element={<PageTransition><Tutorial /></PageTransition>} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-                </Routes>
-              </AnimatePresence>
-            </div>
-          </TooltipProvider>
+          <DataSyncProvider>
+            <BackButtonHandler />
+            <TooltipProvider delayDuration={0}>
+              {/* Safe Area Container with safe area insets support */}
+              <div className="safe-area-container safe-area-top pt-16">
+                <Toaster />
+                <Sonner />
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+                    <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+                    <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
+                    <Route path="/subscription" element={<Subscription />} />
+                    <Route path="/tutorial" element={<PageTransition><Tutorial /></PageTransition>} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+                  </Routes>
+                </AnimatePresence>
+              </div>
+            </TooltipProvider>
+          </DataSyncProvider>
         </AppProvider>
       </BrowserRouter>
     </QueryClientProvider>
