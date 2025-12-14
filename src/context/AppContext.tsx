@@ -1,9 +1,7 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { AppState, Task, Habit, Goal, FocusSession, Achievement, User, Plan, AppSettings, AICoachSuggestion, Reward } from '@/types';
 import { toast } from 'sonner';
 import { triggerHaptic } from '@/utils/haptics';
-import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 
 // Initial State
 const initialUser: User = {
