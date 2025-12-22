@@ -81,8 +81,8 @@ const App = () => {
           <DataSyncProvider>
             <BackButtonHandler />
             <TooltipProvider delayDuration={0}>
-              {/* Safe Area Container with safe area insets support */}
-              <div className="safe-area-container safe-area-top pt-16">
+              {/* Safe Area Container - no extra padding on web */}
+              <div className="safe-area-container">
                 <Toaster />
                 <Sonner />
                 <AnimatePresence mode="wait">
