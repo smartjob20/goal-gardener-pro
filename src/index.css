@@ -519,3 +519,198 @@
   .delay-400 { animation-delay: 0.4s; }
   .delay-500 { animation-delay: 0.5s; }
 }
+
+/* ======================================= */
+/* Web Layout Utilities */
+/* ======================================= */
+.web-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .web-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .web-container {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .web-container {
+    padding: 0 3rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .web-container {
+    padding: 0 4rem;
+  }
+}
+
+/* Responsive Card Grid */
+.card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Sidebar Layout for Desktop */
+.sidebar-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-layout {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  
+  .sidebar-layout > .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  
+  .sidebar-layout > .main-content {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Web Typography Scaling */
+@media (min-width: 768px) {
+  .text-responsive-xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  .text-responsive-2xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  
+  .text-responsive-3xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-xl {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+  
+  .text-responsive-2xl {
+    font-size: 2.25rem;
+    line-height: 2.75rem;
+  }
+  
+  .text-responsive-3xl {
+    font-size: 3rem;
+    line-height: 3.5rem;
+  }
+}
+
+/* Hide on mobile / desktop */
+.hide-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block;
+  }
+  
+  .hide-desktop {
+    display: none;
+  }
+}
+
+/* Desktop hover states - only apply on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .web-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .web-button:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Web-specific spacing */
+@media (min-width: 768px) {
+  .web-spacing {
+    padding: 2rem;
+  }
+  
+  .web-gap {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .web-spacing {
+    padding: 2.5rem;
+  }
+  
+  .web-gap {
+    gap: 2rem;
+  }
+}

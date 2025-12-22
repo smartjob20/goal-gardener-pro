@@ -142,44 +142,56 @@ const Index = () => {
   if (!user) {
     return null;
   }
-  return <>
-      {showWelcome ? <Welcome onStart={() => {
-      setShowWelcome(false);
-      setShowOnboarding(true);
-    }} /> : showOnboarding ? <Onboarding onComplete={() => setShowOnboarding(false)} /> : <div className="min-h-screen bg-background pb-32" dir="rtl">
-          <AnimatePresence mode="wait">
-            <motion.div key={activeTab} initial={{
-          opacity: 0,
-          y: 10
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} exit={{
-          opacity: 0,
-          y: -10
-        }} transition={{
-          duration: 0.15,
-          ease: 'easeInOut'
-        }} className="min-h-screen px-2 sm:px-3 pt-4 pb-4">
-              {renderContent()}
-            </motion.div>
-          </AnimatePresence>
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  return (
+    <>
+      {showWelcome ? (
+        <Welcome onStart={() => {
+          setShowWelcome(false);
+          setShowOnboarding(true);
+        }} />
+      ) : showOnboarding ? (
+        <Onboarding onComplete={() => setShowOnboarding(false)} />
+      ) : (
+        <div className="min-h-screen bg-background" dir="rtl">
+          {/* Main Content Area */}
+          <div className={`${isMobile ? 'pb-32 px-2 sm:px-3 pt-4' : 'pt-20 pb-8'}`}>
+            <div className={isMobile ? '' : 'web-container'}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.15, ease: 'easeInOut' }}
+                  className="min-h-[calc(100vh-8rem)]"
+                >
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
           
-          {/* Bottom Floating Dock */}
+          {/* Navigation - Bottom Dock on mobile, Header on desktop */}
           <BottomDock 
             activeTab={activeTab} 
             onTabChange={setActiveTab}
             onMoreClick={() => setMoreMenuOpen(true)}
           />
 
-          {/* More Menu (Slide from left) */}
-          <MoreMenu 
-            open={moreMenuOpen}
-            onClose={() => setMoreMenuOpen(false)}
-            onNavigate={setActiveTab}
-          />
-        </div>}
-    </>;
+          {/* More Menu (Slide from left) - Only on mobile */}
+          {isMobile && (
+            <MoreMenu 
+              open={moreMenuOpen}
+              onClose={() => setMoreMenuOpen(false)}
+              onNavigate={setActiveTab}
+            />
+          )}
+        </div>
+      )}
+    </>
+  );
 };
 
 export default Index;
